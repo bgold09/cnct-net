@@ -1,7 +1,8 @@
 using System;
 using Xunit;
-using Cnct.Core;
+using Cnct.Core.Configuration;
 using Newtonsoft.Json;
+
 
 namespace Cnct.Core.Tests
 {
