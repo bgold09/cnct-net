@@ -15,6 +15,14 @@ namespace Cnct.Core.Configuration
         [JsonConverter(typeof(LinkSpecificationCollectionConverter))]
         public IDictionary<string, object> Links { get; set; }
 
+        public void Validate()
+        {
+            if (this.Links == null || this.Links.Count == 0)
+            {
+                throw new System.Exception();
+            }
+        }
+
         public async Task ExecuteAsync()
         {
             var d = new Dictionary<string, IEnumerable<string>>();
@@ -65,14 +73,6 @@ namespace Cnct.Core.Configuration
             var l = new LinkTask(d);
 
             await l.ExecuteAsync();
-        }
-
-        public void Validate()
-        {
-            if (this.Links == null || this.Links.Count == 0)
-            {
-                throw new System.Exception();
-            }
         }
     }
 }

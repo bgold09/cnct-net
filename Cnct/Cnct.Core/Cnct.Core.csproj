@@ -6,12 +6,8 @@
     <RootNamespace>Cnct.Core</RootNamespace>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet>Cnct.Core.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet>Cnct.Core.ruleset</CodeAnalysisRuleSet>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\build.settings\Cnct.Core.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

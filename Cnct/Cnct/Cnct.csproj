@@ -12,6 +12,10 @@
     </PackageReference>
   </ItemGroup>
 
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\build.settings\Cnct.Core.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Cnct.Core\Cnct.Core.csproj" />
   </ItemGroup>

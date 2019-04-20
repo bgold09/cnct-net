@@ -8,6 +8,7 @@ namespace Cnct.Core.Configuration
     public class LinkSpecificationCollectionConverter : JsonConverter<IDictionary<string, object>>
     {
         public override bool CanRead => true;
+
         public override bool CanWrite => false;
 
         public override IDictionary<string, object> ReadJson(

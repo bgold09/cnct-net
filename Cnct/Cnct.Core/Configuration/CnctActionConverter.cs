@@ -7,6 +7,7 @@ namespace Cnct.Core.Configuration
     public class CnctActionConverter : JsonConverter<ICnctActionSpec>
     {
         public override bool CanRead => true;
+
         public override bool CanWrite => false;
 
         public override ICnctActionSpec ReadJson(
