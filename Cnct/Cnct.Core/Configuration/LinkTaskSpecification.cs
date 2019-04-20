@@ -30,33 +30,39 @@ namespace Cnct.Core.Configuration
             {
                 string target = kvp.Key;
 
-                IEnumerable<string> destinationPaths;
                 var v = kvp.Value;
                 switch (v)
                 {
                     case null:
-                        destinationPaths = new[] { Gen(target) };
+                        d.Add(target, new[] { Gen(target) });
                         break;
 
                     case string s:
-                        destinationPaths = new[] { s };
+                        d.Add(target, new[] { s });
                         break;
 
                     case SymlinkSpecification spec:
-                        var dl = new List<string>();
-                        A(target, dl, spec.Windows);
-                        A(target, dl, spec.Linux);
-                        A(target, dl, spec.Osx);
+                        string[] destinationPaths = null;
+                        switch (Platform.CurrentPlatform)
+                        {
+                            case PlatformType.Windows:
+                                destinationPaths = A(target, spec.Windows);
+                                break;
+                            case PlatformType.Linux:
+                                destinationPaths = A(target, spec.Linux);
+                                break;
+                            case PlatformType.OSX:
+                                destinationPaths = A(target, spec.Osx);
+                                break;
+                        }
 
-                        destinationPaths = dl;
-                        break;
+                        if (destinationPaths != null)
+                        {
+                            d.Add(target, destinationPaths);
+                        }
 
-                    default:
-                        destinationPaths = null;
                         break;
                 }
-
-                d.Add(target, destinationPaths);
             }
 
             var l = new LinkTask(d);
@@ -64,26 +70,21 @@ namespace Cnct.Core.Configuration
             await l.ExecuteAsync();
         }
 
-        private static void A(string target, List<string> l, string[] d)
+        private static string[] A(string target, string[] d)
         {
             if (d == null)
             {
-                return;
+                return null;
             }
 
-            if (d.Length == 0)
-            {
-                l.Add(Gen(target));
-            }
-            else
-            {
-                l.AddRange(d);
-            }
+            return d.Length == 0
+                ? new[] { Gen(target) }
+                : d;
         }
 
         private static string Gen(string p)
         {
-            return $"{Platform.Home}/.{Path.GetFileName(p)}";
+            return $"{Platform.Home}{Path.DirectorySeparatorChar}.{Path.GetFileName(p)}";
         }
     }
 }

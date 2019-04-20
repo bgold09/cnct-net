@@ -5,13 +5,13 @@ namespace Cnct.Core.Configuration
 {
     public static class Platform
     {
-        private static readonly Lazy<PlatformType> PlatformTypeLazy = new Lazy<PlatformType>(GetCurrentPlatformType);
+        private static readonly Lazy<PlatformType> CurrentPlatformLazy = new Lazy<PlatformType>(GetCurrentPlatformType);
 
         public static string Home
         {
             get
             {
-                switch (PlatformType)
+                switch (CurrentPlatform)
                 {
                     case PlatformType.Windows:
                         return Environment.GetEnvironmentVariable("USERPROFILE");
@@ -24,7 +24,7 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        private static PlatformType PlatformType => PlatformTypeLazy.Value;
+        public static PlatformType CurrentPlatform => CurrentPlatformLazy.Value;
 
         private static PlatformType GetCurrentPlatformType()
         {
