@@ -35,7 +35,7 @@ namespace Cnct.Core.Configuration
                 switch (v)
                 {
                     case null:
-                        destinationPaths = new[] { $"{Platform.Home}/.{Path.GetFileName(target)}" };
+                        destinationPaths = new[] { Gen(target) };
                         break;
 
                     case string s:
@@ -44,20 +44,9 @@ namespace Cnct.Core.Configuration
 
                     case SymlinkSpecification spec:
                         var dl = new List<string>();
-                        if (spec.Windows != null)
-                        {
-                            dl.Add(spec.Windows);
-                        }
-
-                        if (spec.Linux != null)
-                        {
-                            dl.Add(spec.Linux);
-                        }
-
-                        if (spec.Osx != null)
-                        {
-                            dl.Add(spec.Osx);
-                        }
+                        A(target, dl, spec.Windows);
+                        A(target, dl, spec.Linux);
+                        A(target, dl, spec.Osx);
 
                         destinationPaths = dl;
                         break;
@@ -73,6 +62,28 @@ namespace Cnct.Core.Configuration
             var l = new LinkTask(d);
 
             await l.ExecuteAsync();
+        }
+
+        private static void A(string target, List<string> l, string[] d)
+        {
+            if (d == null)
+            {
+                return;
+            }
+
+            if (d.Length == 0)
+            {
+                l.Add(Gen(target));
+            }
+            else
+            {
+                l.AddRange(d);
+            }
+        }
+
+        private static string Gen(string p)
+        {
+            return $"{Platform.Home}/.{Path.GetFileName(p)}";
         }
     }
 }
