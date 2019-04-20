@@ -1,8 +1,7 @@
-﻿
-namespace Cnct.Core.Configuration
+﻿namespace Cnct.Core.Configuration
 {
     public class CnctConfig
     {
-        public ICnctAction[] Actions { get; set; }
+        public ICnctActionSpec[] Actions { get; set; }
     }
 }

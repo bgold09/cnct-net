@@ -4,25 +4,25 @@ using Newtonsoft.Json.Linq;
 
 namespace Cnct.Core.Configuration
 {
-    public class CnctActionConverter : JsonConverter<ICnctAction>
+    public class CnctActionConverter : JsonConverter<ICnctActionSpec>
     {
         public override bool CanRead => true;
         public override bool CanWrite => false;
 
-        public override ICnctAction ReadJson(
+        public override ICnctActionSpec ReadJson(
             JsonReader reader,
             Type objectType,
-            ICnctAction existingValue,
+            ICnctActionSpec existingValue,
             bool hasExistingValue,
             JsonSerializer serializer)
         {
             JObject jsonObject = JObject.Load(reader);
-            ICnctAction action;
+            ICnctActionSpec action;
 
             switch (jsonObject["actionType"].Value<string>())
             {
                 case "link":
-                    action = new LinkAction();
+                    action = new LinkTaskSpecification();
                     break;
 
                 case "shell":
@@ -37,7 +37,7 @@ namespace Cnct.Core.Configuration
             return action;
         }
 
-        public override void WriteJson(JsonWriter writer, ICnctAction value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ICnctActionSpec value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
