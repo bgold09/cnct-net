@@ -10,6 +10,6 @@ namespace Cnct.Core.Configuration
 
         void Validate();
 
-        Task ExecuteAsync();
+        Task ExecuteAsync(ILogger logger);
     }
 }

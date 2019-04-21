@@ -23,7 +23,7 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public async Task ExecuteAsync()
+        public async Task ExecuteAsync(ILogger logger)
         {
             var d = new Dictionary<string, IEnumerable<string>>();
             foreach (var kvp in this.Links)
@@ -65,8 +65,7 @@ namespace Cnct.Core.Configuration
                 }
             }
 
-            var l = new LinkTask(d);
-
+            var l = new LinkTask(logger, d);
             await l.ExecuteAsync();
         }
 
@@ -84,7 +83,13 @@ namespace Cnct.Core.Configuration
 
         private static string Gen(string p)
         {
-            return $"{Platform.Home}{Path.DirectorySeparatorChar}.{Path.GetFileName(p)}";
+            string fileName = Path.GetFileName(p);
+            if (fileName[0] != '.')
+            {
+                fileName = $".{fileName}";
+            }
+
+            return $"{Platform.Home}{Path.DirectorySeparatorChar}{fileName}";
         }
     }
 }

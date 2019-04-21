@@ -6,11 +6,19 @@ namespace Cnct.Core.Configuration
     {
         public ICnctActionSpec[] Actions { get; set; }
 
-        public async Task ExecuteAsync()
+        public void Validate()
         {
             foreach (var action in this.Actions)
             {
-                await action.ExecuteAsync();
+                action.Validate();
+            }
+        }
+
+        public async Task ExecuteAsync(ILogger logger)
+        {
+            foreach (var action in this.Actions)
+            {
+                await action.ExecuteAsync(logger);
             }
         }
     }
