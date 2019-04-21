@@ -10,8 +10,6 @@ namespace Cnct.Core.Configuration
     {
         public string ActionType => "link";
 
-        public bool? Force { get; set; }
-
         [JsonConverter(typeof(LinkSpecificationCollectionConverter))]
         public IDictionary<string, object> Links { get; set; }
 
@@ -23,22 +21,21 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public async Task ExecuteAsync(ILogger logger)
+        public IDictionary<string, IEnumerable<string>> GetLinkConfigurations()
         {
-            var d = new Dictionary<string, IEnumerable<string>>();
+            var linkConfigs = new Dictionary<string, IEnumerable<string>>();
             foreach (var kvp in this.Links)
             {
                 string target = kvp.Key;
-
-                var v = kvp.Value;
-                switch (v)
+                object linkValue = kvp.Value;
+                switch (linkValue)
                 {
                     case null:
-                        d.Add(target, new[] { Gen(target) });
+                        linkConfigs.Add(target, new[] { NormalizeLink(target) });
                         break;
 
                     case string s:
-                        d.Add(target, new[] { s });
+                        linkConfigs.Add(target, new[] { s });
                         break;
 
                     case SymlinkSpecification spec:
@@ -46,44 +43,49 @@ namespace Cnct.Core.Configuration
                         switch (Platform.CurrentPlatform)
                         {
                             case PlatformType.Windows:
-                                destinationPaths = A(target, spec.Windows);
+                                destinationPaths = GetPlatformLinkPaths(target, spec.Windows);
                                 break;
                             case PlatformType.Linux:
-                                destinationPaths = A(target, spec.Linux);
+                                destinationPaths = GetPlatformLinkPaths(target, spec.Linux);
                                 break;
                             case PlatformType.OSX:
-                                destinationPaths = A(target, spec.Osx);
+                                destinationPaths = GetPlatformLinkPaths(target, spec.Osx);
                                 break;
                         }
 
                         if (destinationPaths != null)
                         {
-                            d.Add(target, destinationPaths);
+                            linkConfigs.Add(target, destinationPaths);
                         }
 
                         break;
                 }
             }
 
-            var l = new LinkTask(logger, d);
-            await l.ExecuteAsync();
+            return linkConfigs;
         }
 
-        private static string[] A(string target, string[] d)
+        public async Task ExecuteAsync(ILogger logger)
         {
-            if (d == null)
+            var linkTask = new LinkTask(logger, this.GetLinkConfigurations());
+            await linkTask.ExecuteAsync();
+        }
+
+        private static string[] GetPlatformLinkPaths(string target, string[] platformLinkPaths)
+        {
+            if (platformLinkPaths == null)
             {
                 return null;
             }
 
-            return d.Length == 0
-                ? new[] { Gen(target) }
-                : d;
+            return platformLinkPaths.Length == 0
+                ? new[] { NormalizeLink(target) }
+                : platformLinkPaths;
         }
 
-        private static string Gen(string p)
+        private static string NormalizeLink(string path)
         {
-            string fileName = Path.GetFileName(p);
+            string fileName = Path.GetFileName(path);
             if (fileName[0] != '.')
             {
                 fileName = $".{fileName}";
