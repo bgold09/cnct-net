@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cnct.Core
 {
@@ -13,8 +11,13 @@ namespace Cnct.Core
             this.loggerOptions = options;
         }
 
-        public void LogError(string message)
+        public void LogError(string message, Exception exception = null)
         {
+            if (exception != null)
+            {
+                message = $"{message}{Environment.NewLine}Ex: {exception}";
+            }
+
             LogWithColor(message, ConsoleColor.Red);
         }
 
