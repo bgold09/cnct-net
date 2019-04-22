@@ -1,11 +1,22 @@
+trigger:
+- master
+- develop
+- release/*
+
+pr:
+- master
+- develop
+- release/*
+
 pool:
-  name: Hosted Ubuntu 1604
+  vmImage: windows-2019
 
 steps:
 - task: DotNetCoreCLI@2
   displayName: Restore
   inputs:
     command: restore
+    projects: '**/*.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: Build
