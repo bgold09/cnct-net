@@ -1,3 +1,13 @@
+trigger:
+- master
+- develop
+- release/*
+
+pr:
+- master
+- develop
+- release/*
+
 pool:
   vmImage: windows-2019
 
