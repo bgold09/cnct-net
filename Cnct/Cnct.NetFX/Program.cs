@@ -7,7 +7,7 @@ namespace Cnct
     {
         public static async Task Main(string[] args)
         {
-            await CommandLineOptions.T(args);
+            await CnctCommandLine.Invoke(args);
         }
     }
 }

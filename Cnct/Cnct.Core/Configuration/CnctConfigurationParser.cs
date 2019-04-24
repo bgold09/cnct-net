@@ -13,16 +13,28 @@ namespace Cnct.Core.Configuration
             this.logger = logger;
         }
 
-        public CnctConfig Parse(FileInfo configFile)
+        public CnctConfig Parse(string configFile)
         {
-            if (!configFile.Exists)
+            if (configFile == null)
             {
-                throw new FileNotFoundException("The config file does not exist.", configFile.FullName);
+                configFile = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
+            }
+
+            if (string.IsNullOrWhiteSpace(configFile))
+            {
+                throw new ArgumentException(
+                    "The path to the config file was null or contains only whitespace.",
+                    nameof(configFile));
+            }
+
+            if (!File.Exists(configFile))
+            {
+                throw new FileNotFoundException("The config file does not exist.", configFile);
             }
 
             try
             {
-                string json = File.ReadAllText(configFile.FullName);
+                string json = File.ReadAllText(configFile);
                 CnctConfig config = JsonConvert.DeserializeObject<CnctConfig>(json);
                 config.Logger = this.logger;
 
@@ -30,7 +42,7 @@ namespace Cnct.Core.Configuration
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Failed to parse '{configFile.FullName}'.", ex);
+                this.logger.LogError($"Failed to parse '{configFile}'.", ex);
                 throw;
             }
         }
