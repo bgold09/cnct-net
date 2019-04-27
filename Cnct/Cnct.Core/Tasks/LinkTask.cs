@@ -24,13 +24,18 @@ namespace Cnct.Core.Tasks
 
                 foreach (string link in destinationLinks)
                 {
+                    this.Logger.LogInformation($"  [LINK] {target} -> {link}");
                     if (File.Exists(target))
                     {
-                        CreateLink(link, target, LinkType.File);
+                        this.CreateLink(link, target, LinkType.File);
                     }
                     else if (Directory.Exists(target))
                     {
-                        CreateLink(link, target, LinkType.Directory);
+                        this.CreateLink(link, target, LinkType.Directory);
+                    }
+                    else
+                    {
+                        this.Logger.LogWarning($"Target '{target}' does not exist.");
                     }
                 }
             }
@@ -38,20 +43,21 @@ namespace Cnct.Core.Tasks
             return Task.FromResult(0);
         }
 
-        private static void CreateLink(string linkPath, string targetPath, LinkType linkType)
+        private void CreateLink(string linkPath, string targetPath, LinkType linkType)
         {
-            if (linkType == LinkType.File)
+            if (File.Exists(linkPath))
             {
                 File.Delete(linkPath);
             }
-            else if (linkType == LinkType.Directory)
+            else if (Directory.Exists(linkPath))
             {
-                Directory.Delete(linkPath, recursive: true);
+                Directory.Delete(linkPath);
             }
 
             if (!NativeMethods.CreateSymbolicLink(linkPath, targetPath, linkType))
             {
                 int hr = Marshal.GetHRForLastWin32Error();
+                this.Logger.LogError($"Failed to create link.", Marshal.GetExceptionForHR(hr));
             }
         }
     }

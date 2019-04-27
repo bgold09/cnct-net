@@ -9,6 +9,9 @@ namespace Cnct.Core.Configuration
         [JsonIgnore]
         public ILogger Logger { get; set; }
 
+        [JsonIgnore]
+        public string ConfigRootDirectory { get; set; }
+
         public ICnctActionSpec[] Actions { get; set; }
 
         public void Validate()
@@ -25,7 +28,7 @@ namespace Cnct.Core.Configuration
             {
                 try
                 {
-                    await action.ExecuteAsync(this.Logger);
+                    await action.ExecuteAsync(this.Logger, this.ConfigRootDirectory);
                 }
                 catch (Exception ex)
                 {
