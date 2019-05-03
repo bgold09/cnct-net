@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {
     public class CnctConfig
     {
+        [JsonIgnore]
+        public ILogger Logger { get; set; }
+
         public ICnctActionSpec[] Actions { get; set; }
 
         public void Validate()
@@ -14,12 +19,22 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public async Task ExecuteAsync(ILogger logger)
+        public async Task<bool> ExecuteAsync()
         {
             foreach (var action in this.Actions)
             {
-                await action.ExecuteAsync(logger);
+                try
+                {
+                    await action.ExecuteAsync(this.Logger);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.LogError($"Task of type '{action.ActionType}' failed.", ex);
+                    return false;
+                }
             }
+
+            return true;
         }
     }
 }
