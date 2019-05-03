@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -18,12 +19,22 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public async Task ExecuteAsync()
+        public async Task<bool> ExecuteAsync()
         {
             foreach (var action in this.Actions)
             {
-                await action.ExecuteAsync(this.Logger);
+                try
+                {
+                    await action.ExecuteAsync(this.Logger);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.LogError($"Task of type '{action.ActionType}' failed.", ex);
+                    return false;
+                }
             }
+
+            return true;
         }
     }
 }

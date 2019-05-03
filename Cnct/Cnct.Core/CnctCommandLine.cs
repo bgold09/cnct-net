@@ -33,14 +33,16 @@ namespace Cnct.Core
             await rootCommand.InvokeAsync(args);
         }
 
-        private static async Task ExecuteAsync(FileInfo config, bool quiet, bool debug)
+        private static async Task<int> ExecuteAsync(FileInfo config, bool quiet, bool debug)
         {
             var logger = new ConsoleLogger(new LoggerOptions(quiet, debug));
             var parser = new CnctConfigurationParser(logger);
             string configFilePath = config?.FullName ?? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
 
             CnctConfig cnctConfig = parser.Parse(configFilePath);
-            await cnctConfig.ExecuteAsync();
+            bool result = await cnctConfig.ExecuteAsync();
+
+            return result ? 0 : 1;
         }
 
         private static Option CreateOption<T>(char shortName, string longName, string description)
