@@ -15,10 +15,9 @@ namespace Cnct.Core.Configuration
 
         public CnctConfig Parse(string configFile)
         {
-            if (configFile == null)
-            {
-                configFile = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
-            }
+            configFile = configFile == null
+                ? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json"
+                : Path.GetFullPath(configFile);
 
             if (string.IsNullOrWhiteSpace(configFile))
             {
@@ -37,6 +36,7 @@ namespace Cnct.Core.Configuration
                 string json = File.ReadAllText(configFile);
                 CnctConfig config = JsonConvert.DeserializeObject<CnctConfig>(json);
                 config.Logger = this.logger;
+                config.ConfigRootDirectory = Path.GetDirectoryName(configFile);
 
                 return config;
             }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
 using Newtonsoft.Json;
@@ -17,25 +19,25 @@ namespace Cnct.Core.Configuration
         {
             if (this.Links == null || this.Links.Count == 0)
             {
-                throw new System.Exception();
+                throw new InvalidOperationException("The collection of links cannot be null or empty.");
             }
         }
 
-        public IDictionary<string, IEnumerable<string>> GetLinkConfigurations()
+        public IDictionary<string, IEnumerable<string>> GetLinkConfigurations(string configDirectoryRoot)
         {
             var linkConfigs = new Dictionary<string, IEnumerable<string>>();
             foreach (var kvp in this.Links)
             {
-                string target = kvp.Key;
+                string target = PathExtensions.NormalizePath($"{configDirectoryRoot}{Path.DirectorySeparatorChar}{kvp.Key}");
                 object linkValue = kvp.Value;
                 switch (linkValue)
                 {
                     case null:
-                        linkConfigs.Add(target, new[] { NormalizeLink(target) });
+                        linkConfigs.Add(target, new[] { GetDotFileLinkPath(target) });
                         break;
 
                     case string s:
-                        linkConfigs.Add(target, new[] { s });
+                        linkConfigs.Add(target, new[] { s.NormalizePath() });
                         break;
 
                     case SymlinkSpecification spec:
@@ -65,9 +67,9 @@ namespace Cnct.Core.Configuration
             return linkConfigs;
         }
 
-        public async Task ExecuteAsync(ILogger logger)
+        public async Task ExecuteAsync(ILogger logger, string confgiDirectoryRoot)
         {
-            var linkTask = new LinkTask(logger, this.GetLinkConfigurations());
+            var linkTask = new LinkTask(logger, this.GetLinkConfigurations(confgiDirectoryRoot));
             await linkTask.ExecuteAsync();
         }
 
@@ -77,13 +79,17 @@ namespace Cnct.Core.Configuration
             {
                 return null;
             }
-
-            return platformLinkPaths.Length == 0
-                ? new[] { NormalizeLink(target) }
-                : platformLinkPaths;
+            else if (platformLinkPaths.Length == 0)
+            {
+                return new[] { GetDotFileLinkPath(target) };
+            }
+            else
+            {
+                return platformLinkPaths.Select(p => p.NormalizePath()).ToArray();
+            }
         }
 
-        private static string NormalizeLink(string path)
+        private static string GetDotFileLinkPath(string path)
         {
             string fileName = Path.GetFileName(path);
             if (fileName[0] != '.')
