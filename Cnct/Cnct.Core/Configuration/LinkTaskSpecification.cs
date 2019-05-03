@@ -19,7 +19,7 @@ namespace Cnct.Core.Configuration
         {
             if (this.Links == null || this.Links.Count == 0)
             {
-                throw new System.Exception();
+                throw new InvalidOperationException("The collection of links cannot be null or empty.");
             }
         }
 
