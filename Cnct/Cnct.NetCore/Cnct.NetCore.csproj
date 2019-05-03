@@ -17,6 +17,7 @@
     <CodeAnalysisRuleSet>..\build.settings\Cnct.Core.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>Cnct</AssemblyName>
     <RootNamespace>Cnct</RootNamespace>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
