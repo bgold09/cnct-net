@@ -4,6 +4,10 @@ using System.CommandLine.Invocation;
 using System.IO;
 using System.Threading.Tasks;
 using Cnct.Core.Configuration;
+using Cnct.Core.Configuration.Schema;
+using Newtonsoft.Json.Schema;
+using Newtonsoft.Json.Schema.Generation;
+using Newtonsoft.Json.Serialization;
 
 namespace Cnct.Core
 {
@@ -11,6 +15,16 @@ namespace Cnct.Core
     {
         public static async Task Invoke(string[] args)
         {
+            JSchemaGenerator gen = new JSchemaGenerator()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+
+            gen.GenerationProviders.Add(new CnctTaskSchemaGenerationProvider());
+            gen.GenerationProviders.Add(new LinkTaskSpecificationSchemaGenerationProvider());
+
+            JSchema schema = gen.Generate(typeof(CnctConfig));
+
             var rootCommand = new RootCommand
             {
                 Description = "A cross-platform bootstrapping tool. Connect your dotfiles / cnct the dots!",

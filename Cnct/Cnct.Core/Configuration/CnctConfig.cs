@@ -12,6 +12,7 @@ namespace Cnct.Core.Configuration
         [JsonIgnore]
         public string ConfigRootDirectory { get; set; }
 
+        [JsonRequired]
         public ICnctActionSpec[] Actions { get; set; }
 
         public void Validate()
