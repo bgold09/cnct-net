@@ -50,8 +50,10 @@ namespace Cnct.Core
         {
             return new Option(
                 new[] { $"-{shortName}", $"--{longName}" },
-                description,
-                new Argument<T>());
+                description)
+            {
+                Argument = new Argument<T>(),
+            };
         }
     }
 }
