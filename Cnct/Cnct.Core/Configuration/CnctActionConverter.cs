@@ -18,17 +18,12 @@ namespace Cnct.Core.Configuration
             JsonSerializer serializer)
         {
             JObject jsonObject = JObject.Load(reader);
-            switch (jsonObject["actionType"].Value<string>())
+            return jsonObject["actionType"].Value<string>() switch
             {
-                case "link":
-                    return jsonObject.ToObject<LinkTaskSpecification>();
-
-                case "shell":
-                    return null;
-
-                default:
-                    throw new NotImplementedException();
-            }
+                "link" => jsonObject.ToObject<LinkTaskSpecification>(),
+                "shell" => null,
+                _ => throw new NotImplementedException(),
+            };
         }
 
         public override void WriteJson(JsonWriter writer, ICnctActionSpec value, JsonSerializer serializer)

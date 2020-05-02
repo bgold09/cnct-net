@@ -25,25 +25,13 @@ namespace Cnct.Core.Configuration
             {
                 string target = kvp.Key;
                 JToken token = kvp.Value;
-
-                object value;
-                switch (token.Type)
+                object value = token.Type switch
                 {
-                    case JTokenType.Null:
-                        value = null;
-                        break;
-
-                    case JTokenType.String:
-                        value = token.Value<string>();
-                        break;
-
-                    case JTokenType.Object:
-                        value = token.ToObject<SymlinkSpecification>();
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
-                }
+                    JTokenType.Null => null,
+                    JTokenType.String => token.Value<string>(),
+                    JTokenType.Object => token.ToObject<SymlinkSpecification>(),
+                    _ => throw new NotImplementedException(),
+                };
 
                 d.Add(target, value);
             }
