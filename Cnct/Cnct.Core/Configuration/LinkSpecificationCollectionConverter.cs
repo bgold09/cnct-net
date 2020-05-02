@@ -38,10 +38,7 @@ namespace Cnct.Core.Configuration
                         break;
 
                     case JTokenType.Object:
-                        value = new SymlinkSpecification();
-                        var v = (JObject)token;
-
-                        serializer.Populate(v.CreateReader(), value);
+                        value = token.ToObject<SymlinkSpecification>();
                         break;
 
                     default:
