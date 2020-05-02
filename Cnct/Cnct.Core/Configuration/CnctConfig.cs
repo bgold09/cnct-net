@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {

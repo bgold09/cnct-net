@@ -1,60 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Cnct.Core.Configuration
 {
     public class LinkSpecificationCollectionConverter : JsonConverter<IDictionary<string, object>>
     {
-        public override bool CanRead => true;
-
-        public override bool CanWrite => false;
-
-        public override IDictionary<string, object> ReadJson(
-            JsonReader reader,
-            Type objectType,
-            IDictionary<string, object> existingValue,
-            bool hasExistingValue,
-            JsonSerializer serializer)
+        public override IDictionary<string, object> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            JObject jsonObject = JObject.Load(reader);
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
             var d = new Dictionary<string, object>();
-
-            foreach (var kvp in jsonObject)
+            foreach (JsonProperty property in document.RootElement.EnumerateObject())
             {
-                string target = kvp.Key;
-                JToken token = kvp.Value;
-
-                object value;
-                switch (token.Type)
+                JsonElement token = property.Value;
+                object value = token.ValueKind switch
                 {
-                    case JTokenType.Null:
-                        value = null;
-                        break;
+                    JsonValueKind.Object => JsonSerializer.Deserialize<SymlinkSpecification>(ref reader, options),
+                    JsonValueKind.String => token.GetString(),
+                    JsonValueKind.Null => null,
+                    _ => throw new NotImplementedException(),
+                };
 
-                    case JTokenType.String:
-                        value = token.Value<string>();
-                        break;
-
-                    case JTokenType.Object:
-                        value = new SymlinkSpecification();
-                        var v = (JObject)token;
-
-                        serializer.Populate(v.CreateReader(), value);
-                        break;
-
-                    default:
-                        throw new NotImplementedException();
-                }
-
-                d.Add(target, value);
+                d.Add(property.Name, value);
             }
 
             return d;
         }
 
-        public override void WriteJson(JsonWriter writer, IDictionary<string, object> value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, IDictionary<string, object> value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }

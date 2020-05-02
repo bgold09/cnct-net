@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
-using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {

@@ -1,46 +1,35 @@
 ﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Cnct.Core.Configuration
 {
     public class CnctActionConverter : JsonConverter<ICnctActionSpec>
     {
-        public override bool CanRead => true;
-
-        public override bool CanWrite => false;
-
-        public override ICnctActionSpec ReadJson(
-            JsonReader reader,
-            Type objectType,
-            ICnctActionSpec existingValue,
-            bool hasExistingValue,
-            JsonSerializer serializer)
+        public override ICnctActionSpec Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            JObject jsonObject = JObject.Load(reader);
-            ICnctActionSpec action;
-
-            switch (jsonObject["actionType"].Value<string>())
+            using JsonDocument jsonObject = JsonDocument.ParseValue(ref reader);
+            string s = jsonObject.RootElement.GetProperty("actionType").GetString();
+            Type t = s switch
             {
-                case "link":
-                    action = new LinkTaskSpecification();
-                    break;
+                "link" => typeof(LinkTaskSpecification),
+                //"shell" => null,
+                _ => throw new NotImplementedException(),
+            };
 
-                case "shell":
-                    return null;
+            return (ICnctActionSpec)JsonSerializer.Deserialize(ref reader, t, options);
 
-                default:
-                    throw new NotImplementedException();
-            }
-
-            serializer.Populate(jsonObject.CreateReader(), action);
-
-            return action;
+            //JsonSerializer.Deserialize<LinkTaskSpecification>(ref reader, options)
         }
 
-        public override void WriteJson(JsonWriter writer, ICnctActionSpec value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, ICnctActionSpec value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }
+
+        //public override void WriteJson(JsonWriter writer, ICnctActionSpec value, JsonSerializer serializer)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
