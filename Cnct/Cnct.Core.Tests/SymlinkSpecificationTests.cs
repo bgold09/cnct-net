@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Text.Json;
 using Cnct.Core.Configuration;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Cnct.Core.Tests
@@ -13,10 +13,13 @@ namespace Cnct.Core.Tests
             string json = @"{
   ""windows"": null,
   ""osx"": null,
-  ""linux"": null,
+  ""linux"": null
 }";
 
-            var s = JsonConvert.DeserializeObject<SymlinkSpecification>(json);
+            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, IgnoreNullValues = false };
+            options.Converters.Add(new SymlinkCollectionConverter());
+
+            var s = JsonSerializer.Deserialize<SymlinkSpecification>(json, options);
             Assert.Equal(Array.Empty<string>(), s.Windows);
             Assert.Equal(Array.Empty<string>(), s.Linux);
             Assert.Equal(Array.Empty<string>(), s.Osx);
@@ -29,7 +32,7 @@ namespace Cnct.Core.Tests
   ""windows"": null
 }";
 
-            var s = JsonConvert.DeserializeObject<SymlinkSpecification>(json);
+            var s = JsonSerializer.Deserialize<SymlinkSpecification>(json);
             Assert.Equal(Array.Empty<string>(), s.Windows);
             Assert.Null(s.Linux);
             Assert.Null(s.Osx);
@@ -42,7 +45,10 @@ namespace Cnct.Core.Tests
             string json = @"{
   ""windows"": """ + expectedLink + "\"}";
 
-            var s = JsonConvert.DeserializeObject<SymlinkSpecification>(json);
+            var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true, };
+            options.Converters.Add(new SymlinkCollectionConverter());
+
+            var s = JsonSerializer.Deserialize<SymlinkSpecification>(json, options);
             Assert.Equal(new[] { expectedLink }, s.Windows);
             Assert.Null(s.Linux);
             Assert.Null(s.Osx);

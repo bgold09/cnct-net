@@ -1,9 +1,31 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Cnct.Core.Configuration
 {
+    public class ActionCollection : IEnumerable<ICnctActionSpec>
+    {
+        private readonly IReadOnlyCollection<ICnctActionSpec> actions;
+
+        public ActionCollection(IReadOnlyCollection<ICnctActionSpec> actions)
+        {
+            this.actions = actions ?? throw new ArgumentNullException(nameof(actions));
+        }
+
+        public IEnumerator<ICnctActionSpec> GetEnumerator()
+        {
+            return this.actions.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.actions.GetEnumerator();
+        }
+    }
+
     public class CnctConfig
     {
         [JsonIgnore]
@@ -12,7 +34,8 @@ namespace Cnct.Core.Configuration
         [JsonIgnore]
         public string ConfigRootDirectory { get; set; }
 
-        public ICnctActionSpec[] Actions { get; set; }
+        [JsonConverter(typeof(ActionCollectionConverter))]
+        public ActionCollection Actions { get; set; }
 
         public void Validate()
         {

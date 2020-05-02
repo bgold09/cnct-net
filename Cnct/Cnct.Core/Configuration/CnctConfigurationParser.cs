@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Cnct.Core.Configuration
 {
@@ -34,7 +34,15 @@ namespace Cnct.Core.Configuration
             try
             {
                 string json = File.ReadAllText(configFile);
-                CnctConfig config = JsonConvert.DeserializeObject<CnctConfig>(json);
+                var options = new JsonSerializerOptions()
+                {
+                    PropertyNameCaseInsensitive = true,
+                };
+
+                options.Converters.Add(new ActionCollectionConverter());
+
+
+                CnctConfig config = JsonSerializer.Deserialize<CnctConfig>(json);
                 config.Logger = this.logger;
                 config.ConfigRootDirectory = Path.GetDirectoryName(configFile);
 

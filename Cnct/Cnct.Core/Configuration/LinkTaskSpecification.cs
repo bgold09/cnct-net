@@ -73,13 +73,13 @@ namespace Cnct.Core.Configuration
             await linkTask.ExecuteAsync();
         }
 
-        private static string[] GetPlatformLinkPaths(string target, string[] platformLinkPaths)
+        private static string[] GetPlatformLinkPaths(string target, IReadOnlyCollection<string> platformLinkPaths)
         {
             if (platformLinkPaths == null)
             {
                 return null;
             }
-            else if (platformLinkPaths.Length == 0)
+            else if (platformLinkPaths.Count == 0)
             {
                 return new[] { GetDotFileLinkPath(target) };
             }

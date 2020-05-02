@@ -1,16 +1,11 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Cnct.Core.Configuration
+﻿namespace Cnct.Core.Configuration
 {
     public class SymlinkSpecification
     {
-        [JsonConverter(typeof(LinkCollectionConverter))]
-        public string[] Windows { get; set; }
+        public SymlinkCollection Windows { get; set; }
 
-        [JsonConverter(typeof(LinkCollectionConverter))]
-        public string[] Osx { get; set; }
+        public SymlinkCollection Osx { get; set; }
 
-        [JsonConverter(typeof(LinkCollectionConverter))]
-        public string[] Linux { get; set; }
+        public SymlinkCollection Linux { get; set; }
     }
 }
