@@ -13,6 +13,11 @@ namespace Cnct.Core
         /// <returns>A normalized version of <paramref name="path"/>.</returns>
         public static string NormalizePath(this string path)
         {
+            if (path == null)
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+
             path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             return path.StartsWith("~", StringComparison.Ordinal)

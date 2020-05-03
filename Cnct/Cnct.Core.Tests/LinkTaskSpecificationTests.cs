@@ -19,8 +19,8 @@ namespace Cnct.Core.Tests
             {
                 Links = new Dictionary<string, object>()
                 {
-                    { target, null }
-                }
+                    { target, null },
+                },
             };
 
             var actualLinks = linkSpec.GetLinkConfigurations(configRootDirectory);
@@ -44,8 +44,8 @@ namespace Cnct.Core.Tests
             {
                 Links = new Dictionary<string, object>()
                 {
-                    { target, null }
-                }
+                    { target, null },
+                },
             };
 
             var actualLinks = linkSpec.GetLinkConfigurations(configRootDirectory);
@@ -71,8 +71,8 @@ namespace Cnct.Core.Tests
             {
                 Links = new Dictionary<string, object>()
                 {
-                    { target, explicitLinkPath }
-                }
+                    { target, explicitLinkPath },
+                },
             };
 
             var actualLinks = linkSpec.GetLinkConfigurations(configRootDirectory);

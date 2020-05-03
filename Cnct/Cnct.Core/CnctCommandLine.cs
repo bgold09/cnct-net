@@ -14,7 +14,7 @@ namespace Cnct.Core
             var rootCommand = new RootCommand
             {
                 Description = "A cross-platform bootstrapping tool. Connect your dotfiles / cnct the dots!",
-                Handler = CommandHandler.Create((Func<FileInfo, bool, bool, Task<int>>)ExecuteAsync)
+                Handler = CommandHandler.Create((Func<FileInfo, bool, bool, Task<int>>)ExecuteAsync),
             };
 
             string configOptDescription = "Path to a configuration file. If not supplied, a file called 'cnct.json' "
@@ -50,8 +50,10 @@ namespace Cnct.Core
         {
             return new Option(
                 new[] { $"-{shortName}", $"--{longName}" },
-                description,
-                new Argument<T>());
+                description)
+            {
+                Argument = new Argument<T>(),
+            };
         }
     }
 }
