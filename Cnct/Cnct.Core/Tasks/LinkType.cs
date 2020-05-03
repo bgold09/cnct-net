@@ -3,6 +3,6 @@
     internal enum LinkType
     {
         File = 0,
-        Directory = 
+        Directory = 1
     }
 }
