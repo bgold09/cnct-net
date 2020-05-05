@@ -10,5 +10,8 @@ namespace Cnct.Core
             string symlinkFileName,
             string targetFileName,
             LinkType flags);
+
+        [DllImport("libc.so.6", EntryPoint = "symlink", CharSet = CharSet.Unicode)]
+        public static extern int CreateLinuxSymlink(string targetPath, string linkPath);
     }
 }
