@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -12,6 +13,7 @@ namespace Cnct.Core.Configuration
         [JsonIgnore]
         public string ConfigRootDirectory { get; set; }
 
+        [JsonProperty(ItemConverterType = typeof(CnctActionConverter))]
         public ICnctActionSpec[] Actions { get; set; }
 
         public void Validate()
@@ -24,7 +26,7 @@ namespace Cnct.Core.Configuration
 
         public async Task<bool> ExecuteAsync()
         {
-            foreach (var action in this.Actions)
+            foreach (var action in this.Actions.Where(a => a != null))
             {
                 try
                 {
