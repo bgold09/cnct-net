@@ -4,11 +4,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Cnct.Core</AssemblyName>
     <RootNamespace>Cnct.Core</RootNamespace>
-    <LangVersion>8.0</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>..\build.settings\Cnct.Core.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>

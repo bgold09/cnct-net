@@ -1,5 +1,8 @@
 <Project>
  <PropertyGroup>
    <VersionPrefix>1.0.0</VersionPrefix>
+    <LangVersion>8.0</LangVersion>
+
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\build.settings\Cnct.Core.ruleset</CodeAnalysisRuleSet>
  </PropertyGroup>
 </Project>
