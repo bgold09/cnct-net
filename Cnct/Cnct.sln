@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cnct.Core.Tests", "Cnct.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cnct.NetCore", "Cnct.NetCore\Cnct.NetCore.csproj", "{D2236735-B1EF-4EC1-8982-E3A10E5E92CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cnct.NetFX", "Cnct.NetFX\Cnct.NetFX.csproj", "{89CFFD04-60A1-48FA-8B78-D9EEECB6D2D3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{83377A6B-C7EA-4901-8345-41E81D72AA1D}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -34,10 +32,6 @@ Global
 		{D2236735-B1EF-4EC1-8982-E3A10E5E92CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2236735-B1EF-4EC1-8982-E3A10E5E92CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2236735-B1EF-4EC1-8982-E3A10E5E92CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89CFFD04-60A1-48FA-8B78-D9EEECB6D2D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89CFFD04-60A1-48FA-8B78-D9EEECB6D2D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89CFFD04-60A1-48FA-8B78-D9EEECB6D2D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89CFFD04-60A1-48FA-8B78-D9EEECB6D2D3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
