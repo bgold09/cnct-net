@@ -12,8 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{83377A6B-C7EA-4901-8345-41E81D72AA1D}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		build.settings\Cnct.Core.ruleset = build.settings\Cnct.Core.ruleset
-		Directory.build.props = Directory.build.props
 	EndProjectSection
 EndProject
 Global
