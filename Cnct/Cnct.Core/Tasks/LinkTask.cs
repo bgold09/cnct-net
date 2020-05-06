@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks
 {
@@ -54,10 +56,27 @@ namespace Cnct.Core.Tasks
                 Directory.Delete(linkPath);
             }
 
-            if (!NativeMethods.CreateSymbolicLink(linkPath, targetPath, linkType))
+            switch (Platform.CurrentPlatform)
             {
-                int hr = Marshal.GetHRForLastWin32Error();
-                this.Logger.LogError($"Failed to create link.", Marshal.GetExceptionForHR(hr));
+                case PlatformType.Windows:
+                    if (!NativeMethods.CreateSymbolicLink(linkPath, targetPath, linkType))
+                    {
+                        int hr = Marshal.GetHRForLastWin32Error();
+                        this.Logger.LogError($"Failed to create link.", Marshal.GetExceptionForHR(hr));
+                    }
+
+                    break;
+
+                case PlatformType.Linux:
+                    if (NativeMethods.CreateLinuxSymlink(targetPath, linkPath) != 0)
+                    {
+                        this.Logger.LogError($"Failed to create link.");
+                    }
+
+                    break;
+
+                default:
+                    throw new NotImplementedException();
             }
         }
     }
