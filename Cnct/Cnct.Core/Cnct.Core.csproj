@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Cnct.Core</AssemblyName>
     <RootNamespace>Cnct.Core</RootNamespace>
     <LangVersion>8.0</LangVersion>
@@ -22,6 +23,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.20214.1" />
+    <PackageReference Include="System.Management.Automation" Version="7.0.0" />
   </ItemGroup>
 
 </Project>
