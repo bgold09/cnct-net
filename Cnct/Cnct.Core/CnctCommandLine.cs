@@ -41,6 +41,7 @@ namespace Cnct.Core
             string configFilePath = config?.FullName ?? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
 
             CnctConfig cnctConfig = parser.Parse(configFilePath);
+            cnctConfig.Validate();
             bool result = await cnctConfig.ExecuteAsync();
 
             return result ? 0 : 1;
