@@ -9,7 +9,7 @@ namespace Cnct.Core.Tasks.Shell
 {
     public class PowerShellInvoker : IShellInvoker
     {
-        private static readonly InitialSessionState Iss = InitialSessionState.CreateDefault();
+        private static readonly InitialSessionState SessionState = InitialSessionState.CreateDefault();
 
         public async Task ExecuteAsync(ShellTaskSpecification specification)
         {
@@ -19,9 +19,9 @@ namespace Cnct.Core.Tasks.Shell
             }
 
             // need this to be configurable
-            Iss.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Unrestricted;
+            SessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Unrestricted;
 
-            using var powershell = PowerShell.Create(Iss);
+            using var powershell = PowerShell.Create(SessionState);
             powershell.AddScript(specification.Command);
 
             powershell.Streams.Error.DataAdded += ToStandardError<ErrorRecord>;
