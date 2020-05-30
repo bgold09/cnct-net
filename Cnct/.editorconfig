@@ -14,3 +14,6 @@ dotnet_diagnostic.SA1602.severity = none
 
 # SA1601: Partial elements should be documented
 dotnet_diagnostic.SA1601.severity = none
+
+# SA1200: Using directive should appear within a namespace declaration
+dotnet_diagnostic.SA1200.severity = none
