@@ -18,10 +18,10 @@ namespace Cnct.Core.Configuration
             JsonSerializer serializer)
         {
             JObject jsonObject = JObject.Load(reader);
-            var spec = jsonObject["actionType"].Value<string>() switch
+            ICnctActionSpec spec = jsonObject["actionType"].Value<string>() switch
             {
                 "link" => new LinkTaskSpecification(),
-                "shell" => null,
+                "shell" => new ShellTaskSpecification(),
                 _ => throw new NotImplementedException(),
             };
 
