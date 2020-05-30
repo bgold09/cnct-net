@@ -13,7 +13,7 @@ namespace Cnct.Core.Configuration
         public string ActionType => "link";
 
         [JsonConverter(typeof(LinkSpecificationCollectionConverter))]
-        public IDictionary<string, object> Links { get; set; }
+        public IReadOnlyDictionary<string, object> Links { get; set; }
 
         public void Validate()
         {
