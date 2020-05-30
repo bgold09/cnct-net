@@ -9,8 +9,6 @@ namespace Cnct.Core.Configuration
 {
     public class ShellTaskSpecification : ICnctActionSpec
     {
-        private readonly HashSet<PlatformType> platformTypes = new HashSet<PlatformType>();
-
         public string ActionType { get; } = "shell";
 
         [JsonRequired]
@@ -21,14 +19,14 @@ namespace Cnct.Core.Configuration
 
         [JsonProperty("os")]
         [JsonRequired]
-        [JsonConverter(typeof(LinkCollectionConverter))]
-        public string[] PlatformType { get; set; }
+        [JsonConverter(typeof(EnumCollectionConverter<PlatformType>))]
+        public IReadOnlyCollection<PlatformType> PlatformType { get; set; }
 
         public bool Silent { get; set; }
 
         public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            if (!this.platformTypes.Contains(Platform.CurrentPlatform))
+            if (!this.PlatformType.Contains(Platform.CurrentPlatform))
             {
                 return;
             }
@@ -36,7 +34,9 @@ namespace Cnct.Core.Configuration
             IShellInvoker shellInvoker = this.Shell switch
             {
                 ShellType.PowerShell => new PowerShellInvoker(),
-                _ => throw new IndexOutOfRangeException(),
+                _ => throw new ArgumentOutOfRangeException(
+                    message: $"Shell type {this.Shell} is not supported.",
+                    innerException: null),
             };
 
             await shellInvoker.ExecuteAsync(this);
@@ -56,17 +56,7 @@ namespace Cnct.Core.Configuration
 
             if (!this.PlatformType.Any())
             {
-                throw new ArgumentException("At least one OS must be specified.");
-            }
-
-            foreach (string item in this.PlatformType)
-            {
-                if (!Enum.TryParse(item, true, out PlatformType platformType))
-                {
-                    throw new ArgumentOutOfRangeException($"OS type '{item}' was not recognized.");
-                }
-
-                this.platformTypes.Add(platformType);
+                throw new ArgumentException("At least one valid OS must be specified.");
             }
         }
 
