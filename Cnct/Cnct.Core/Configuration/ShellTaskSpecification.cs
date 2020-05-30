@@ -9,6 +9,8 @@ namespace Cnct.Core.Configuration
 {
     public class ShellTaskSpecification : ICnctActionSpec
     {
+        private readonly HashSet<PlatformType> platformTypes = new HashSet<PlatformType>();
+
         public string ActionType { get; } = "shell";
 
         [JsonRequired]
@@ -23,8 +25,6 @@ namespace Cnct.Core.Configuration
         public string[] PlatformType { get; set; }
 
         public bool Silent { get; set; }
-
-        private readonly HashSet<PlatformType> platformTypes = new HashSet<PlatformType>();
 
         public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {

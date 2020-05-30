@@ -21,7 +21,7 @@ namespace Cnct.Core
             path = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             return path.StartsWith("~", StringComparison.Ordinal)
-                ? path.Replace("~", Platform.Home)
+                ? path.Replace("~", Platform.Home, StringComparison.Ordinal)
                 : path;
         }
     }
