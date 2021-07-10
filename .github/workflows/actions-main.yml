@@ -32,7 +32,7 @@ jobs:
     - name: Package
       run: dotnet pack --no-build --configuration Release ./Cnct/Cnct.NetCore/Cnct.NetCore.csproj
     - name: Publish as GitHub artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: package
-          path: ./Cnct/Cnct.NetCore/nupkg/Cnct.*.nupkg
+      uses: actions/upload-artifact@v2
+      with:
+        name: package
+        path: ./Cnct/Cnct.NetCore/nupkg/Cnct.*.nupkg
