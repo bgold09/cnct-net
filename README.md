@@ -2,6 +2,13 @@
 
 Install your dotfiles, no matter what platform you're on.
 
+## Build Status
+
+| Branch       |                             |
+|:-------------|:----------------------------|
+| **develop**  | ![Build status][ci-develop] |
+| **main**     | ![Build status][ci-main]    |
+
 ## Overview
 
 Cnct is a cross-platform command-line tool that aims to make bootstrapping your developer environment
@@ -50,3 +57,5 @@ cnct -c ~/.dotfiles/cnct.json
   which heavily inspired this project
 
 [create-pat]: https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token
+[ci-develop]: https://github.com/bgold09/cnct-net/actions/workflows/actions-main.yml/badge.svg?branch=develop
+[ci-main]: https://github.com/bgold09/cnct-net/actions/workflows/actions-main.yml/badge.svg?branch=main
