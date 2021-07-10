@@ -7,6 +7,9 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>cnct</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
+    <Version>0.1.0</Version>
+    <Authors>bgold09</Authors>
+    <Description>Cnct is a cross-platform command-line tool that aims to make bootstrapping your developer environment easier. This is accomplished by providing a set of common operations (e.g. creating symlinks) that can be expressed in a simple configuration.</Description>
 
   </PropertyGroup>
 
