@@ -11,7 +11,7 @@
     <Authors>bgold09</Authors>
     <Description>Cnct is a cross-platform command-line tool that aims to make bootstrapping your developer environment easier. This is accomplished by providing a set of common operations (e.g. creating symlinks) that can be expressed in a simple configuration.</Description>
     <Repository Type="git" url="https://github.com/bgold09/cnct-net.git"/>
-    <ProjectUrl>https://github.com/bgold09/cnct-net</Project>
+    <ProjectUrl>https://github.com/bgold09/cnct-net</ProjectUrl>
 
   </PropertyGroup>
 
