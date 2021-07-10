@@ -23,6 +23,9 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
+        source-url: https://nuget.pkg.github.com/${{github.repository_owner}}/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
     - name: Restore dependencies
       run: dotnet restore ./Cnct/Cnct.sln
     - name: Build
@@ -36,3 +39,8 @@ jobs:
       with:
         name: package
         path: ./Cnct/Cnct.NetCore/nupkg/Cnct.*.nupkg
+    - name: Publish to GitHub Packages
+      if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+      run: dotnet nuget push ./Cnct/Cnct.NetCore/nupkg/Cnct.*.nupkg --skip-duplicate --api-key $NUGET_AUTH_TOKEN
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
