@@ -46,7 +46,7 @@ namespace Cnct.Core.Configuration
         {
             if (this.Shell == ShellType.Unknown)
             {
-                throw new ArgumentOutOfRangeException($"Shell type not recognized.");
+                throw new ArgumentException($"Shell type '{this.Shell}' not recognized.");
             }
 
             if (string.IsNullOrWhiteSpace(this.Command))
