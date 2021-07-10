@@ -2,9 +2,15 @@ name: .NET
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches:
+      - develop
+      - main
+      - release
   pull_request:
-    branches: [ $default-branch ]
+    branches:
+      - develop
+      - main
+      - release
 
 jobs:
   build:
