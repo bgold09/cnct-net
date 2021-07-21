@@ -4,10 +4,10 @@ Install your dotfiles, no matter what platform you're on.
 
 ## Build Status
 
-| Branch       |                             |
-|:-------------|:----------------------------|
-| **develop**  | ![Build status][ci-develop] |
-| **main**     | ![Build status][ci-main]    |
+| Branch       |                                                   |
+|:-------------|:--------------------------------------------------|
+| **develop**  | [![Build status][ci-develop]][ci-develop-history] |
+| **main**     | [![Build status][ci-main]][ci-main-history]       |
 
 ## Overview
 
@@ -59,3 +59,5 @@ cnct -c ~/.dotfiles/cnct.json
 [create-pat]: https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token
 [ci-develop]: https://github.com/bgold09/cnct-net/actions/workflows/actions-main.yml/badge.svg?branch=develop
 [ci-main]: https://github.com/bgold09/cnct-net/actions/workflows/actions-main.yml/badge.svg?branch=main
+[ci-develop-history]: https://github.com/bgold09/cnct-net/actions?query=event%3Apush+branch%3Adevelop
+[ci-main-history]: https://github.com/bgold09/cnct-net/actions?query=event%3Apush+branch%3Amain

@@ -1,0 +1,8 @@
+{
+    "line-length": {
+        "line_length": 104,
+        "code_blocks": false
+    },
+    "no-duplicate-header": false,
+    "ul-start-left": false
+}
