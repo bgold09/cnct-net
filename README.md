@@ -26,7 +26,7 @@ $c = Get-Credential -UserName "<your GitHub username>"
 dotnet nuget add source --name github-bgold09 "https://nuget.pkg.github.com/bgold09/index.json" `
   --username $c.UserName --password $c.GetNetworkCredential().Password
 
-dotnet tool install --global cnct --source github-bgold09 
+dotnet tool install --global cnct
 ```
 
 ## Configuration file
