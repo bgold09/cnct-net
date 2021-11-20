@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using Cnct.Core.Tasks;
 
 namespace Cnct.Core
@@ -11,7 +13,7 @@ namespace Cnct.Core
             string targetFileName,
             LinkType flags);
 
-        [DllImport("libc.so.6", EntryPoint = "symlink", CharSet = CharSet.Unicode)]
+        [DllImport("libc", EntryPoint = "symlink", CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern int CreateLinuxSymlink(string targetPath, string linkPath);
     }
 }
