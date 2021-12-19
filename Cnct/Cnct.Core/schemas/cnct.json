@@ -1,0 +1,101 @@
+{
+  "$schema": "./cnctConfig.vnext.json",
+  "actions": [
+    {
+      "actionType": "shell",
+      "os": "windows",
+      "shell": "powershell",
+      "command": "./bootstrap/bootstrap.ps1",
+      "silent": false
+    },
+    {
+      "actionType": "link",
+      "force": true,
+      "links": {
+        "bash": {
+          "unix": null
+        },
+        "bash/bashrc": {
+          "unix": null
+        },
+        "bash/bash_profile": {
+          "unix": null
+        },
+        "bin-windows": {
+          "windows": "~/bin"
+        },
+        "editors/vscode-settings.json": {
+          "windows": "~/AppData/Roaming/Code/User/settings.json",
+          "linux": "~/.config/Code/User/settings.json",
+          "osx": "~/Library/Application Support/Code/User/settings.json"
+        },
+        "git": "~/.gitfiles",
+        "git/base.gitconfig": "~/.gitconfig",
+        "git/gitignore": null,
+        "git/os-linux.gitconfig": {
+          "linux": "~/.os.gitconfig"
+        },
+        "git/os-windows.gitconfig": {
+          "windows": "~/.os.gitconfig"
+        },
+        "git/os-osx.gitconfig": {
+          "osx": "~/.os.gitconfig"
+        },
+        "powershell/profile.ps1": {
+          "linux": "~/.config/powershell/profile.ps1",
+          "windows": [
+            "~/Documents/WindowsPowerShell/profile.ps1",
+            "~/Documents/PowerShell/profile.ps1"
+          ]
+        },
+        "powershell/aliases.ps1": {
+          "linux": "~/.config/powershell/aliases.ps1",
+          "windows": [
+            "~/Documents/WindowsPowerShell/aliases.ps1",
+            "~/Documents/PowerShell/aliases.ps1"
+          ]
+        },
+        "powershell/functions": {
+          "linux": "~/.config/powershell/functions",
+          "windows": [
+            "~/Documents/WindowsPowerShell/functions",
+            "~/Documents/PowerShell/functions"
+          ]
+        },
+        "windows/windowsterminal-settings.json": {
+          "windows": "~/AppData/Local/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState/settings.json"
+        },
+        "windows/winget.json": {
+          "windows": "~/AppData/Local/Packages/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe/LocalState/settings.json"
+        },
+        "python/pythonrc.py": null,
+        "system/dircolors": null,
+        "system/inputrc": {
+          "unix": null
+        },
+        "system/wgetrc": {
+          "unix": null
+        },
+        "tmux/tmux.conf": {
+          "unix": null
+        },
+        "vim": null,
+        "vim/base.vimrc": null,
+        "vim/gvimrc": {
+          "windows": [ "~/_gvimrc", "~/Appdata/Local/nvim/ginit.vim" ]
+        },
+        "vim/vimrc": {
+          "windows": [ "~/_vimrc", "~/Appdata/Local/nvim/init.vim" ],
+          "unix": null
+        },
+      	"vim/ideavimrc": null,
+        "windows/vsvimrc": {
+          "windows": "~/_vsvimrc"
+        },
+        "windows/ConEmu.xml": {
+          "windows": "~/AppData/Roaming/ConEmu.xml"
+        }
+      }
+    }
+  ]
+}
