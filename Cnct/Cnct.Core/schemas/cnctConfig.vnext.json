@@ -80,6 +80,10 @@
                 "osx": {
                     "description": "Symlinks to create in an OSX environment.",
                     "$ref": "#/definitions/DestinationLinks"
+                },
+                "unix": {
+                    "description": "Symlinks to create in a UNIX environment.",
+                    "$ref": "#/definitions/DestinationLinks"
                 }
             }
         },
