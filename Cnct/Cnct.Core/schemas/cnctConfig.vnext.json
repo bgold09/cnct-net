@@ -1,0 +1,158 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "id": "https://raw.githubusercontent.com/bgold09/cnct-net/develop/schema/cnctConfig.vnext.json",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "actions": {
+            "description": "The actions to execute.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/ShellAction"
+                    },
+                    {
+                        "$ref": "#/definitions/LinkAction"
+                    }
+                ]
+            }
+        }
+    }, 
+    "definitions": {
+        "ActionBase": {
+            "type": "object",
+            "required": [
+                "actionType"
+            ],
+            "properties": {
+                "os": {
+                    "description": "The operating system for which to execute the action.",
+                    "type": "string",
+                    "enum": [
+                        "windows",
+                        "linux",
+                        "osx"
+                    ]
+                },
+                "actionType": {
+                    "description": "The type of the action.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "A description for the action.",
+                    "type": "string"
+                }
+            }
+        },
+        "DestinationLinks": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "PlatformLinks": {
+            "type": "object",
+            "properties": {
+                "windows": {
+                    "description": "Symlinks to create in a Windows environment.",
+                    "$ref": "#/definitions/DestinationLinks"
+                },
+                "linux": {
+                    "description": "Symlinks to create in a Linux environment.",
+                    "$ref": "#/definitions/DestinationLinks"
+                },
+                "osx": {
+                    "description": "Symlinks to create in an OSX environment.",
+                    "$ref": "#/definitions/DestinationLinks"
+                }
+            }
+        },
+        "ShellAction": {
+            "description": "An action that invokes a command or script in a shell.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "command"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "shell"
+                            ]
+                        },
+                        "command": {
+                            "description": "The command to invoke.",
+                            "type": "string"
+                        },
+                        "shell": {
+                            "description": "The type of shell to use when invoking the command.",
+                            "enum": [
+                                "sh",
+                                "powershell"
+                            ]
+                        },
+                        "silent": {
+                            "description": "If true, do not direct output from the shell to the console.",
+                            "type": "boolean"
+                        }
+                    }
+                }
+            ]
+        },
+        "LinkAction": {
+            "allOf":[
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "links"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "link"
+                            ]
+                        },
+                        "links": {
+                            "description": "The target and destination for symlinks to create.",
+                            "type": "object", 
+                            "minItems": 1,
+                            "additionalProperties": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/definitions/DestinationLinks"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/PlatformLinks"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
