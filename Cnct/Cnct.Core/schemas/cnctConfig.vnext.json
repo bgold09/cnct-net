@@ -8,6 +8,7 @@
             "type": "string"
         },
         "actions": {
+            "description": "The actions to execute.",
             "type": "array",
             "minItems": 1,
             "items": {
@@ -30,6 +31,7 @@
             ],
             "properties": {
                 "os": {
+                    "description": "The operating system for which to execute the action.",
                     "type": "string",
                     "enum": [
                         "windows",
@@ -38,6 +40,11 @@
                     ]
                 },
                 "actionType": {
+                    "description": "The type of the action.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "A description for the action.",
                     "type": "string"
                 }
             }
@@ -63,17 +70,21 @@
             "type": "object",
             "properties": {
                 "windows": {
+                    "description": "Symlinks to create in a Windows environment.",
                     "$ref": "#/definitions/DestinationLinks"
                 },
                 "linux": {
+                    "description": "Symlinks to create in a Linux environment.",
                     "$ref": "#/definitions/DestinationLinks"
                 },
                 "osx": {
+                    "description": "Symlinks to create in an OSX environment.",
                     "$ref": "#/definitions/DestinationLinks"
                 }
             }
         },
         "ShellAction": {
+            "description": "An action that invokes a command or script in a shell.",
             "allOf": [
                 {
                     "$ref": "#/definitions/ActionBase"
@@ -90,19 +101,19 @@
                             ]
                         },
                         "command": {
+                            "description": "The command to invoke.",
                             "type": "string"
                         },
                         "shell": {
+                            "description": "The type of shell to use when invoking the command.",
                             "enum": [
                                 "sh",
                                 "powershell"
                             ]
                         },
                         "silent": {
+                            "description": "If true, do not direct output from the shell to the console.",
                             "type": "boolean"
-                        },
-                        "description": {
-                            "type": "string"
                         }
                     }
                 }
@@ -125,6 +136,7 @@
                             ]
                         },
                         "links": {
+                            "description": "The target and destination for symlinks to create.",
                             "type": "object", 
                             "minItems": 1,
                             "additionalProperties": {
