@@ -12,5 +12,8 @@ namespace Cnct.Core.Configuration
 
         [JsonConverter(typeof(LinkCollectionConverter))]
         public string[] Linux { get; set; }
+
+        [JsonConverter(typeof(LinkCollectionConverter))]
+        public string[] Unix { get; set; }
     }
 }
