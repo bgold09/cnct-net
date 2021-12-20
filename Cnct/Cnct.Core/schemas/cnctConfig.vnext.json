@@ -1,0 +1,146 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "id": "https://raw.githubusercontent.com/bgold09/cnct-net/develop/schema/cnctConfig.vnext.json",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "actions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/ShellAction"
+                    },
+                    {
+                        "$ref": "#/definitions/LinkAction"
+                    }
+                ]
+            }
+        }
+    }, 
+    "definitions": {
+        "ActionBase": {
+            "type": "object",
+            "required": [
+                "actionType"
+            ],
+            "properties": {
+                "os": {
+                    "type": "string",
+                    "enum": [
+                        "windows",
+                        "linux",
+                        "osx"
+                    ]
+                },
+                "actionType": {
+                    "type": "string"
+                }
+            }
+        },
+        "DestinationLinks": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "PlatformLinks": {
+            "type": "object",
+            "properties": {
+                "windows": {
+                    "$ref": "#/definitions/DestinationLinks"
+                },
+                "linux": {
+                    "$ref": "#/definitions/DestinationLinks"
+                },
+                "osx": {
+                    "$ref": "#/definitions/DestinationLinks"
+                }
+            }
+        },
+        "ShellAction": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "command"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "shell"
+                            ]
+                        },
+                        "command": {
+                            "type": "string"
+                        },
+                        "shell": {
+                            "enum": [
+                                "sh",
+                                "powershell"
+                            ]
+                        },
+                        "silent": {
+                            "type": "boolean"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "LinkAction": {
+            "allOf":[
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "links"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "link"
+                            ]
+                        },
+                        "links": {
+                            "type": "object", 
+                            "minItems": 1,
+                            "additionalProperties": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/definitions/DestinationLinks"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/PlatformLinks"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
