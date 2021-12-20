@@ -70,7 +70,8 @@ namespace Cnct.Core.Tasks
                 case PlatformType.Linux:
                     if (NativeMethods.CreateLinuxSymlink(targetPath, linkPath) != 0)
                     {
-                        this.Logger.LogError($"Failed to create link.");
+                        var errno = Marshal.GetLastWin32Error();
+                        this.Logger.LogError($"Failed to create link (errno: {errno}).");
                     }
 
                     break;
