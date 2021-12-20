@@ -126,18 +126,18 @@ namespace Cnct.Core.Tests
         /// If UNIX-specific links are specified, they should only be created in UNIX environments (Linux and OSX).
         /// </summary>
         /// <param name="allowedPlatform">The platform that should create links.</param>
-        [Theory]
-        [InlineData(PlatformType.Linux)]
-        [InlineData(PlatformType.OSX)]
-        public void CreateUnixLinks(PlatformType allowedPlatform)
+        [Fact]
+        public void CreateUnixLinks()
         {
-            TestPlatformLinks(allowedPlatform, new SymlinkSpecification
-            {
-                Unix = Array.Empty<string>(),
-            });
+            TestPlatformLinks(
+                Platform.CurrentPlatformIsUnix,
+                new SymlinkSpecification
+                {
+                    Unix = Array.Empty<string>(),
+                });
         }
 
-        private static void TestPlatformLinks(PlatformType allowedPlatform, SymlinkSpecification symlinkSpec)
+        private static void TestPlatformLinks(bool predicate, SymlinkSpecification symlinkSpec)
         {
             string configRootDirectory = "test";
             string target = "file.ext";
@@ -152,7 +152,7 @@ namespace Cnct.Core.Tests
 
             var actualLinks = linkSpec.GetLinkConfigurations(configRootDirectory);
 
-            if (allowedPlatform == Platform.CurrentPlatform)
+            if (predicate)
             {
                 Assert.Equal(1, actualLinks.Count);
                 Assert.Contains(expectedFullTargetPath, actualLinks);
@@ -165,6 +165,11 @@ namespace Cnct.Core.Tests
             {
                 Assert.Empty(actualLinks);
             }
+        }
+
+        private static void TestPlatformLinks(PlatformType allowedPlatform, SymlinkSpecification symlinkSpec)
+        {
+            TestPlatformLinks(allowedPlatform == Platform.CurrentPlatform, symlinkSpec);
         }
     }
 }
