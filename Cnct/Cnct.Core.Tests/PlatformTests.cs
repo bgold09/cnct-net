@@ -32,5 +32,19 @@ namespace Cnct.Core.Tests
 
             Assert.Equal(expectedPlatformType, actualPlatformType);
         }
+
+        [Fact]
+        public void IsUnixPlatform()
+        {
+            bool isUnix = Platform.CurrentPlatformIsUnix;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Assert.True(isUnix);
+            }
+            else
+            {
+                Assert.False(isUnix);
+            }
+        }
     }
 }

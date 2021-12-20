@@ -41,21 +41,21 @@ namespace Cnct.Core.Configuration
                         break;
 
                     case SymlinkSpecification spec:
-                        string[] destinationPaths = null;
-                        switch (Platform.CurrentPlatform)
+                        string[] platformLinkPaths = Platform.CurrentPlatform switch
                         {
-                            case PlatformType.Windows:
-                                destinationPaths = GetPlatformLinkPaths(target, spec.Windows);
-                                break;
-                            case PlatformType.Linux:
-                                destinationPaths = GetPlatformLinkPaths(target, spec.Linux);
-                                break;
-                            case PlatformType.OSX:
-                                destinationPaths = GetPlatformLinkPaths(target, spec.Osx);
-                                break;
+                            PlatformType.Windows => spec.Windows,
+                            PlatformType.Linux => spec.Linux,
+                            PlatformType.OSX => spec.Osx,
+                            _ => throw new NotImplementedException(),
+                        };
+
+                        string[] destinationPaths;
+                        if (TryGetPlatformLinkPaths(target, platformLinkPaths, out destinationPaths))
+                        {
+                            linkConfigs.Add(target, destinationPaths);
                         }
 
-                        if (destinationPaths != null)
+                        if (Platform.CurrentPlatformIsUnix && TryGetPlatformLinkPaths(target, spec.Unix, out destinationPaths))
                         {
                             linkConfigs.Add(target, destinationPaths);
                         }
@@ -73,19 +73,22 @@ namespace Cnct.Core.Configuration
             await linkTask.ExecuteAsync();
         }
 
-        private static string[] GetPlatformLinkPaths(string target, string[] platformLinkPaths)
+        private static bool TryGetPlatformLinkPaths(string target, string[] platformLinkPaths, out string[] destinationLinks)
         {
             if (platformLinkPaths == null)
             {
-                return null;
+                destinationLinks = null;
+                return false;
             }
             else if (platformLinkPaths.Length == 0)
             {
-                return new[] { GetDotFileLinkPath(target) };
+                destinationLinks = new[] { GetDotFileLinkPath(target) };
+                return true;
             }
             else
             {
-                return platformLinkPaths.Select(p => p.NormalizePath()).ToArray();
+                destinationLinks = platformLinkPaths.Select(p => p.NormalizePath()).ToArray();
+                return true;
             }
         }
 

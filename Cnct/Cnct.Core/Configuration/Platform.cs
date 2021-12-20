@@ -26,6 +26,20 @@ namespace Cnct.Core.Configuration
 
         public static PlatformType CurrentPlatform => CurrentPlatformLazy.Value;
 
+        public static bool CurrentPlatformIsUnix { get; } = IsUnix();
+
+        private static bool IsUnix()
+        {
+            switch (CurrentPlatform)
+            {
+                case PlatformType.Linux:
+                case PlatformType.OSX:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         private static PlatformType GetCurrentPlatformType()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
