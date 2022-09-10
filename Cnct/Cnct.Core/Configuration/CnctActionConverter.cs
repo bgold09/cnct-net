@@ -22,6 +22,7 @@ namespace Cnct.Core.Configuration
             {
                 "link" => new LinkTaskSpecification(),
                 "shell" => new ShellTaskSpecification(),
+                "environmentVariable" => new EnvironmentVariableTaskSpecification(),
                 _ => throw new NotImplementedException(),
             };
 
