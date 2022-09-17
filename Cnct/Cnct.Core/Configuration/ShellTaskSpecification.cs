@@ -7,10 +7,9 @@ using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {
-    public class ShellTaskSpecification : ICnctActionSpec
+    [CnctActionType("shell")]
+    public partial class ShellTaskSpecification : ICnctActionSpec
     {
-        public string ActionType { get; } = "shell";
-
         [JsonRequired]
         public ShellType Shell { get; set; }
 
