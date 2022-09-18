@@ -45,6 +45,8 @@ namespace Cnct.SourceGeneration
             //    var m2 = member.GetMembers("ActionType");
             //}
 
+            var l = new List<(string actionType, string className)>();
+
             foreach (ClassDeclarationSyntax cds in syntaxReceiver.ClassesToAugment)
             {
                 AttributeSyntax result = cds.AttributeLists
@@ -57,7 +59,10 @@ namespace Cnct.SourceGeneration
                     string value = result.ArgumentList.Arguments.Single().Expression.GetText().ToString();
                     value = value.Substring(1, value.Length - 2);
 
-                    this.G(context, value, cds);
+                    string className = cds.Identifier.ValueText;
+
+                    this.G(context, value, className);
+                    l.Add((value, className));
                 }
 
                 //var semantic = context.Compilation.GetSemanticModel(cds.SyntaxTree);
@@ -71,6 +76,40 @@ namespace Cnct.SourceGeneration
                 //    continue;
                 //}
             }
+
+            StringBuilder builder = new(@$"using System;
+
+namespace Cnct.Core.Configuration
+{{
+    public partial class CnctActionConverter
+    {{
+        private static ICnctActionSpec GetActionSpecFromType(string actionType)
+        {{
+            return actionType switch
+            {{
+");
+
+            foreach (var (actionType, className) in l)
+            {
+                builder.AppendLine(@$"               ""{actionType}"" => new {className}(),");
+            }
+
+            builder.AppendLine(@"                _ => throw new NotImplementedException(),
+            };
+        }
+    }
+}");
+
+            context.AddSource("CnctActionConverter.g.cs", SourceText.From(builder.ToString(), Encoding.UTF8));
+
+            //ICnctActionSpec spec = jsonObject["actionType"].Value<string>() switch
+            //{
+            //    "link" => new LinkTaskSpecification(),
+            //    "shell" => new ShellTaskSpecification(),
+            //    "environmentVariable" => new EnvironmentVariableTaskSpecification(),
+            //    _ => throw new NotImplementedException(),
+            //};
+
         }
 
         public void Initialize(GeneratorInitializationContext context)
@@ -78,9 +117,8 @@ namespace Cnct.SourceGeneration
             context.RegisterForSyntaxNotifications(() => new MySyntaxReceiver());
         }
 
-        private void G(GeneratorExecutionContext context, string val, ClassDeclarationSyntax cds)
+        private void G(GeneratorExecutionContext context, string val, string className)
         {
-            string className = cds.Identifier.ValueText;
             StringBuilder builder = new(@$"
 namespace Cnct.Core.Configuration
 {{
