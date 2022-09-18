@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
@@ -12,41 +11,14 @@ namespace Cnct.SourceGeneration
     [Generator]
     public class CnctTaskSpecificationGenerator : ISourceGenerator
     {
-        private const string AttributeName = "CnctActionType";
-
-        private const string InterfaceName = "ICnctActionSpec";
+        private const string NamespaceCnctCoreConfiguration = "Cnct.Core.Configuration";
 
         public void Execute(GeneratorExecutionContext context)
         {
+            const string CnctActionConverterClassName = "CnctActionConverter";
+            const string AttributeName = "CnctActionType";
             var syntaxReceiver = context.SyntaxReceiver as MySyntaxReceiver;
-
-            //var ns = context.Compilation.GlobalNamespace
-            //    .GetNamespaceMembers()
-            //    .Where(n => n.ContainingAssembly == context.Compilation.Assembly)
-            //    .SelectMany(t => t.GetTypeMembers())
-            //    .Where(t => t.TypeKind == TypeKind.Class)
-            //    .ToArray();
-
-            //context.Compilation.GlobalNamespace.GetNamespaceMembers().ToArray()[0].GetMembers().Count();
-
-            //var n1 = ns.FirstOrDefault();
-            //var interfaces = n1?.Interfaces;
-            //interfaces.Value.FirstOrDefault().Name;
-
-            //var classTypeSymbol = context.Compilation.GetSemanticModel().GetDeclaredSymbol(classDeclaration) as ITypeSymbol;
-
-            //var classes = context.Compilation.Assembly.GlobalNamespace
-            //    .GetTypeMembers()
-            //    .Where(m => m.TypeKind == TypeKind.Class)
-            //    .ToArray();
-
-            //foreach (INamedTypeSymbol member in classes)
-            //{
-            //    var m2 = member.GetMembers("ActionType");
-            //}
-
-            var l = new List<(string actionType, string className)>();
-
+            var actionTypeToClassNameMap = new List<(string actionType, string className)>();
             foreach (ClassDeclarationSyntax cds in syntaxReceiver.ClassesToAugment)
             {
                 AttributeSyntax result = cds.AttributeLists
@@ -61,27 +33,16 @@ namespace Cnct.SourceGeneration
 
                     string className = cds.Identifier.ValueText;
 
-                    this.G(context, value, className);
-                    l.Add((value, className));
+                    this.AddActionSpecGeneratedSource(context, value, className);
+                    actionTypeToClassNameMap.Add((value, className));
                 }
-
-                //var semantic = context.Compilation.GetSemanticModel(cds.SyntaxTree);
-                //context.Compilation.GetEntryPoint().GetAttributes().First().AttributeClass.
-                //var symbol = semantic.GetDeclaredSymbol(cds);
-                //var attribute = symbol.GetAttributes().First();
-                //symbol.GetAttributes().First().AttributeClass.Name;
-                //var interfaces2 = symbol.Interfaces;
-                //if (!interfaces2.Any(i => i.Name == "ICnctActionSpec"))
-                //{
-                //    continue;
-                //}
             }
 
-            StringBuilder builder = new(@$"using System;
+            StringBuilder actionConverterSourceBuilder = new(@$"using System;
 
-namespace Cnct.Core.Configuration
+namespace {NamespaceCnctCoreConfiguration}
 {{
-    public partial class CnctActionConverter
+    public partial class {CnctActionConverterClassName}
     {{
         private static ICnctActionSpec GetActionSpecFromType(string actionType)
         {{
@@ -89,27 +50,21 @@ namespace Cnct.Core.Configuration
             {{
 ");
 
-            foreach (var (actionType, className) in l)
+            foreach (var (actionType, className) in actionTypeToClassNameMap)
             {
-                builder.AppendLine(@$"               ""{actionType}"" => new {className}(),");
+                actionConverterSourceBuilder.AppendLine(
+                    @$"               ""{actionType}"" => new {className}(),");
             }
 
-            builder.AppendLine(@"                _ => throw new NotImplementedException(),
+            actionConverterSourceBuilder.AppendLine(@"                _ => throw new NotImplementedException(),
             };
         }
     }
 }");
 
-            context.AddSource("CnctActionConverter.g.cs", SourceText.From(builder.ToString(), Encoding.UTF8));
-
-            //ICnctActionSpec spec = jsonObject["actionType"].Value<string>() switch
-            //{
-            //    "link" => new LinkTaskSpecification(),
-            //    "shell" => new ShellTaskSpecification(),
-            //    "environmentVariable" => new EnvironmentVariableTaskSpecification(),
-            //    _ => throw new NotImplementedException(),
-            //};
-
+            context.AddSource(
+                $"{CnctActionConverterClassName}.g.cs",
+                SourceText.From(actionConverterSourceBuilder.ToString(), Encoding.UTF8));
         }
 
         public void Initialize(GeneratorInitializationContext context)
@@ -117,19 +72,22 @@ namespace Cnct.Core.Configuration
             context.RegisterForSyntaxNotifications(() => new MySyntaxReceiver());
         }
 
-        private void G(GeneratorExecutionContext context, string val, string className)
+        private void AddActionSpecGeneratedSource(
+            GeneratorExecutionContext context,
+            string actionType,
+            string className)
         {
-            StringBuilder builder = new(@$"
-namespace Cnct.Core.Configuration
+            string source = @$"
+namespace {NamespaceCnctCoreConfiguration}
 {{
     public partial class {className}
     {{
-        public string ActionType {{ get; }} = ""{val}"";
+        public string ActionType {{ get; }} = ""{actionType}"";
     }}
 }}
-");
+";
 
-            context.AddSource($"{className}.g.cs", SourceText.From(builder.ToString(), Encoding.UTF8));
+            context.AddSource($"{className}.g.cs", SourceText.From(source, Encoding.UTF8));
         }
 
         class MySyntaxReceiver : ISyntaxReceiver
@@ -138,16 +96,15 @@ namespace Cnct.Core.Configuration
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                if (syntaxNode is ClassDeclarationSyntax cds)
+                const string InterfaceName = "ICnctActionSpec";
+                if (syntaxNode is ClassDeclarationSyntax cds &&
+                         cds.BaseList?.Types
+                            .Where(t => t.Type.Kind() == SyntaxKind.IdentifierName)
+                            .Select(t => t.Type)
+                            .Cast<IdentifierNameSyntax>()
+                            .Any(t => t.Identifier.ValueText == InterfaceName) == true)
                 {
-                    if (cds.BaseList?.Types
-                        .Where(t => t.Type.Kind() == SyntaxKind.IdentifierName)
-                        .Select(t => t.Type)
-                        .Cast<IdentifierNameSyntax>()
-                        .Any(t => t.Identifier.ValueText == InterfaceName) == true)
-                    {
-                        this.ClassesToAugment.Add(cds);
-                    }
+                    this.ClassesToAugment.Add(cds);
                 }
             }
         }
