@@ -13,26 +13,28 @@ namespace Cnct.SourceGeneration
     {
         private const string NamespaceCnctCoreConfiguration = "Cnct.Core.Configuration";
 
+        private const string CnctActionSpecInterfaceName = "ICnctActionSpec";
+
         public void Execute(GeneratorExecutionContext context)
         {
             const string CnctActionConverterClassName = "CnctActionConverter";
             const string AttributeName = "CnctActionType";
-            var syntaxReceiver = context.SyntaxReceiver as MySyntaxReceiver;
+            var syntaxReceiver = context.SyntaxReceiver as ActionSpecSyntaxReceiver;
             var actionTypeToClassNameMap = new List<(string actionType, string className)>();
             foreach (ClassDeclarationSyntax cds in syntaxReceiver.ClassesToAugment)
             {
                 AttributeSyntax result = cds.AttributeLists
-                    .SelectMany(al => al.Attributes)
+                    .SelectMany(attributeList => attributeList.Attributes)
+                    //.Cast<IdentifierNameSyntax>()
                     .SingleOrDefault(a => ((IdentifierNameSyntax)a.Name).Identifier.ValueText == AttributeName);
 
                 if (result != null)
                 {
-                    AttributeArgumentSyntax arg = result.ArgumentList.Arguments.Single();
+                    AttributeArgumentSyntax attributeArgument = result.ArgumentList.Arguments.Single();
                     string value = result.ArgumentList.Arguments.Single().Expression.GetText().ToString();
                     value = value.Substring(1, value.Length - 2);
 
                     string className = cds.Identifier.ValueText;
-
                     this.AddActionSpecGeneratedSource(context, value, className);
                     actionTypeToClassNameMap.Add((value, className));
                 }
@@ -44,7 +46,7 @@ namespace {NamespaceCnctCoreConfiguration}
 {{
     public partial class {CnctActionConverterClassName}
     {{
-        private static ICnctActionSpec GetActionSpecFromType(string actionType)
+        private static {CnctActionSpecInterfaceName} GetActionSpecFromType(string actionType)
         {{
             return actionType switch
             {{
@@ -69,7 +71,7 @@ namespace {NamespaceCnctCoreConfiguration}
 
         public void Initialize(GeneratorInitializationContext context)
         {
-            context.RegisterForSyntaxNotifications(() => new MySyntaxReceiver());
+            context.RegisterForSyntaxNotifications(() => new ActionSpecSyntaxReceiver());
         }
 
         private void AddActionSpecGeneratedSource(
@@ -90,19 +92,18 @@ namespace {NamespaceCnctCoreConfiguration}
             context.AddSource($"{className}.g.cs", SourceText.From(source, Encoding.UTF8));
         }
 
-        class MySyntaxReceiver : ISyntaxReceiver
+        private class ActionSpecSyntaxReceiver : ISyntaxReceiver
         {
             public ISet<ClassDeclarationSyntax> ClassesToAugment { get; } = new HashSet<ClassDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
-                const string InterfaceName = "ICnctActionSpec";
                 if (syntaxNode is ClassDeclarationSyntax cds &&
-                         cds.BaseList?.Types
-                            .Where(t => t.Type.Kind() == SyntaxKind.IdentifierName)
+                        cds.BaseList?.Types
+                            .Where(t => t.IsKind(SyntaxKind.IdentifierName))
                             .Select(t => t.Type)
                             .Cast<IdentifierNameSyntax>()
-                            .Any(t => t.Identifier.ValueText == InterfaceName) == true)
+                            .Any(t => t.Identifier.ValueText == CnctActionSpecInterfaceName) == true)
                 {
                     this.ClassesToAugment.Add(cds);
                 }
