@@ -25,7 +25,6 @@ namespace Cnct.SourceGeneration
             {
                 AttributeSyntax result = cds.AttributeLists
                     .SelectMany(attributeList => attributeList.Attributes)
-                    //.Cast<IdentifierNameSyntax>()
                     .SingleOrDefault(a => ((IdentifierNameSyntax)a.Name).Identifier.ValueText == AttributeName);
 
                 if (result != null)
