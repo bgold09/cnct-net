@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Feature updates
+
+* Add task to set environment variables for the executing user.
+
 ## 0.2.0
 
 ### Feature updates
