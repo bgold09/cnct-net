@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Cnct.Core.Configuration
 {
-    public class CnctActionConverter : JsonConverter<ICnctActionSpec>
+    public partial class CnctActionConverter : JsonConverter<ICnctActionSpec>
     {
         public override bool CanRead => true;
 
@@ -18,14 +18,7 @@ namespace Cnct.Core.Configuration
             JsonSerializer serializer)
         {
             JObject jsonObject = JObject.Load(reader);
-            ICnctActionSpec spec = jsonObject["actionType"].Value<string>() switch
-            {
-                "link" => new LinkTaskSpecification(),
-                "shell" => new ShellTaskSpecification(),
-                "environmentVariable" => new EnvironmentVariableTaskSpecification(),
-                _ => throw new NotImplementedException(),
-            };
-
+            ICnctActionSpec spec = GetActionSpecFromType(jsonObject["actionType"].Value<string>());
             if (spec != null)
             {
                 serializer?.Populate(jsonObject.CreateReader(), spec);

@@ -23,4 +23,8 @@
     <PackageReference Include="System.Management.Automation" Version="7.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Cnct.SourceGeneration\Cnct.SourceGeneration.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
 </Project>

@@ -8,10 +8,9 @@ using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {
-    public class EnvironmentVariableTaskSpecification : ICnctActionSpec
+    [CnctActionType("environmentVariable")]
+    public partial class EnvironmentVariableTaskSpecification : ICnctActionSpec
     {
-        public string ActionType { get; } = "environmentVariable";
-
         [JsonRequired]
         public string Name { get; set; }
 
