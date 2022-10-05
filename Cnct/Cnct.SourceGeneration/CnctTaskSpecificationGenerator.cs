@@ -100,7 +100,7 @@ namespace {NamespaceCnctCoreConfiguration}
             {
                 if (syntaxNode is ClassDeclarationSyntax cds &&
                         cds.BaseList?.Types
-                            .Where(t => t.IsKind(SyntaxKind.IdentifierName))
+                            .Where(t => t.Type.IsKind(SyntaxKind.IdentifierName))
                             .Select(t => t.Type)
                             .Cast<IdentifierNameSyntax>()
                             .Any(t => t.Identifier.ValueText == CnctActionSpecInterfaceName) == true)
