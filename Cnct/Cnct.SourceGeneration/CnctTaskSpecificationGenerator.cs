@@ -23,7 +23,7 @@ namespace Cnct.SourceGeneration
             const string CnctActionConverterClassName = "CnctActionConverter";
             const string AttributeName = "CnctActionType";
 
-            Func<SyntaxNode, (string, string)?> g2 = (c) =>
+            Func<SyntaxNode, (string, string)?> g2 = static (c) =>
             {
                 var cds = (ClassDeclarationSyntax)c;
 
@@ -52,14 +52,19 @@ namespace Cnct.SourceGeneration
                             .Select(t => t.Type)
                             .Cast<IdentifierNameSyntax>()
                             .Any(t => t.Identifier.ValueText == CnctActionSpecInterfaceName) == true,
-                static (c, _) => c.Node);
+                (c, _) => g2(c.Node));
 
             var p2 = syntaxProvider
-                .Select((n, ct) => g2(n))
-                .Where(n => n != null);
+                .Where(n => n != null)
+                .Select((n, _) => n.Value);
+
+            context.RegisterSourceOutput(p2, (spc, actionTypeAndClassName) =>
+            {
+                (string actionType, string className) = actionTypeAndClassName;
+                AddActionSpecGeneratedSource(spc, actionType, className);
+            });
 
             var p3 = p2.Collect();
-
             context.RegisterSourceOutput(p3, (spc, actionTypeAndClassName) =>
             {
             StringBuilder actionConverterSourceBuilder = new(@$"using System;
@@ -74,11 +79,8 @@ namespace {NamespaceCnctCoreConfiguration}
             {{
 ");
 
-            var nonNull = actionTypeAndClassName.Where(s => s != null).Select(s => s.Value);
-
-            foreach (var (actionType, className) in nonNull)
+            foreach (var (actionType, className) in actionTypeAndClassName)
             {
-                AddActionSpecGeneratedSource(spc, actionType, className);
                 actionConverterSourceBuilder.AppendLine(
                     @$"               ""{actionType}"" => new {className}(),");
             }
