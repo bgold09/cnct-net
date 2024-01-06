@@ -56,6 +56,12 @@ namespace Cnct.Core.Tasks
                 Directory.Delete(linkPath);
             }
 
+            string destinationLinkDirectory = linkPath[..linkPath.LastIndexOf(Path.DirectorySeparatorChar)];
+            if (!Directory.Exists(destinationLinkDirectory))
+            {
+                Directory.CreateDirectory(destinationLinkDirectory);
+            }
+
             switch (Platform.CurrentPlatform)
             {
                 case PlatformType.Windows:
