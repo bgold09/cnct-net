@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixes
+
+* Create link destination directories if they do not exist.
+
 ### Feature updates
 
 * Add task to set environment variables for the executing user.
