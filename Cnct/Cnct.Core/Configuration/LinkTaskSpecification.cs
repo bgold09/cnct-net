@@ -8,10 +8,9 @@ using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {
-    public sealed class LinkTaskSpecification : ICnctActionSpec
+    [CnctActionType("link")]
+    public sealed partial class LinkTaskSpecification : ICnctActionSpec
     {
-        public string ActionType => "link";
-
         [JsonConverter(typeof(LinkSpecificationCollectionConverter))]
         public IReadOnlyDictionary<string, object> Links { get; set; }
 
