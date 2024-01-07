@@ -11,7 +11,7 @@ namespace Cnct.Core.Tests
         [Theory]
         [InlineData(ShellTaskSpecification.ShellType.PowerShell, "PowerShell")]
         [InlineData(ShellTaskSpecification.ShellType.PowerShell, "powershell")]
-        public void CanDeserializeAllPlatformLinks(
+        public void CanDeserializeShellType(
             ShellTaskSpecification.ShellType expectedShellType,
             string shellTypeStr)
         {
@@ -24,7 +24,8 @@ namespace Cnct.Core.Tests
                 ["os"] = "windows",
             });
 
-            var spec = JsonConvert.DeserializeObject<ShellTaskSpecification>(json);
+            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
             Assert.Equal(expectedShellType, spec.Shell);
             Assert.Equal(command, spec.Command);
             Assert.Equal(PlatformType.Windows, spec.PlatformType.Single());
