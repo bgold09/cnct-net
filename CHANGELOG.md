@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.2.1
+
 ### Fixes
 
 * Create link destination directories if they do not exist.
