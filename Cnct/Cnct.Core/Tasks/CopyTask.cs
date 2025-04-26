@@ -44,6 +44,14 @@ namespace Cnct.Core.Tasks
         private void CopyFile(string sourceFile, string destination)
         {
             this.Logger.LogInformation($"  [COPY] {sourceFile} -> {destination}");
+            if (this.fileSystem.File.Exists(destination))
+            {
+                this.Logger.LogWarning($"Destination file '{destination}' already exists. " +
+                    $"Delete the destination file first if it should be overwritten");
+
+                return;
+            }
+
             this.fileSystem.File.Copy(sourceFile, destination);
         }
     }
