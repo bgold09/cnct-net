@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.0
+
 ### Feature updates
 
 * Add `copy` task which copies source files on the machine.
