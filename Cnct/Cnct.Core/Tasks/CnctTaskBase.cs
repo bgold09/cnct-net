@@ -2,7 +2,7 @@
 
 namespace Cnct.Core.Tasks
 {
-    internal abstract class CnctTaskBase : ICnctTask
+    public abstract class CnctTaskBase : ICnctTask
     {
         protected ILogger Logger { get; }
 

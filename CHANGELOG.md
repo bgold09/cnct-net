@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Feature updates
+
+* Add `copy` task which copies source files on the machine.
+
 ## 0.2.1
 
 ### Fixes
