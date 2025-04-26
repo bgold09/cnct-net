@@ -24,11 +24,11 @@ jobs:
     runs-on: ${{matrix.image}}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        global-json-file: global.json
         source-url: https://nuget.pkg.github.com/${{github.repository_owner}}/index.json
       env:
         NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -41,9 +41,10 @@ jobs:
     - name: Package
       run: dotnet pack --no-build --configuration Release ./Cnct/Cnct.NetCore/Cnct.NetCore.csproj
     - name: Publish as GitHub artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
+      if: ${{ matrix.image == 'ubuntu-latest' }}
       with:
-        name: package
+        name: package-${{ github.run_id }}
         path: ./Cnct/Cnct.NetCore/nupkg/Cnct.*.nupkg
     - name: Publish to GitHub Packages
       if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.image == 'ubuntu-latest' }}
