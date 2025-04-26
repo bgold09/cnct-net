@@ -17,6 +17,7 @@
     </PackageReference>
 	<PackageReference Include="System.CommandLine" />
     <PackageReference Include="System.Management.Automation" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" />
   </ItemGroup>
 
   <ItemGroup>

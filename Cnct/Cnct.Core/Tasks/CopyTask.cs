@@ -1,16 +1,21 @@
 ﻿using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 
 namespace Cnct.Core.Tasks
 {
-    internal class CopyTask : CnctTaskBase
+    public class CopyTask : CnctTaskBase
     {
+        private readonly IFileSystem fileSystem;
         private readonly IDictionary<string, IEnumerable<string>> fileMap;
 
-        public CopyTask(ILogger logger, IDictionary<string, IEnumerable<string>> fileMap)
+        public CopyTask(
+            ILogger logger,
+            IFileSystem fileSystem,
+            IDictionary<string, IEnumerable<string>> fileMap)
             : base(logger)
         {
+            this.fileSystem = fileSystem;
             this.fileMap = fileMap;
         }
 
@@ -20,9 +25,16 @@ namespace Cnct.Core.Tasks
             {
                 string sourceFile = kvp.Key;
                 IEnumerable<string> destinationPaths = kvp.Value;
-                foreach (string destination in destinationPaths)
+                if (!this.fileSystem.File.Exists(sourceFile))
                 {
-                    this.CopyFile(sourceFile, destination);
+                    this.Logger.LogWarning($"Source '{sourceFile}' does not exist.");
+                }
+                else
+                {
+                    foreach (string destination in destinationPaths)
+                    {
+                        this.CopyFile(sourceFile, destination);
+                    }
                 }
             }
 
@@ -32,14 +44,7 @@ namespace Cnct.Core.Tasks
         private void CopyFile(string sourceFile, string destination)
         {
             this.Logger.LogInformation($"  [COPY] {sourceFile} -> {destination}");
-            if (File.Exists(sourceFile))
-            {
-                File.Copy(sourceFile, destination);
-            }
-            else
-            {
-                this.Logger.LogWarning($"Source '{sourceFile}' does not exist.");
-            }
+            this.fileSystem.File.Copy(sourceFile, destination);
         }
     }
 }

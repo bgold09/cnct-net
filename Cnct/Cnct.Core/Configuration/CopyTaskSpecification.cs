@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
@@ -34,7 +35,11 @@ namespace Cnct.Core.Configuration
 
         public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            var copyTask = new CopyTask(logger, this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Files));
+            var copyTask = new CopyTask(
+                logger,
+                new FileSystem(),
+                this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Files));
+
             await copyTask.ExecuteAsync();
         }
     }
