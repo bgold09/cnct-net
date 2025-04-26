@@ -5,6 +5,7 @@
 ### Feature updates
 
 * Add `copy` task which copies source files on the machine.
+* Update to .NET 8 runtime and update packages.
 
 ## 0.2.1
 
