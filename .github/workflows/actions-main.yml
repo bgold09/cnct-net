@@ -43,6 +43,7 @@ jobs:
     - name: Publish as GitHub artifact
       uses: actions/upload-artifact@v4
       with:
+        if: ${{ matrix.image == 'ubuntu-latest' }}
         name: package
         path: ./Cnct/Cnct.NetCore/nupkg/Cnct.*.nupkg
     - name: Publish to GitHub Packages
