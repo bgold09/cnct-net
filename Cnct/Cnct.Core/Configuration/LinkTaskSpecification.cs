@@ -11,7 +11,7 @@ namespace Cnct.Core.Configuration
     [CnctActionType("link")]
     public sealed partial class LinkTaskSpecification : ICnctActionSpec
     {
-        [JsonConverter(typeof(LinkSpecificationCollectionConverter))]
+        [JsonConverter(typeof(FileSpecificationCollectionConverter))]
         public IReadOnlyDictionary<string, object> Links { get; set; }
 
         public void Validate()
