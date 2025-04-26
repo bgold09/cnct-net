@@ -89,7 +89,7 @@ namespace Cnct.Core.Tests
         [Fact]
         public void CreateWindowsFiles()
         {
-            TestPlatformFiles(PlatformType.Windows, new SymlinkSpecification
+            TestPlatformFiles(PlatformType.Windows, new FileSpecification
             {
                 Windows = Array.Empty<string>(),
             });
@@ -101,7 +101,7 @@ namespace Cnct.Core.Tests
         [Fact]
         public void CreateLinuxFiles()
         {
-            TestPlatformFiles(PlatformType.Linux, new SymlinkSpecification
+            TestPlatformFiles(PlatformType.Linux, new FileSpecification
             {
                 Linux = Array.Empty<string>(),
             });
@@ -113,7 +113,7 @@ namespace Cnct.Core.Tests
         [Fact]
         public void CreateOsxFiles()
         {
-            TestPlatformFiles(PlatformType.OSX, new SymlinkSpecification
+            TestPlatformFiles(PlatformType.OSX, new FileSpecification
             {
                 Osx = Array.Empty<string>(),
             });
@@ -128,13 +128,13 @@ namespace Cnct.Core.Tests
         {
             TestPlatformFiles(
                 Platform.CurrentPlatformIsUnix,
-                new SymlinkSpecification
+                new FileSpecification
                 {
                     Unix = Array.Empty<string>(),
                 });
         }
 
-        private static void TestPlatformFiles(bool predicate, SymlinkSpecification symfileSpec)
+        private static void TestPlatformFiles(bool predicate, FileSpecification symfileSpec)
         {
             string configRootDirectory = "test";
             string target = "file.ext";
@@ -163,7 +163,7 @@ namespace Cnct.Core.Tests
             }
         }
 
-        private static void TestPlatformFiles(PlatformType allowedPlatform, SymlinkSpecification symfileSpec)
+        private static void TestPlatformFiles(PlatformType allowedPlatform, FileSpecification symfileSpec)
         {
             TestPlatformFiles(allowedPlatform == Platform.CurrentPlatform, symfileSpec);
         }

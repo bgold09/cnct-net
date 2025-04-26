@@ -29,7 +29,7 @@ namespace Cnct.Core.Configuration
                 {
                     JTokenType.Null => null,
                     JTokenType.String => token.Value<string>(),
-                    JTokenType.Object => token.ToObject<SymlinkSpecification>(),
+                    JTokenType.Object => token.ToObject<FileSpecification>(),
                     _ => throw new NotImplementedException(),
                 };
 

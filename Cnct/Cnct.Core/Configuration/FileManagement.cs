@@ -26,7 +26,7 @@ namespace Cnct.Core.Configuration
                         fileCopyConfigs.Add(sourceFile, new[] { s.NormalizePath() });
                         break;
 
-                    case SymlinkSpecification spec:
+                    case FileSpecification spec:
                         string[] platformLinkPaths = Platform.CurrentPlatform switch
                         {
                             PlatformType.Windows => spec.Windows,
