@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Cnct.Core</AssemblyName>
     <RootNamespace>Cnct.Core</RootNamespace>
     <LangVersion>8.0</LangVersion>
@@ -17,6 +16,7 @@
     </PackageReference>
 	<PackageReference Include="System.CommandLine" />
     <PackageReference Include="System.Management.Automation" />
+    <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" />
   </ItemGroup>
 
   <ItemGroup>

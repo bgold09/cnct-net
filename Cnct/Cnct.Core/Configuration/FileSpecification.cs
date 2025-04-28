@@ -1,0 +1,19 @@
+﻿using Newtonsoft.Json;
+
+namespace Cnct.Core.Configuration
+{
+    public class FileSpecification
+    {
+        [JsonConverter(typeof(LinkCollectionConverter))]
+        public string[] Windows { get; set; }
+
+        [JsonConverter(typeof(LinkCollectionConverter))]
+        public string[] Osx { get; set; }
+
+        [JsonConverter(typeof(LinkCollectionConverter))]
+        public string[] Linux { get; set; }
+
+        [JsonConverter(typeof(LinkCollectionConverter))]
+        public string[] Unix { get; set; }
+    }
+}

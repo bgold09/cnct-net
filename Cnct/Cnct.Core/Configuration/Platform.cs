@@ -42,17 +42,17 @@ namespace Cnct.Core.Configuration
 
         private static PlatformType GetCurrentPlatformType()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
                 return PlatformType.Windows;
             }
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            if (OperatingSystem.IsLinux())
             {
                 return PlatformType.Linux;
             }
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (OperatingSystem.IsMacOS())
             {
                 return PlatformType.OSX;
             }
