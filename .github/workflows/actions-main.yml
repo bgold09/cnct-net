@@ -48,7 +48,7 @@ jobs:
         path: ./Cnct/Cnct.NetCore/nupkg/github/Cnct.*.nupkg
     - name: Publish to GitHub Packages
       if: ${{ github.event_name == 'push' && matrix.image == 'ubuntu-latest' }}
-      run: dotnet nuget push ./Cnct/Cnct.NetCore/nupkg/github/Cnct.*.nupkg --source "github" --skip-duplicate --api-key ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push ./Cnct/Cnct.NetCore/nupkg/github/Cnct.*.nupkg --source "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" --skip-duplicate --api-key ${{ secrets.GITHUB_TOKEN }}
     - name: Publish to NuGet.org
       if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' && matrix.image == 'ubuntu-latest' }}
       run: dotnet nuget push ./Cnct/Cnct.NetCore/nupkg/nuget/Cnct.*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{secrets.NUGET_API_KEY}}
