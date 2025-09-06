@@ -25,7 +25,7 @@ namespace Cnct.Core.Tests
 
             var actualFiles = fileManagement.GetFileConfigurations(configRootDirectory, fileSpec);
 
-            Assert.Single(actualFiles);
+            Assert.Equal(1, actualFiles.Count);
             Assert.Contains(expectedFullTargetPath, actualFiles);
 
             IEnumerable<string> files = actualFiles[expectedFullTargetPath];
@@ -49,7 +49,7 @@ namespace Cnct.Core.Tests
 
             var actualFiles = fileManagement.GetFileConfigurations(configRootDirectory, fileSpec);
 
-            Assert.Single(actualFiles);
+            Assert.Equal(1, actualFiles.Count);
             Assert.Contains(expectedFullTargetPath, actualFiles);
 
             IEnumerable<string> files = actualFiles[expectedFullTargetPath];
@@ -75,7 +75,7 @@ namespace Cnct.Core.Tests
 
             var actualFiles = fileManagement.GetFileConfigurations(configRootDirectory, fileSpec);
 
-            Assert.Single(actualFiles);
+            Assert.Equal(1, actualFiles.Count);
             Assert.Contains(expectedFullTargetPath, actualFiles);
 
             IEnumerable<string> files = actualFiles[expectedFullTargetPath];
@@ -150,7 +150,7 @@ namespace Cnct.Core.Tests
 
             if (predicate)
             {
-                Assert.Single(actualFiles);
+                Assert.Equal(1, actualFiles.Count);
                 Assert.Contains(expectedFullTargetPath, actualFiles);
 
                 IEnumerable<string> files = actualFiles[expectedFullTargetPath];
