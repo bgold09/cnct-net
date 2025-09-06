@@ -35,12 +35,11 @@ jobs:
       run: dotnet build --no-restore --no-incremental --configuration Release /WarnAsError ./Cnct/Cnct.sln
     - name: Test
       run: dotnet test --no-build --verbosity normal --configuration Release ./Cnct/Cnct.sln
-    - name: Package
-      run: |
-        dotnet pack --no-build --configuration Release ./Cnct/Cnct.NetCore/Cnct.NetCore.csproj -p:BuildNumber=${{ github.run_number }} -o ./Cnct/Cnct.NetCore/nupkg/github
-        if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-          dotnet pack --no-build --configuration Release ./Cnct/Cnct.NetCore/Cnct.NetCore.csproj -o ./Cnct/Cnct.NetCore/nupkg/nuget
-        fi
+    - name: Package with build number
+      run: dotnet pack --no-build --configuration Release ./Cnct/Cnct.NetCore/Cnct.NetCore.csproj -p:BuildNumber=${{ github.run_number }} -o ./Cnct/Cnct.NetCore/nupkg/github
+    - name: Package for main release
+      if: ${{ github.ref == 'refs/heads/main' }}
+      run: dotnet pack --no-build --configuration Release ./Cnct/Cnct.NetCore/Cnct.NetCore.csproj -o ./Cnct/Cnct.NetCore/nupkg/nuget
     - name: Publish as GitHub artifact
       uses: actions/upload-artifact@v4
       if: ${{ matrix.image == 'ubuntu-latest' }}
