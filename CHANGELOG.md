@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.3.1
+
+### Feature updates
+
+* Publish package to nuget.org.
+
 ## 0.3.0
 
 ### Feature updates
