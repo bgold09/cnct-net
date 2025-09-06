@@ -5,10 +5,19 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>cnct</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
-    <Version>0.3.0</Version>
+    <BaseVersion>0.3.0</BaseVersion>
+    <Version Condition=" '$(BuildNumber)' == '' ">$(BaseVersion)</Version>
+    <Version Condition=" '$(BuildNumber)' != '' ">$(BaseVersion)-$(BuildNumber)</Version>
     <Authors>bgold09</Authors>
     <Description>Cnct is a cross-platform command-line tool that aims to make bootstrapping your developer environment easier. This is accomplished by providing a set of common operations (e.g. creating symlinks) that can be expressed in a simple configuration.</Description>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageId>Cnct</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/bgold09/cnct-net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bgold09/cnct-net</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>developer-environment;symlinks;dotfiles;cross-platform;cli-tool</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +39,10 @@
     <RootNamespace>Cnct</RootNamespace>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Cnct.Core\Cnct.Core.csproj" />
