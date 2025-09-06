@@ -20,6 +20,9 @@
                         "$ref": "#/definitions/LinkAction"
                     },
                     {
+                        "$ref": "#/definitions/CopyAction"
+                    },
+                    {
                         "$ref": "#/definitions/EnvironmentVariableAction"
                     }
                 ]
@@ -145,6 +148,41 @@
                         "links": {
                             "description": "The target and destination for symlinks to create.",
                             "type": "object", 
+                            "minItems": 1,
+                            "additionalProperties": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/definitions/DestinationLinks"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/PlatformLinks"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "CopyAction": {
+            "allOf":[
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "files"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "copy"
+                            ]
+                        },
+                        "files": {
+                            "description": "The target and destination for files to copy.",
+                            "type": "object",
                             "minItems": 1,
                             "additionalProperties": {
                                 "oneOf": [
