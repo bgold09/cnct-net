@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixes
+
+* Align version of `Microsoft.PowerShell.SDK` with `System.Management.Automation`
+
 ## 0.3.1
 
 ### Feature updates
