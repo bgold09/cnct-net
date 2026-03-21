@@ -123,15 +123,27 @@ Create a PR from `release-<new-version>` → `release` branch:
 - **Body**: paste the new version's changelog section (the feature updates and fixes being released)
 - **Base branch**: `release` (not `develop` or `main`)
 
-Use the `create_pull_request` GitHub tool or `gh pr create`:
+`gh` may not be on the PATH in the current shell session. Always resolve it first:
+
 ```powershell
-gh pr create --base release --title "Release <version>" --body "<changelog content>"
+$gh = (Get-Command gh -ErrorAction SilentlyContinue)?.Source ?? "C:\Program Files\GitHub CLI\gh.exe"
 ```
+
+Run `gh pr create` in **async mode** (sync mode hangs waiting on the TTY). Use backtick-style
+newlines (`\`n`) in the body string — do **not** use a here-string or multiline literal, as those
+cause the command to hang in sync PowerShell sessions:
+
+```powershell
+# async mode — use powershell tool with mode="async", then read output with read_powershell
+& $gh pr create --base release --head release-<new-version> --title "Release <version>" --body "## <version>`n`n### Feature updates`n`n* ...`n`n### Fixes`n`n* ..."
+```
+
+The command prints the new PR URL on success (e.g. `https://github.com/bgold09/cnct-net/pull/65`).
 
 ### 9. Open the pull request in the browser
 
 ```powershell
-gh pr view --web
+& $gh pr view --web
 ```
 
 Or use the PR URL returned in step 8 to open it.
