@@ -11,18 +11,25 @@ namespace Cnct.Core.Configuration
     public partial class CopyTaskSpecification : ICnctActionSpec
     {
         private readonly IFileManagement fileManagement;
+        private readonly IFileSystem fileSystem;
 
         [JsonConverter(typeof(FileSpecificationCollectionConverter))]
         public IReadOnlyDictionary<string, object> Files { get; set; }
 
         public CopyTaskSpecification(IFileManagement fileManagement)
+            : this(fileManagement, new FileSystem())
+        {
+        }
+
+        public CopyTaskSpecification(IFileManagement fileManagement, IFileSystem fileSystem)
         {
             this.fileManagement = fileManagement;
+            this.fileSystem = fileSystem;
         }
 
         public CopyTaskSpecification()
+            : this(new FileManagement(), new FileSystem())
         {
-            this.fileManagement = new FileManagement();
         }
 
         public void Validate()
@@ -37,7 +44,7 @@ namespace Cnct.Core.Configuration
         {
             var copyTask = new CopyTask(
                 logger,
-                new FileSystem(),
+                this.fileSystem,
                 this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Files));
 
             await copyTask.ExecuteAsync();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
 using Newtonsoft.Json;
@@ -10,15 +11,22 @@ namespace Cnct.Core.Configuration
     public sealed partial class LinkTaskSpecification : ICnctActionSpec
     {
         private readonly IFileManagement fileManagement;
+        private readonly IFileSystem fileSystem;
 
         public LinkTaskSpecification(IFileManagement fileManagement)
+            : this(fileManagement, new FileSystem())
+        {
+        }
+
+        public LinkTaskSpecification(IFileManagement fileManagement, IFileSystem fileSystem)
         {
             this.fileManagement = fileManagement;
+            this.fileSystem = fileSystem;
         }
 
         public LinkTaskSpecification()
+            : this(new FileManagement(), new FileSystem())
         {
-            this.fileManagement = new FileManagement();
         }
 
         [JsonConverter(typeof(FileSpecificationCollectionConverter))]
@@ -35,7 +43,9 @@ namespace Cnct.Core.Configuration
         public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var linkTask = new LinkTask(
-                logger, this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Links));
+                logger,
+                this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Links),
+                this.fileSystem);
 
             await linkTask.ExecuteAsync();
         }
