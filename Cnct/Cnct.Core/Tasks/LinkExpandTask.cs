@@ -25,7 +25,7 @@ namespace Cnct.Core.Tasks
             }
 
             var links = new Dictionary<string, IEnumerable<string>>();
-            foreach (string subdirectory in Directory.GetDirectories(this.source))
+            foreach (string subdirectory in Directory.EnumerateDirectories(this.source))
             {
                 string name = Path.GetFileName(subdirectory);
                 string linkPath = Path.Combine(this.target, name);
