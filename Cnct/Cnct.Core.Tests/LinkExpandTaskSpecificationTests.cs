@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 using Moq;
@@ -82,13 +83,14 @@ namespace Cnct.Core.Tests
             var logger = new Mock<ILogger>();
             logger.Setup(l => l.LogWarning(It.IsAny<string>()));
 
-            var spec = new LinkExpandTaskSpecification
+            // Source dir doesn't exist in the mock filesystem → task logs a warning
+            var mockFileSystem = new MockFileSystem();
+            var spec = new LinkExpandTaskSpecification(mockFileSystem)
             {
                 Source = relativeSource,
                 Target = "~/some/target",
             };
 
-            // Source resolves to <configRoot>/skills which doesn't exist — logs warning, doesn't throw
             await spec.ExecuteAsync(logger.Object, configRoot);
 
             logger.Verify(

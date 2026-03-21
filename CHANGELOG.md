@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Improvements
+
+* Migrate all tasks to use `IFileSystem` from `System.IO.Abstractions` for filesystem operations, enabling full unit test coverage without real disk I/O.
+
 ## 0.4.0
 
 ### Feature updates

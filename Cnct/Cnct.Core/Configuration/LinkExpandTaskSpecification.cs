@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
 using Newtonsoft.Json;
@@ -9,6 +9,18 @@ namespace Cnct.Core.Configuration
     [CnctActionType("linkExpand")]
     public sealed partial class LinkExpandTaskSpecification : ICnctActionSpec
     {
+        private readonly IFileSystem fileSystem;
+
+        public LinkExpandTaskSpecification()
+        {
+            this.fileSystem = new FileSystem();
+        }
+
+        public LinkExpandTaskSpecification(IFileSystem fileSystem)
+        {
+            this.fileSystem = fileSystem;
+        }
+
         [JsonProperty("source")]
         public string Source { get; set; }
 
@@ -31,13 +43,13 @@ namespace Cnct.Core.Configuration
         public Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             string source = this.Source.NormalizePath();
-            if (!Path.IsPathRooted(source))
+            if (!this.fileSystem.Path.IsPathRooted(source))
             {
-                source = Path.Combine(configDirectoryRoot, source);
+                source = this.fileSystem.Path.Combine(configDirectoryRoot, source);
             }
 
             string target = this.Target.NormalizePath();
-            var linkExpandTask = new LinkExpandTask(logger, source, target);
+            var linkExpandTask = new LinkExpandTask(logger, source, target, this.fileSystem);
             return linkExpandTask.ExecuteAsync();
         }
     }
