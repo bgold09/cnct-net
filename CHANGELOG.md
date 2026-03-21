@@ -5,6 +5,7 @@
 ### Feature updates
 
 * Add `linkExpand` task which creates individual symlinks for each subdirectory of a source directory into a target directory.
+* Add `cloneGitRepository` task which clones git repositories and keeps them up to date.
 
 ### Fixes
 
