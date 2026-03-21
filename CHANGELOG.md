@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Feature updates
+
+* Add `linkExpand` task which creates individual symlinks for each subdirectory of a source directory into a target directory.
+
 ### Fixes
 
 * Align version of `Microsoft.PowerShell.SDK` with `System.Management.Automation`
