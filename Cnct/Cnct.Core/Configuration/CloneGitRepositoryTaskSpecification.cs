@@ -14,7 +14,6 @@ namespace Cnct.Core.Configuration
 
         public CloneGitRepositoryTaskSpecification()
         {
-            this.gitRunner = new ProcessGitRunner();
         }
 
         public CloneGitRepositoryTaskSpecification(IGitRunner gitRunner)
@@ -60,7 +59,7 @@ namespace Cnct.Core.Configuration
                 normalizedRepos[kvp.Key] = dest;
             }
 
-            var cloneTask = new CloneGitRepositoryTask(logger, normalizedRepos, this.gitRunner);
+            var cloneTask = new CloneGitRepositoryTask(logger, normalizedRepos, this.gitRunner ?? new ProcessGitRunner(logger));
             return cloneTask.ExecuteAsync();
         }
     }

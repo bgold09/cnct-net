@@ -6,6 +6,13 @@ namespace Cnct.Core.Tasks
 {
     public class ProcessGitRunner : IGitRunner
     {
+        private readonly ILogger logger;
+
+        public ProcessGitRunner(ILogger logger)
+        {
+            this.logger = logger;
+        }
+
         public Task CloneAsync(string url, string destination)
             => this.RunGitProcessAsync(new[] { "clone", url, destination });
 
@@ -38,7 +45,7 @@ namespace Cnct.Core.Tasks
 
             if (!string.IsNullOrWhiteSpace(outputTask.Result))
             {
-                Console.WriteLine(outputTask.Result.TrimEnd());
+                this.logger.LogInformation(outputTask.Result.TrimEnd());
             }
 
             if (process.ExitCode != 0)
@@ -50,7 +57,7 @@ namespace Cnct.Core.Tasks
             if (!string.IsNullOrWhiteSpace(errorTask.Result))
             {
                 // git writes progress info (e.g. clone progress) to stderr even on success
-                Console.WriteLine(errorTask.Result.TrimEnd());
+                this.logger.LogInformation(errorTask.Result.TrimEnd());
             }
         }
     }

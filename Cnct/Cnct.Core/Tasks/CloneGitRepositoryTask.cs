@@ -10,7 +10,7 @@ namespace Cnct.Core.Tasks
         private readonly IGitRunner gitRunner;
 
         public CloneGitRepositoryTask(ILogger logger, IReadOnlyDictionary<string, string> repos)
-            : this(logger, repos, new ProcessGitRunner())
+            : this(logger, repos, new ProcessGitRunner(logger))
         {
         }
 
