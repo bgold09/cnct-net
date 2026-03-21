@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
 using Newtonsoft.Json;
@@ -30,6 +31,11 @@ namespace Cnct.Core.Configuration
         public Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             string source = this.Source.NormalizePath();
+            if (!Path.IsPathRooted(source))
+            {
+                source = Path.Combine(configDirectoryRoot, source);
+            }
+
             string target = this.Target.NormalizePath();
             var linkExpandTask = new LinkExpandTask(logger, source, target);
             return linkExpandTask.ExecuteAsync();

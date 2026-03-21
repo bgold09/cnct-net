@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Cnct.Core.Configuration;
+using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -67,6 +70,30 @@ namespace Cnct.Core.Tests
             };
 
             spec.Validate();
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_ResolvesRelativeSourceAgainstConfigDirectoryRoot()
+        {
+            string configRoot = Path.GetTempPath();
+            const string relativeSource = "skills";
+            string expectedResolvedSource = Path.Combine(configRoot, relativeSource);
+
+            var logger = new Mock<ILogger>();
+            logger.Setup(l => l.LogWarning(It.IsAny<string>()));
+
+            var spec = new LinkExpandTaskSpecification
+            {
+                Source = relativeSource,
+                Target = "~/some/target",
+            };
+
+            // Source resolves to <configRoot>/skills which doesn't exist — logs warning, doesn't throw
+            await spec.ExecuteAsync(logger.Object, configRoot);
+
+            logger.Verify(
+                l => l.LogWarning(It.Is<string>(s => s.Contains(expectedResolvedSource))),
+                Times.Once);
         }
     }
 }
