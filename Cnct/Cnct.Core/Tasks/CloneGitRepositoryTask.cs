@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -8,11 +7,18 @@ namespace Cnct.Core.Tasks
     internal class CloneGitRepositoryTask : CnctTaskBase
     {
         private readonly IReadOnlyDictionary<string, string> repos;
+        private readonly IGitRunner gitRunner;
 
         public CloneGitRepositoryTask(ILogger logger, IReadOnlyDictionary<string, string> repos)
+            : this(logger, repos, new ProcessGitRunner())
+        {
+        }
+
+        public CloneGitRepositoryTask(ILogger logger, IReadOnlyDictionary<string, string> repos, IGitRunner gitRunner)
             : base(logger)
         {
             this.repos = repos;
+            this.gitRunner = gitRunner;
         }
 
         public override async Task ExecuteAsync()
@@ -21,11 +27,16 @@ namespace Cnct.Core.Tasks
             {
                 string url = kvp.Key;
                 string dest = kvp.Value;
+                string gitPath = Path.Combine(dest, ".git");
 
-                if (Directory.Exists(Path.Combine(dest, ".git")))
+                if (File.Exists(gitPath) || Directory.Exists(gitPath))
                 {
                     this.Logger.LogInformation($"  [GIT] Pulling latest changes in '{dest}'");
-                    await this.RunGitAsync(new[] { "-C", dest, "pull" });
+                    await this.gitRunner.PullAsync(dest);
+                }
+                else if (Directory.Exists(dest))
+                {
+                    this.Logger.LogWarning($"Directory '{dest}' exists but is not a git repository. Skipping.");
                 }
                 else
                 {
@@ -36,49 +47,8 @@ namespace Cnct.Core.Tasks
                         Directory.CreateDirectory(parent);
                     }
 
-                    await this.RunGitAsync(new[] { "clone", url, dest });
+                    await this.gitRunner.CloneAsync(url, dest);
                 }
-            }
-        }
-
-        private async Task RunGitAsync(string[] arguments, string workingDirectory = null)
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = "git",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-            };
-
-            foreach (string arg in arguments)
-            {
-                startInfo.ArgumentList.Add(arg);
-            }
-
-            if (workingDirectory != null)
-            {
-                startInfo.WorkingDirectory = workingDirectory;
-            }
-
-            using var process = Process.Start(startInfo);
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadToEndAsync();
-            await process.WaitForExitAsync();
-
-            if (!string.IsNullOrWhiteSpace(output))
-            {
-                this.Logger.LogInformation(output.TrimEnd());
-            }
-
-            if (process.ExitCode != 0)
-            {
-                this.Logger.LogError($"git {string.Join(" ", arguments)} failed (exit code {process.ExitCode}): {error}");
-            }
-            else if (!string.IsNullOrWhiteSpace(error))
-            {
-                // git writes progress info (e.g. clone progress) to stderr even on success
-                this.Logger.LogInformation(error.TrimEnd());
             }
         }
     }

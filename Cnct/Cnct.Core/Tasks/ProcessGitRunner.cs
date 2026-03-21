@@ -1,0 +1,57 @@
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+
+namespace Cnct.Core.Tasks
+{
+    public class ProcessGitRunner : IGitRunner
+    {
+        public Task CloneAsync(string url, string destination)
+            => this.RunGitProcessAsync(new[] { "clone", url, destination });
+
+        public Task PullAsync(string repositoryPath)
+            => this.RunGitProcessAsync(new[] { "-C", repositoryPath, "pull" });
+
+        private async Task RunGitProcessAsync(string[] arguments)
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "git",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+            };
+
+            foreach (string arg in arguments)
+            {
+                startInfo.ArgumentList.Add(arg);
+            }
+
+            using var process = Process.Start(startInfo)
+                ?? throw new InvalidOperationException(
+                    "Failed to start git. Ensure git is installed and available on PATH.");
+
+            Task<string> outputTask = process.StandardOutput.ReadToEndAsync();
+            Task<string> errorTask = process.StandardError.ReadToEndAsync();
+            await Task.WhenAll(outputTask, errorTask);
+            await process.WaitForExitAsync();
+
+            if (!string.IsNullOrWhiteSpace(outputTask.Result))
+            {
+                Console.WriteLine(outputTask.Result.TrimEnd());
+            }
+
+            if (process.ExitCode != 0)
+            {
+                throw new InvalidOperationException(
+                    $"git {string.Join(" ", arguments)} failed (exit code {process.ExitCode}): {errorTask.Result}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(errorTask.Result))
+            {
+                // git writes progress info (e.g. clone progress) to stderr even on success
+                Console.WriteLine(errorTask.Result.TrimEnd());
+            }
+        }
+    }
+}
