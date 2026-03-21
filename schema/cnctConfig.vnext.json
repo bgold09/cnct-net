@@ -27,6 +27,9 @@
                     },
                     {
                         "$ref": "#/definitions/LinkExpandAction"
+                    },
+                    {
+                        "$ref": "#/definitions/CloneGitRepositoryAction"
                     }
                 ]
             }
@@ -257,6 +260,35 @@
                         "target": {
                             "description": "The directory in which to create the symlinks.",
                             "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "CloneGitRepositoryAction": {
+            "description": "An action that clones git repositories and keeps them up to date.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "repos"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "cloneGitRepository"
+                            ]
+                        },
+                        "repos": {
+                            "description": "A map of repository URLs to local destination paths.",
+                            "type": "object",
+                            "minProperties": 1,
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
