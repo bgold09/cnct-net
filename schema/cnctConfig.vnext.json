@@ -24,6 +24,9 @@
                     },
                     {
                         "$ref": "#/definitions/EnvironmentVariableAction"
+                    },
+                    {
+                        "$ref": "#/definitions/LinkExpandAction"
                     }
                 ]
             }
@@ -223,6 +226,36 @@
                         },
                         "value": {
                             "description": "The value of the environment variable to set.",
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "LinkExpandAction": {
+            "description": "An action that creates individual symlinks for each subdirectory of a source directory into a target directory.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "source",
+                        "target"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "linkExpand"
+                            ]
+                        },
+                        "source": {
+                            "description": "The directory whose subdirectories will be symlinked.",
+                            "type": "string"
+                        },
+                        "target": {
+                            "description": "The directory in which to create the symlinks.",
                             "type": "string"
                         }
                     }
