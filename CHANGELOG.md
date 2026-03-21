@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.4.0
+
 ### Feature updates
 
 * Add `linkExpand` task which creates individual symlinks for each subdirectory of a source directory into a target directory.
