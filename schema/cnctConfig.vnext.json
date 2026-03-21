@@ -24,6 +24,12 @@
                     },
                     {
                         "$ref": "#/definitions/EnvironmentVariableAction"
+                    },
+                    {
+                        "$ref": "#/definitions/LinkExpandAction"
+                    },
+                    {
+                        "$ref": "#/definitions/CloneGitRepositoryAction"
                     }
                 ]
             }
@@ -224,6 +230,65 @@
                         "value": {
                             "description": "The value of the environment variable to set.",
                             "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "LinkExpandAction": {
+            "description": "An action that creates individual symlinks for each subdirectory of a source directory into a target directory.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "source",
+                        "target"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "linkExpand"
+                            ]
+                        },
+                        "source": {
+                            "description": "The directory whose subdirectories will be symlinked.",
+                            "type": "string"
+                        },
+                        "target": {
+                            "description": "The directory in which to create the symlinks.",
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "CloneGitRepositoryAction": {
+            "description": "An action that clones git repositories and keeps them up to date.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "repos"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "cloneGitRepository"
+                            ]
+                        },
+                        "repos": {
+                            "description": "A map of repository URLs to local destination paths.",
+                            "type": "object",
+                            "minProperties": 1,
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
