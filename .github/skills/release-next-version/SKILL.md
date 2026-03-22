@@ -140,13 +140,89 @@ cause the command to hang in sync PowerShell sessions:
 
 The command prints the new PR URL on success (e.g. `https://github.com/bgold09/cnct-net/pull/65`).
 
-### 9. Open the pull request in the browser
+### 9. Wait for CI on PR 1 (`release-<version>` → `release`)
+
+Stream CI status until all three matrix checks complete. Run in **async mode** and read output
+with `read_powershell` — this can take several minutes:
 
 ```powershell
-& $gh pr view --web
+# async mode
+& $gh pr checks --watch
 ```
 
-Or use the PR URL returned in step 8 to open it.
+The three required checks are:
+- `build (ubuntu-latest)`
+- `build (windows-latest)`
+- `build (macos-latest)`
+
+If any check fails, **stop** — do not proceed to the merge step. Investigate the failure first.
+
+### 10. Merge PR 1
+
+```powershell
+& $gh pr merge --merge
+```
+
+This merges `release-<version>` into `release`. The GitHub ruleset enforces the merge method;
+do **not** use `--squash` or `--rebase`.
+
+### 11. Create PR 2 (`release` → `main`)
+
+Run in **async mode** and capture the printed PR URL:
+
+```powershell
+# async mode
+& $gh pr create --base main --head release --title "Release <version>" --body "Release <version>"
+```
+
+The command prints the new PR URL (e.g. `https://github.com/bgold09/cnct-net/pull/66`).
+Store it as `$pr2`.
+
+### 12. Wait for CI on PR 2
+
+```powershell
+# async mode
+& $gh pr checks $pr2 --watch
+```
+
+Wait for all three `build (ubuntu-latest)` / `build (windows-latest)` / `build (macos-latest)`
+checks to pass. Stop and investigate if any fail.
+
+### 13. Merge PR 2
+
+```powershell
+& $gh pr merge $pr2 --merge
+```
+
+Do **not** use `--squash` or `--rebase`.
+
+### 14. Create PR 3 (`main` → `develop`)
+
+Run in **async mode** and capture the printed PR URL:
+
+```powershell
+# async mode
+& $gh pr create --base develop --head main --title "Merge main into develop after release <version>" --body "Back-merge main into develop after releasing <version>."
+```
+
+Store the returned URL as `$pr3`.
+
+### 15. Wait for CI on PR 3
+
+```powershell
+# async mode
+& $gh pr checks $pr3 --watch
+```
+
+Wait for all three matrix checks to pass. Stop and investigate if any fail.
+
+### 16. Merge PR 3
+
+```powershell
+& $gh pr merge $pr3 --merge
+```
+
+Do **not** use `--squash` or `--rebase`. This preserves full commit history on `develop`.
 
 ## Checklist
 
@@ -157,5 +233,12 @@ Or use the PR URL returned in step 8 to open it.
 - [ ] `<BaseVersion>` in `Cnct/Cnct.NetCore/Cnct.NetCore.csproj` updated
 - [ ] Both files staged and committed with message `Release <version>`
 - [ ] Branch pushed to origin
-- [ ] PR created targeting the `release` branch
-- [ ] PR opened in browser
+- [ ] PR 1 created (`release-<version>` → `release`)
+- [ ] PR 1 CI passed (all three matrix checks green)
+- [ ] PR 1 merged with merge method
+- [ ] PR 2 created (`release` → `main`)
+- [ ] PR 2 CI passed (all three matrix checks green)
+- [ ] PR 2 merged with merge method
+- [ ] PR 3 created (`main` → `develop`)
+- [ ] PR 3 CI passed (all three matrix checks green)
+- [ ] PR 3 merged with merge method
