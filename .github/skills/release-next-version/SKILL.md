@@ -49,19 +49,61 @@ git checkout -b release-<new-version>   # e.g. release-0.4.0
 
 ### 4. Update CHANGELOG.md
 
-Transform the `## Unreleased` section:
+#### 4a. Find PRs merged since the last release
+
+Identify the last released version by reading the most recent versioned heading in `CHANGELOG.md`
+(e.g. `## 0.4.0`). Find its commit on `develop`:
+
+```powershell
+# The release commit message is always "Release <version>"
+$lastReleaseCommit = git log --oneline --format="%H" --grep "^Release " -1
+```
+
+List all PRs merged into `develop` after that commit:
+
+```powershell
+& $gh pr list --state merged --base develop --limit 50 `
+    --json number,title,url,mergedAt
+```
+
+Filter to those merged after the release commit's date. Each entry in the JSON has `number`,
+`title`, and `url`.
+
+#### 4b. Add PR links to each changelog entry
+
+For each `* ` bullet in the `## Unreleased` section, identify the PR that introduced it by
+matching the entry topic to the PR title/description. Append a link at the end:
+
+```markdown
+* Add `linkExpand` task ... ([#60](https://github.com/bgold09/cnct-net/pull/60))
+```
+
+- If a single PR introduced multiple entries, each entry gets the same link.
+- If an entry was introduced by a PR already noted inline, do not duplicate the link.
+- If no confident match can be found, leave the entry without a link rather than guessing.
+
+Multi-line entries: place the link at the end of the final continuation line:
+
+```markdown
+* Add support for machine-specific task filtering via tags. Each action in `cnct.json` can
+  optionally declare a `"tags"` property (a string or array of strings).
+  ([#72](https://github.com/bgold09/cnct-net/pull/72))
+```
+
+#### 4c. Transform the `## Unreleased` section
+
 - **Before** (example):
   ```markdown
   ## Unreleased
 
   ### Feature updates
 
-  * Add `linkExpand` task ...
-  * Add `cloneGitRepository` task ...
+  * Add `linkExpand` task ... ([#60](https://github.com/bgold09/cnct-net/pull/60))
+  * Add `cloneGitRepository` task ... ([#61](https://github.com/bgold09/cnct-net/pull/61))
 
   ### Fixes
 
-  * Align version of `Microsoft.PowerShell.SDK` ...
+  * Align version of `Microsoft.PowerShell.SDK` ... ([#59](https://github.com/bgold09/cnct-net/pull/59))
   ```
 - **After**:
   ```markdown
@@ -71,12 +113,12 @@ Transform the `## Unreleased` section:
 
   ### Feature updates
 
-  * Add `linkExpand` task ...
-  * Add `cloneGitRepository` task ...
+  * Add `linkExpand` task ... ([#60](https://github.com/bgold09/cnct-net/pull/60))
+  * Add `cloneGitRepository` task ... ([#61](https://github.com/bgold09/cnct-net/pull/61))
 
   ### Fixes
 
-  * Align version of `Microsoft.PowerShell.SDK` ...
+  * Align version of `Microsoft.PowerShell.SDK` ... ([#59](https://github.com/bgold09/cnct-net/pull/59))
   ```
 
 Rules:
@@ -229,7 +271,8 @@ Do **not** use `--squash` or `--rebase`. This preserves full commit history on `
 - [ ] Unreleased changelog entries identified and change type determined (feature/fix/breaking)
 - [ ] New version number calculated using semver
 - [ ] Branch `release-<version>` created from latest `develop`
-- [ ] `CHANGELOG.md` updated: unreleased items moved under new version heading, `## Unreleased` left empty
+- [ ] `CHANGELOG.md` updated: PR links added to each entry, unreleased items moved under new
+  version heading, `## Unreleased` left empty
 - [ ] `<BaseVersion>` in `Cnct/Cnct.NetCore/Cnct.NetCore.csproj` updated
 - [ ] Both files staged and committed with message `Release <version>`
 - [ ] Branch pushed to origin
