@@ -8,24 +8,31 @@ using Cnct.Core.Tasks;
 namespace Cnct.Core.Configuration
 {
     [CnctActionType("copy")]
-    public partial class CopyTaskSpecification : ICnctActionSpec
+    public partial class CopyTaskSpecification : CnctActionSpecBase
     {
         private readonly IFileManagement fileManagement;
+        private readonly IFileSystem fileSystem;
 
         [JsonConverter(typeof(FileSpecificationCollectionConverter))]
         public IReadOnlyDictionary<string, object> Files { get; set; }
 
         public CopyTaskSpecification(IFileManagement fileManagement)
+            : this(fileManagement, new FileSystem())
+        {
+        }
+
+        public CopyTaskSpecification(IFileManagement fileManagement, IFileSystem fileSystem)
         {
             this.fileManagement = fileManagement;
+            this.fileSystem = fileSystem;
         }
 
         public CopyTaskSpecification()
+            : this(new FileManagement(), new FileSystem())
         {
-            this.fileManagement = new FileManagement();
         }
 
-        public void Validate()
+        public override void Validate()
         {
             if (this.Files == null || this.Files.Count == 0)
             {
@@ -33,11 +40,11 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
+        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var copyTask = new CopyTask(
                 logger,
-                new FileSystem(),
+                this.fileSystem,
                 this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Files));
 
             await copyTask.ExecuteAsync();

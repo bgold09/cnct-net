@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Cnct.Core.Configuration
 {
     [CnctActionType("environmentVariable")]
-    public partial class EnvironmentVariableTaskSpecification : ICnctActionSpec
+    public partial class EnvironmentVariableTaskSpecification : CnctActionSpecBase
     {
         [JsonRequired]
         public string Name { get; set; }
@@ -17,13 +17,13 @@ namespace Cnct.Core.Configuration
         [JsonRequired]
         public string Value { get; set; }
 
-        public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
+        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var envVariableTask = new EnvironmentVariableTask(logger, this.Name, this.Value);
             await envVariableTask.ExecuteAsync();
         }
 
-        public void Validate()
+        public override void Validate()
         {
         }
     }

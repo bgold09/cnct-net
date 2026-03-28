@@ -18,12 +18,17 @@ Cnct/
 
 Each task type requires **two** files in `Cnct.Core`:
 
-1. **`Configuration/<Name>TaskSpecification.cs`** — JSON-deserializable config class, decorated with `[CnctActionType("<actionType>")]`. Implements `ICnctActionSpec` (`Validate()` + `ExecuteAsync(ILogger, configDirectoryRoot)`). Must be `public sealed partial` — the source generator emits the `ActionType` property and wires it into `CnctActionConverter`.
+1. **`Configuration/<Name>TaskSpecification.cs`** — JSON-deserializable config class, decorated
+   with `[CnctActionType("<actionType>")]`. Extends `CnctActionSpecBase` (which implements
+   `ICnctActionSpec`) and overrides `Validate()` + `ExecuteAsync(ILogger, configDirectoryRoot)`.
+   Must be `public sealed partial` — the source generator emits the `ActionType` property and
+   wires it into `CnctActionConverter`.
 
 2. **`Tasks/<Name>Task.cs`** — `internal` class extending `CnctTaskBase`, does the actual work. Created and called by the specification's `ExecuteAsync`.
 
-The source generator (`CnctTaskSpecificationGenerator`) scans for classes implementing `ICnctActionSpec` decorated with `[CnctActionType]` and generates:
-- A partial `ActionType` property on the spec class
+The source generator (`CnctTaskSpecificationGenerator`) scans for classes decorated with
+`[CnctActionType]` and generates:
+- A partial `override ActionType` property on the spec class
 - A `switch` arm in `CnctActionConverter.GetActionSpecFromType()` to deserialize it
 
 **No manual registration is needed** — adding the attribute is sufficient.
@@ -77,6 +82,14 @@ The spec class should expose a constructor accepting the interface so tests can 
 1. A `$ref` added to `actions.items.oneOf`
 2. A new `definitions/<Name>Action` block with `allOf: [ActionBase, { required, properties }]`
 
+## Code style
+
+- **Maximum line length is 120 characters** for all C# source files.
+
 ## Changelog
 
-`CHANGELOG.md` — new features go under `## Unreleased → ### Feature updates`, fixes under `### Fixes`.
+`CHANGELOG.md` — new features go under `## Unreleased → ### Feature updates`, fixes under
+`### Fixes`. All edits must comply with `.markdownlint.json`:
+
+- Maximum line length **104 characters** (code blocks are exempt)
+- Wrap continuation lines with 2-space indent to stay within the limit

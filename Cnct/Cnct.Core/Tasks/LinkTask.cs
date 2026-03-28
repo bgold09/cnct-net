@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Cnct.Core.Configuration;
@@ -9,12 +9,19 @@ namespace Cnct.Core.Tasks
 {
     internal class LinkTask : CnctTaskBase
     {
+        private readonly IFileSystem fileSystem;
         private readonly IDictionary<string, IEnumerable<string>> links;
 
         public LinkTask(ILogger logger, IDictionary<string, IEnumerable<string>> links)
+            : this(logger, links, new FileSystem())
+        {
+        }
+
+        public LinkTask(ILogger logger, IDictionary<string, IEnumerable<string>> links, IFileSystem fileSystem)
             : base(logger)
         {
             this.links = links;
+            this.fileSystem = fileSystem;
         }
 
         public override Task ExecuteAsync()
@@ -27,11 +34,11 @@ namespace Cnct.Core.Tasks
                 foreach (string link in destinationLinks)
                 {
                     this.Logger.LogInformation($"  [LINK] {target} -> {link}");
-                    if (File.Exists(target))
+                    if (this.fileSystem.File.Exists(target))
                     {
                         this.CreateLink(link, target, LinkType.File);
                     }
-                    else if (Directory.Exists(target))
+                    else if (this.fileSystem.Directory.Exists(target))
                     {
                         this.CreateLink(link, target, LinkType.Directory);
                     }
@@ -47,19 +54,19 @@ namespace Cnct.Core.Tasks
 
         private void CreateLink(string linkPath, string targetPath, LinkType linkType)
         {
-            if (File.Exists(linkPath))
+            if (this.fileSystem.File.Exists(linkPath))
             {
-                File.Delete(linkPath);
+                this.fileSystem.File.Delete(linkPath);
             }
-            else if (Directory.Exists(linkPath))
+            else if (this.fileSystem.Directory.Exists(linkPath))
             {
-                Directory.Delete(linkPath);
+                this.fileSystem.Directory.Delete(linkPath);
             }
 
-            string destinationLinkDirectory = linkPath[..linkPath.LastIndexOf(Path.DirectorySeparatorChar)];
-            if (!Directory.Exists(destinationLinkDirectory))
+            string destinationLinkDirectory = linkPath[..linkPath.LastIndexOf(this.fileSystem.Path.DirectorySeparatorChar)];
+            if (!this.fileSystem.Directory.Exists(destinationLinkDirectory))
             {
-                Directory.CreateDirectory(destinationLinkDirectory);
+                this.fileSystem.Directory.CreateDirectory(destinationLinkDirectory);
             }
 
             switch (Platform.CurrentPlatform)

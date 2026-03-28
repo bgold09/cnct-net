@@ -1,24 +1,26 @@
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 
 namespace Cnct.Core.Tasks
 {
     internal class CloneGitRepositoryTask : CnctTaskBase
     {
+        private readonly IFileSystem fileSystem;
         private readonly IReadOnlyDictionary<string, string> repos;
         private readonly IGitRunner gitRunner;
 
-        public CloneGitRepositoryTask(ILogger logger, IReadOnlyDictionary<string, string> repos)
-            : this(logger, repos, new ProcessGitRunner(logger))
+        public CloneGitRepositoryTask(ILogger logger, IReadOnlyDictionary<string, string> repos, IGitRunner gitRunner)
+            : this(logger, repos, gitRunner, new FileSystem())
         {
         }
 
-        public CloneGitRepositoryTask(ILogger logger, IReadOnlyDictionary<string, string> repos, IGitRunner gitRunner)
+        public CloneGitRepositoryTask(ILogger logger, IReadOnlyDictionary<string, string> repos, IGitRunner gitRunner, IFileSystem fileSystem)
             : base(logger)
         {
             this.repos = repos;
             this.gitRunner = gitRunner;
+            this.fileSystem = fileSystem;
         }
 
         public override async Task ExecuteAsync()
@@ -27,24 +29,24 @@ namespace Cnct.Core.Tasks
             {
                 string url = kvp.Key;
                 string dest = kvp.Value;
-                string gitPath = Path.Combine(dest, ".git");
+                string gitPath = this.fileSystem.Path.Combine(dest, ".git");
 
-                if (File.Exists(gitPath) || Directory.Exists(gitPath))
+                if (this.fileSystem.File.Exists(gitPath) || this.fileSystem.Directory.Exists(gitPath))
                 {
                     this.Logger.LogInformation($"  [GIT] Pulling latest changes in '{dest}'");
                     await this.gitRunner.PullAsync(dest);
                 }
-                else if (Directory.Exists(dest))
+                else if (this.fileSystem.Directory.Exists(dest))
                 {
                     this.Logger.LogWarning($"Directory '{dest}' exists but is not a git repository. Skipping.");
                 }
                 else
                 {
                     this.Logger.LogInformation($"  [GIT] Cloning '{url}' to '{dest}'");
-                    string parent = Path.GetDirectoryName(dest);
-                    if (!string.IsNullOrEmpty(parent) && !Directory.Exists(parent))
+                    string parent = this.fileSystem.Path.GetDirectoryName(dest);
+                    if (!string.IsNullOrEmpty(parent) && !this.fileSystem.Directory.Exists(parent))
                     {
-                        Directory.CreateDirectory(parent);
+                        this.fileSystem.Directory.CreateDirectory(parent);
                     }
 
                     await this.gitRunner.CloneAsync(url, dest);

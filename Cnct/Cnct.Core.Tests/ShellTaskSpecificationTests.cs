@@ -31,5 +31,57 @@ namespace Cnct.Core.Tests
             Assert.Equal(PlatformType.Windows, spec.PlatformType.Single());
             Assert.False(spec.Silent);
         }
+
+        [Fact]
+        public void CanDeserializeSingleTag()
+        {
+            var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                ["actionType"] = "shell",
+                ["shell"] = "powershell",
+                ["command"] = "echo hello",
+                ["os"] = "windows",
+                ["tags"] = "personal",
+            });
+
+            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
+            Assert.Single(spec.Tags, "personal");
+        }
+
+        [Fact]
+        public void CanDeserializeTagsArray()
+        {
+            var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                ["actionType"] = "shell",
+                ["shell"] = "powershell",
+                ["command"] = "echo hello",
+                ["os"] = "windows",
+                ["tags"] = new[] { "personal", "home" },
+            });
+
+            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
+            Assert.Equal(2, spec.Tags.Count);
+            Assert.Contains("personal", spec.Tags);
+            Assert.Contains("home", spec.Tags);
+        }
+
+        [Fact]
+        public void TagsDefaultsToEmptyWhenNotSpecified()
+        {
+            var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                ["actionType"] = "shell",
+                ["shell"] = "powershell",
+                ["command"] = "echo hello",
+                ["os"] = "windows",
+            });
+
+            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
+            Assert.Empty(spec.Tags);
+        }
     }
 }

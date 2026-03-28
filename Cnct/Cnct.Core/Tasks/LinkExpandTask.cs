@@ -1,38 +1,45 @@
 using System.Collections.Generic;
-using System.IO;
+using System.IO.Abstractions;
 using System.Threading.Tasks;
 
 namespace Cnct.Core.Tasks
 {
     internal class LinkExpandTask : CnctTaskBase
     {
+        private readonly IFileSystem fileSystem;
         private readonly string source;
         private readonly string target;
 
         public LinkExpandTask(ILogger logger, string source, string target)
+            : this(logger, source, target, new FileSystem())
+        {
+        }
+
+        public LinkExpandTask(ILogger logger, string source, string target, IFileSystem fileSystem)
             : base(logger)
         {
             this.source = source;
             this.target = target;
+            this.fileSystem = fileSystem;
         }
 
         public override Task ExecuteAsync()
         {
-            if (!Directory.Exists(this.source))
+            if (!this.fileSystem.Directory.Exists(this.source))
             {
                 this.Logger.LogWarning($"Source directory '{this.source}' does not exist.");
                 return Task.FromResult(0);
             }
 
             var links = new Dictionary<string, IEnumerable<string>>();
-            foreach (string subdirectory in Directory.EnumerateDirectories(this.source))
+            foreach (string subdirectory in this.fileSystem.Directory.EnumerateDirectories(this.source))
             {
-                string name = Path.GetFileName(subdirectory);
-                string linkPath = Path.Combine(this.target, name);
+                string name = this.fileSystem.Path.GetFileName(subdirectory);
+                string linkPath = this.fileSystem.Path.Combine(this.target, name);
                 links[subdirectory] = new[] { linkPath };
             }
 
-            var linkTask = new LinkTask(this.Logger, links);
+            var linkTask = new LinkTask(this.Logger, links, this.fileSystem);
             return linkTask.ExecuteAsync();
         }
     }
