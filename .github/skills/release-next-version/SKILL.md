@@ -49,19 +49,61 @@ git checkout -b release-<new-version>   # e.g. release-0.4.0
 
 ### 4. Update CHANGELOG.md
 
-Transform the `## Unreleased` section:
+#### 4a. Find PRs merged since the last release
+
+Identify the last released version by reading the most recent versioned heading in `CHANGELOG.md`
+(e.g. `## 0.4.0`). Find its commit on `develop`:
+
+```powershell
+# The release commit message is always "Release <version>"
+$lastReleaseCommit = git log --oneline --format="%H" --grep "^Release " -1
+```
+
+List all PRs merged into `develop` after that commit:
+
+```powershell
+& $gh pr list --state merged --base develop --limit 50 `
+    --json number,title,url,mergedAt
+```
+
+Filter to those merged after the release commit's date. Each entry in the JSON has `number`,
+`title`, and `url`.
+
+#### 4b. Add PR links to each changelog entry
+
+For each `* ` bullet in the `## Unreleased` section, identify the PR that introduced it by
+matching the entry topic to the PR title/description. Append a link at the end:
+
+```markdown
+* Add `linkExpand` task ... ([#60](https://github.com/bgold09/cnct-net/pull/60))
+```
+
+- If a single PR introduced multiple entries, each entry gets the same link.
+- If an entry was introduced by a PR already noted inline, do not duplicate the link.
+- If no confident match can be found, leave the entry without a link rather than guessing.
+
+Multi-line entries: place the link at the end of the final continuation line:
+
+```markdown
+* Add support for machine-specific task filtering via tags. Each action in `cnct.json` can
+  optionally declare a `"tags"` property (a string or array of strings).
+  ([#72](https://github.com/bgold09/cnct-net/pull/72))
+```
+
+#### 4c. Transform the `## Unreleased` section
+
 - **Before** (example):
   ```markdown
   ## Unreleased
 
   ### Feature updates
 
-  * Add `linkExpand` task ...
-  * Add `cloneGitRepository` task ...
+  * Add `linkExpand` task ... ([#60](https://github.com/bgold09/cnct-net/pull/60))
+  * Add `cloneGitRepository` task ... ([#61](https://github.com/bgold09/cnct-net/pull/61))
 
   ### Fixes
 
-  * Align version of `Microsoft.PowerShell.SDK` ...
+  * Align version of `Microsoft.PowerShell.SDK` ... ([#59](https://github.com/bgold09/cnct-net/pull/59))
   ```
 - **After**:
   ```markdown
@@ -71,12 +113,12 @@ Transform the `## Unreleased` section:
 
   ### Feature updates
 
-  * Add `linkExpand` task ...
-  * Add `cloneGitRepository` task ...
+  * Add `linkExpand` task ... ([#60](https://github.com/bgold09/cnct-net/pull/60))
+  * Add `cloneGitRepository` task ... ([#61](https://github.com/bgold09/cnct-net/pull/61))
 
   ### Fixes
 
-  * Align version of `Microsoft.PowerShell.SDK` ...
+  * Align version of `Microsoft.PowerShell.SDK` ... ([#59](https://github.com/bgold09/cnct-net/pull/59))
   ```
 
 Rules:
@@ -140,22 +182,106 @@ cause the command to hang in sync PowerShell sessions:
 
 The command prints the new PR URL on success (e.g. `https://github.com/bgold09/cnct-net/pull/65`).
 
-### 9. Open the pull request in the browser
+### 9. Wait for CI on PR 1 (`release-<version>` → `release`)
+
+Stream CI status until all three matrix checks complete. Run in **async mode** and read output
+with `read_powershell` — this can take several minutes:
 
 ```powershell
-& $gh pr view --web
+# async mode
+& $gh pr checks --watch
 ```
 
-Or use the PR URL returned in step 8 to open it.
+The three required checks are:
+- `build (ubuntu-latest)`
+- `build (windows-latest)`
+- `build (macos-latest)`
+
+If any check fails, **stop** — do not proceed to the merge step. Investigate the failure first.
+
+### 10. Merge PR 1
+
+```powershell
+& $gh pr merge --merge
+```
+
+This merges `release-<version>` into `release`. The GitHub ruleset enforces the merge method;
+do **not** use `--squash` or `--rebase`.
+
+### 11. Create PR 2 (`release` → `main`)
+
+Run in **async mode** and capture the printed PR URL:
+
+```powershell
+# async mode
+& $gh pr create --base main --head release --title "Release <version>" --body "Release <version>"
+```
+
+The command prints the new PR URL (e.g. `https://github.com/bgold09/cnct-net/pull/66`).
+Store it as `$pr2`.
+
+### 12. Wait for CI on PR 2
+
+```powershell
+# async mode
+& $gh pr checks $pr2 --watch
+```
+
+Wait for all three `build (ubuntu-latest)` / `build (windows-latest)` / `build (macos-latest)`
+checks to pass. Stop and investigate if any fail.
+
+### 13. Merge PR 2
+
+```powershell
+& $gh pr merge $pr2 --merge
+```
+
+Do **not** use `--squash` or `--rebase`.
+
+### 14. Create PR 3 (`main` → `develop`)
+
+Run in **async mode** and capture the printed PR URL:
+
+```powershell
+# async mode
+& $gh pr create --base develop --head main --title "Merge main into develop after release <version>" --body "Back-merge main into develop after releasing <version>."
+```
+
+Store the returned URL as `$pr3`.
+
+### 15. Wait for CI on PR 3
+
+```powershell
+# async mode
+& $gh pr checks $pr3 --watch
+```
+
+Wait for all three matrix checks to pass. Stop and investigate if any fail.
+
+### 16. Merge PR 3
+
+```powershell
+& $gh pr merge $pr3 --merge
+```
+
+Do **not** use `--squash` or `--rebase`. This preserves full commit history on `develop`.
 
 ## Checklist
 
 - [ ] Unreleased changelog entries identified and change type determined (feature/fix/breaking)
 - [ ] New version number calculated using semver
 - [ ] Branch `release-<version>` created from latest `develop`
-- [ ] `CHANGELOG.md` updated: unreleased items moved under new version heading, `## Unreleased` left empty
+- [ ] `CHANGELOG.md` updated: PR links added to each entry, unreleased items moved under new
+  version heading, `## Unreleased` left empty
 - [ ] `<BaseVersion>` in `Cnct/Cnct.NetCore/Cnct.NetCore.csproj` updated
 - [ ] Both files staged and committed with message `Release <version>`
 - [ ] Branch pushed to origin
-- [ ] PR created targeting the `release` branch
-- [ ] PR opened in browser
+- [ ] PR 1 created (`release-<version>` → `release`)
+- [ ] PR 1 CI passed (all three matrix checks green)
+- [ ] PR 1 merged with merge method
+- [ ] PR 2 created (`release` → `main`)
+- [ ] PR 2 CI passed (all three matrix checks green)
+- [ ] PR 2 merged with merge method
+- [ ] PR 3 created (`main` → `develop`)
+- [ ] PR 3 CI passed (all three matrix checks green)
+- [ ] PR 3 merged with merge method
