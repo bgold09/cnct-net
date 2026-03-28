@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Feature updates
+
+* Add support for machine-specific task filtering via tags. Each action in `cnct.json` can now declare an
+  optional `"tags"` property (astring or array of strings). A machine's tags are defined in a `settings.json`
+  file in the platform local config directory (`%LOCALAPPDATA%\cnct\settings.json` on Windows; `$XDG_CONFIG_HOME/cnct/settings.json`
+  or `~/.config/cnct/settings.json` on Linux and macOS). An action runs if it has no tags, or if the machine's
+  tags include at least one match (case-insensitive).
+
 ### Improvements
 
 * Migrate all tasks to use `IFileSystem` from `System.IO.Abstractions` for filesystem operations, enabling full unit test coverage without real disk I/O.

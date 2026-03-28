@@ -41,6 +41,7 @@ namespace Cnct.Core
             string configFilePath = config?.FullName ?? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
 
             CnctConfig cnctConfig = parser.Parse(configFilePath);
+            cnctConfig.MachineTags = (await new MachineSettingsLoader().LoadAsync()).Tags;
             cnctConfig.Validate();
             bool result = await cnctConfig.ExecuteAsync();
 

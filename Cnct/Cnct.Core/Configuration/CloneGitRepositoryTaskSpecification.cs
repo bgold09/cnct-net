@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Cnct.Core.Configuration
 {
     [CnctActionType("cloneGitRepository")]
-    public sealed partial class CloneGitRepositoryTaskSpecification : ICnctActionSpec
+    public sealed partial class CloneGitRepositoryTaskSpecification : CnctActionSpecBase
     {
         private readonly IFileSystem fileSystem;
         private readonly IGitRunner gitRunner;
@@ -32,7 +32,7 @@ namespace Cnct.Core.Configuration
         [JsonProperty("repos")]
         public IReadOnlyDictionary<string, string> Repos { get; set; }
 
-        public void Validate()
+        public override void Validate()
         {
             if (this.Repos == null || this.Repos.Count == 0)
             {
@@ -53,7 +53,7 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
+        public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var normalizedRepos = new Dictionary<string, string>();
             foreach (var kvp in this.Repos)

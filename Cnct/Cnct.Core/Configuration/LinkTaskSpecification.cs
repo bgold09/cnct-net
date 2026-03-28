@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Cnct.Core.Configuration
 {
     [CnctActionType("link")]
-    public sealed partial class LinkTaskSpecification : ICnctActionSpec
+    public sealed partial class LinkTaskSpecification : CnctActionSpecBase
     {
         private readonly IFileManagement fileManagement;
         private readonly IFileSystem fileSystem;
@@ -32,7 +32,7 @@ namespace Cnct.Core.Configuration
         [JsonConverter(typeof(FileSpecificationCollectionConverter))]
         public IReadOnlyDictionary<string, object> Links { get; set; }
 
-        public void Validate()
+        public override void Validate()
         {
             if (this.Links == null || this.Links.Count == 0)
             {
@@ -40,7 +40,7 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
+        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var linkTask = new LinkTask(
                 logger,
