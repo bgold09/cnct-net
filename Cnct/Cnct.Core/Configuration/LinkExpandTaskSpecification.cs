@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Cnct.Core.Configuration
 {
     [CnctActionType("linkExpand")]
-    public sealed partial class LinkExpandTaskSpecification : ICnctActionSpec
+    public sealed partial class LinkExpandTaskSpecification : CnctActionSpecBase
     {
         private readonly IFileSystem fileSystem;
 
@@ -27,7 +27,7 @@ namespace Cnct.Core.Configuration
         [JsonProperty("target")]
         public string Target { get; set; }
 
-        public void Validate()
+        public override void Validate()
         {
             if (string.IsNullOrWhiteSpace(this.Source))
             {
@@ -40,7 +40,7 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
+        public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             string source = this.Source.NormalizePath();
             if (!this.fileSystem.Path.IsPathRooted(source))

@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace Cnct.Core.Configuration
 {
     [CnctActionType("shell")]
-    public partial class ShellTaskSpecification : ICnctActionSpec
+    public partial class ShellTaskSpecification : CnctActionSpecBase
     {
         [JsonRequired]
         public ShellType Shell { get; set; }
@@ -23,7 +23,7 @@ namespace Cnct.Core.Configuration
 
         public bool Silent { get; set; }
 
-        public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
+        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             if (!this.PlatformType.Contains(Platform.CurrentPlatform))
             {
@@ -41,7 +41,7 @@ namespace Cnct.Core.Configuration
             await shellInvoker.ExecuteAsync(this);
         }
 
-        public void Validate()
+        public override void Validate()
         {
             if (this.Shell == ShellType.Unknown)
             {

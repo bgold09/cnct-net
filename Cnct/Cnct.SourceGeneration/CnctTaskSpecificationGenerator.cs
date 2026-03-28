@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
@@ -83,7 +82,7 @@ namespace {NamespaceCnctCoreConfiguration}
 {{
     public partial class {className}
     {{
-        public string ActionType {{ get; }} = ""{actionType}"";
+        public override string ActionType {{ get; }} = ""{actionType}"";
     }}
 }}
 ";
@@ -93,16 +92,17 @@ namespace {NamespaceCnctCoreConfiguration}
 
         private class ActionSpecSyntaxReceiver : ISyntaxReceiver
         {
+            private const string CnctActionTypeAttributeName = "CnctActionType";
+
             public ISet<ClassDeclarationSyntax> ClassesToAugment { get; } = new HashSet<ClassDeclarationSyntax>();
 
             public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
             {
                 if (syntaxNode is ClassDeclarationSyntax cds &&
-                        cds.BaseList?.Types
-                            .Where(t => t.Type.IsKind(SyntaxKind.IdentifierName))
-                            .Select(t => t.Type)
-                            .Cast<IdentifierNameSyntax>()
-                            .Any(t => t.Identifier.ValueText == CnctActionSpecInterfaceName) == true)
+                    cds.AttributeLists
+                        .SelectMany(al => al.Attributes)
+                        .Any(a => a.Name is IdentifierNameSyntax id &&
+                                  id.Identifier.ValueText == CnctActionTypeAttributeName))
                 {
                     this.ClassesToAugment.Add(cds);
                 }

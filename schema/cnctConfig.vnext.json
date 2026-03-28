@@ -58,6 +58,21 @@
                 "description": {
                     "description": "A description for the action.",
                     "type": "string"
+                },
+                "tags": {
+                    "description": "Machine tags required for this action to run. If omitted or empty, the action runs on all machines. If specified, the action only runs when the machine's settings.json includes at least one matching tag.",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "minItems": 1
+                        }
+                    ]
                 }
             }
         },

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,6 +13,9 @@ namespace Cnct.Core.Configuration
 
         [JsonIgnore]
         public string ConfigRootDirectory { get; set; }
+
+        [JsonIgnore]
+        public IReadOnlyCollection<string> MachineTags { get; set; } = Array.Empty<string>();
 
         [JsonProperty(ItemConverterType = typeof(CnctActionConverter))]
         public ICnctActionSpec[] Actions { get; set; }
@@ -28,6 +32,14 @@ namespace Cnct.Core.Configuration
         {
             foreach (var action in this.Actions.Where(a => a != null))
             {
+                if (action is CnctActionSpecBase taggedAction
+                    && taggedAction.Tags.Any()
+                    && !taggedAction.Tags.Any(t => this.MachineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
+                {
+                    this.Logger.LogVerbose($"Skipping action '{action.ActionType}': no matching machine tag.");
+                    continue;
+                }
+
                 try
                 {
                     await action.ExecuteAsync(this.Logger, this.ConfigRootDirectory);

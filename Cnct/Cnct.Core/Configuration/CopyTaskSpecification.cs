@@ -8,7 +8,7 @@ using Cnct.Core.Tasks;
 namespace Cnct.Core.Configuration
 {
     [CnctActionType("copy")]
-    public partial class CopyTaskSpecification : ICnctActionSpec
+    public partial class CopyTaskSpecification : CnctActionSpecBase
     {
         private readonly IFileManagement fileManagement;
         private readonly IFileSystem fileSystem;
@@ -32,7 +32,7 @@ namespace Cnct.Core.Configuration
         {
         }
 
-        public void Validate()
+        public override void Validate()
         {
             if (this.Files == null || this.Files.Count == 0)
             {
@@ -40,7 +40,7 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        public async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
+        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var copyTask = new CopyTask(
                 logger,
