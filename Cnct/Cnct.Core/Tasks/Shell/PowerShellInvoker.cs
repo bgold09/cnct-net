@@ -11,10 +11,18 @@ namespace Cnct.Core.Tasks.Shell
     public class PowerShellInvoker : IShellInvoker
     {
         private readonly ILogger logger;
+        private readonly IProcessRunner processRunner;
 
         public PowerShellInvoker(ILogger logger = null)
+            : this(logger, new DefaultProcessRunner())
+        {
+        }
+
+        public PowerShellInvoker(
+            ILogger logger, IProcessRunner processRunner)
         {
             this.logger = logger;
+            this.processRunner = processRunner;
         }
 
         public async Task ExecuteAsync(
@@ -107,7 +115,7 @@ namespace Cnct.Core.Tasks.Shell
             startInfo.ArgumentList.Add("-File");
             startInfo.ArgumentList.Add(specification.Command);
 
-            await ProcessRunner.ExecuteAsync(
+            await this.processRunner.ExecuteAsync(
                 startInfo, specification, this.logger);
         }
     }

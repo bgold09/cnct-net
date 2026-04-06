@@ -8,10 +8,18 @@ namespace Cnct.Core.Tasks.Shell
     public class ShInvoker : IShellInvoker
     {
         private readonly ILogger logger;
+        private readonly IProcessRunner processRunner;
 
         public ShInvoker(ILogger logger)
+            : this(logger, new DefaultProcessRunner())
+        {
+        }
+
+        public ShInvoker(
+            ILogger logger, IProcessRunner processRunner)
         {
             this.logger = logger;
+            this.processRunner = processRunner;
         }
 
         public async Task ExecuteAsync(
@@ -34,7 +42,7 @@ namespace Cnct.Core.Tasks.Shell
             startInfo.ArgumentList.Add("-c");
             startInfo.ArgumentList.Add(specification.Command);
 
-            await ProcessRunner.ExecuteAsync(
+            await this.processRunner.ExecuteAsync(
                 startInfo, specification, this.logger);
         }
     }
