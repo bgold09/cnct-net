@@ -18,8 +18,12 @@ namespace Cnct.Core.Tasks.Shell
                 throw new ArgumentNullException(nameof(specification));
             }
 
-            // need this to be configurable
-            SessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Unrestricted;
+            // ExecutionPolicy is only supported on Windows
+            if (OperatingSystem.IsWindows())
+            {
+                SessionState.ExecutionPolicy =
+                    Microsoft.PowerShell.ExecutionPolicy.Unrestricted;
+            }
 
             using var powershell = PowerShell.Create(SessionState);
             powershell.AddScript(specification.Command);
