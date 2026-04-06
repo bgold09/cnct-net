@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 
@@ -38,37 +39,43 @@ namespace Cnct.Core.Tasks.Shell
                 ?? throw new InvalidOperationException(
                     "Failed to start /bin/sh.");
 
-            Task<string> outputTask =
-                process.StandardOutput.ReadToEndAsync();
-            Task<string> errorTask =
-                process.StandardError.ReadToEndAsync();
+            var stderr = new StringBuilder();
 
-            await Task.WhenAll(outputTask, errorTask);
-            await process.WaitForExitAsync();
-
-            if (!specification.Silent
-                && !string.IsNullOrWhiteSpace(outputTask.Result))
+            if (!specification.Silent)
             {
-                this.logger.LogInformation(
-                    outputTask.Result.TrimEnd());
+                process.OutputDataReceived += (_, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        this.logger.LogInformation(e.Data);
+                    }
+                };
             }
+
+            process.ErrorDataReceived += (_, e) =>
+            {
+                if (e.Data != null)
+                {
+                    stderr.AppendLine(e.Data);
+                    if (!specification.Silent)
+                    {
+                        this.logger.LogWarning(e.Data);
+                    }
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            await process.WaitForExitAsync();
 
             if (process.ExitCode != 0)
             {
-                string errorOutput =
-                    string.IsNullOrWhiteSpace(errorTask.Result)
-                        ? "(no stderr output)"
-                        : errorTask.Result.TrimEnd();
+                string errorOutput = stderr.Length > 0
+                    ? stderr.ToString().TrimEnd()
+                    : "(no stderr output)";
                 throw new InvalidOperationException(
                     $"Command failed (exit code "
                     + $"{process.ExitCode}): {errorOutput}");
-            }
-
-            if (!specification.Silent
-                && !string.IsNullOrWhiteSpace(errorTask.Result))
-            {
-                this.logger.LogWarning(
-                    errorTask.Result.TrimEnd());
             }
         }
     }
