@@ -45,7 +45,7 @@ namespace Cnct.Core.Tasks.Shell
             {
                 process.OutputDataReceived += (_, e) =>
                 {
-                    if (e.Data != null)
+                    if (!string.IsNullOrEmpty(e.Data))
                     {
                         this.logger.LogInformation(e.Data);
                     }
