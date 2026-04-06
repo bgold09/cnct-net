@@ -32,7 +32,7 @@ namespace Cnct.Core.Configuration
 
             IShellInvoker shellInvoker = this.Shell switch
             {
-                ShellType.PowerShell => new PowerShellInvoker(),
+                ShellType.PowerShell => new PowerShellInvoker(logger),
                 ShellType.Sh => new ShInvoker(logger),
                 _ => throw new ArgumentOutOfRangeException(
                     message: $"Shell type {this.Shell} is not supported.",
