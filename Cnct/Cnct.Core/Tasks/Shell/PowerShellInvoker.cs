@@ -9,7 +9,7 @@ namespace Cnct.Core.Tasks.Shell
 {
     public class PowerShellInvoker : IShellInvoker
     {
-        private static readonly InitialSessionState SessionState = InitialSessionState.CreateDefault();
+        private static readonly InitialSessionState SessionState = InitialSessionState.CreateDefault2();
 
         public async Task ExecuteAsync(ShellTaskSpecification specification)
         {
