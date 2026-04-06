@@ -29,7 +29,7 @@ namespace Cnct.Core.Tasks.Shell
 
             if (OperatingSystem.IsWindows())
             {
-                await this.ExecuteInProcessAsync(specification);
+                await ExecuteInProcessAsync(specification);
             }
             else
             {
@@ -37,7 +37,7 @@ namespace Cnct.Core.Tasks.Shell
             }
         }
 
-        private async Task ExecuteInProcessAsync(
+        private static async Task ExecuteInProcessAsync(
             ShellTaskSpecification specification)
         {
             var sessionState =
@@ -65,6 +65,31 @@ namespace Cnct.Core.Tasks.Shell
                 throw new InvalidOperationException(
                     "command failed");
             }
+        }
+
+        private static void ToStandardError<T>(
+            object sender, DataAddedEventArgs args)
+        {
+            ToStream<T>(sender, args, Console.Error);
+        }
+
+        private static void ToStandardOutput<T>(
+            object sender, DataAddedEventArgs args)
+        {
+            ToStream<T>(sender, args, Console.Out);
+        }
+
+        private static void ToStream<T>(
+            object sender,
+            DataAddedEventArgs args,
+            TextWriter writer)
+        {
+            if (!(sender is PSDataCollection<T> collection))
+            {
+                throw new InvalidOperationException();
+            }
+
+            writer.WriteLine(collection[args.Index]);
         }
 
         private async Task ExecuteAsProcessAsync(
@@ -125,31 +150,6 @@ namespace Cnct.Core.Tasks.Shell
                     $"Command failed (exit code "
                     + $"{process.ExitCode}): {errorOutput}");
             }
-        }
-
-        private static void ToStandardError<T>(
-            object sender, DataAddedEventArgs args)
-        {
-            ToStream<T>(sender, args, Console.Error);
-        }
-
-        private static void ToStandardOutput<T>(
-            object sender, DataAddedEventArgs args)
-        {
-            ToStream<T>(sender, args, Console.Out);
-        }
-
-        private static void ToStream<T>(
-            object sender,
-            DataAddedEventArgs args,
-            TextWriter writer)
-        {
-            if (!(sender is PSDataCollection<T> collection))
-            {
-                throw new InvalidOperationException();
-            }
-
-            writer.WriteLine(collection[args.Index]);
         }
     }
 }
