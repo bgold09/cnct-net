@@ -27,7 +27,6 @@ namespace Cnct.Core.Configuration
         {
         }
 
-        protected override string GetAdditionalDisplayText() =>
-            $"'{this.Name}={this.Value}'";
+        protected override string GetAdditionalDisplayText() => $"'{this.Name}={this.Value}'";
     }
 }
