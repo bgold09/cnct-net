@@ -17,6 +17,9 @@ namespace Cnct.Core.Configuration
         [JsonRequired]
         public string Value { get; set; }
 
+        protected override string GetAdditionalDisplayText() =>
+            $"'{this.Name}={this.Value}'";
+
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var envVariableTask = new EnvironmentVariableTask(logger, this.Name, this.Value);

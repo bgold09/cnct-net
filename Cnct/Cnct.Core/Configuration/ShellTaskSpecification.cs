@@ -22,6 +22,9 @@ namespace Cnct.Core.Configuration
 
         public bool Silent { get; set; }
 
+        protected override string GetAdditionalDisplayText() =>
+            $"'{this.Shell} {this.Command}'";
+
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             if (this.PlatformType?.Count > 0

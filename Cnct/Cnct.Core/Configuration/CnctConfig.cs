@@ -40,19 +40,21 @@ namespace Cnct.Core.Configuration
                     continue;
                 }
 
+                string displayText = action is CnctActionSpecBase specBase
+                    && !string.IsNullOrEmpty(specBase.Label)
+                        ? $"{specBase.ActionType}: {specBase.Label}"
+                        : action.GetDisplayText();
+
                 try
                 {
                     var start = DateTimeOffset.Now;
-                    this.Logger.LogVerbose(
-                        $"[{start:HH:mm:ss.fff}] Starting task '{action.ActionType}'");
+                    this.Logger.LogInformation($"> {displayText}");
 
                     await action.ExecuteAsync(this.Logger, this.ConfigRootDirectory);
 
                     var end = DateTimeOffset.Now;
                     var elapsed = end - start;
-                    this.Logger.LogVerbose(
-                        $"[{end:HH:mm:ss.fff}] Finished task '{action.ActionType}'"
-                        + $" ({elapsed.TotalSeconds:F1}s)");
+                    this.Logger.LogInformation($"✓ {displayText} ({elapsed.TotalSeconds:F1}s)");
                 }
                 catch (Exception ex)
                 {

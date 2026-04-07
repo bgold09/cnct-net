@@ -59,6 +59,10 @@
                     "description": "A description for the action.",
                     "type": "string"
                 },
+                "label": {
+                    "description": "An optional display label shown when the action starts and finishes. Overrides the default display format for the action type.",
+                    "type": "string"
+                },
                 "tags": {
                     "description": "Machine tags required for this action to run. If omitted or empty, the action runs on all machines. If specified, the action only runs when the machine's settings.json includes at least one matching tag.",
                     "oneOf": [
