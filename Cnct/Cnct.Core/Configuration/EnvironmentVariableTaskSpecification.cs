@@ -26,5 +26,7 @@ namespace Cnct.Core.Configuration
         public override void Validate()
         {
         }
+
+        protected override string GetAdditionalDisplayText() => $"'{this.Name}={this.Value}'";
     }
 }

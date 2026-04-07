@@ -42,6 +42,22 @@ namespace Cnct.Core
             LogWithColor(message, ConsoleColor.Yellow);
         }
 
+        public void LogStart(string message)
+        {
+            if (!this.loggerOptions.Quiet)
+            {
+                LogWithColor($"▶ {message}", ConsoleColor.Cyan);
+            }
+        }
+
+        public void LogFinish(string message)
+        {
+            if (!this.loggerOptions.Quiet)
+            {
+                LogWithColor($"✓ {message}", ConsoleColor.Green);
+            }
+        }
+
         private static void LogWithColor(string message, ConsoleColor foregroundColor)
         {
             Console.ForegroundColor = foregroundColor;

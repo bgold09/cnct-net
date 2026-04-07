@@ -25,5 +25,13 @@ namespace Cnct.Core.Tests
             var spec = Assert.IsType<CopyTaskSpecification>(specInterface);
             Assert.Equal(expectedFileConfigs.Count, spec.Files.Count);
         }
+
+        [Fact]
+        public void GetDisplayText_ReturnsCopy()
+        {
+            var spec = new CopyTaskSpecification();
+
+            Assert.Equal("copy", spec.GetDisplayText());
+        }
     }
 }

@@ -13,5 +13,9 @@ namespace Cnct.Core
         void LogWarning(string message);
 
         void LogError(string message, Exception exception = null);
+
+        void LogStart(string message);
+
+        void LogFinish(string message);
     }
 }

@@ -97,5 +97,13 @@ namespace Cnct.Core.Tests
                 l => l.LogWarning(It.Is<string>(s => s.Contains(expectedResolvedSource))),
                 Times.Once);
         }
+
+        [Fact]
+        public void GetDisplayText_ReturnsLinkExpand()
+        {
+            var spec = new LinkExpandTaskSpecification();
+
+            Assert.Equal("linkExpand", spec.GetDisplayText());
+        }
     }
 }

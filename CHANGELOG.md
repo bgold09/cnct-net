@@ -8,6 +8,8 @@
   on Linux and macOS. The `os` property on shell actions
   is now optional — when omitted, the action runs on all
   platforms.
+* Each action now logs a start (`>`) and finish (`✓`) event. An optional `"label"`
+  property can be added to actions in `cnct.json` to add context to the display.
 
 ## 0.5.0
 

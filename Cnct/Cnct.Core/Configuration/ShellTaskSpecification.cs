@@ -56,6 +56,8 @@ namespace Cnct.Core.Configuration
             }
         }
 
+        protected override string GetAdditionalDisplayText() => $"'{this.Shell} {this.Command}'";
+
         public enum ShellType
         {
             Unknown = 0,

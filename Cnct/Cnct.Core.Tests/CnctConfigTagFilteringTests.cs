@@ -99,6 +99,66 @@ namespace Cnct.Core.Tests
             Assert.False(taggedAction.WasExecuted);
         }
 
+        [Fact]
+        public async Task ExecuteAsync_LogsStartAndFinish_WithDisplayText()
+        {
+            var logger = new Mock<ILogger>();
+            var action = new TestActionSpec();
+            var config = new CnctConfig
+            {
+                Logger = logger.Object,
+                ConfigRootDirectory = "/",
+                MachineTags = Array.Empty<string>(),
+                Actions = new ICnctActionSpec[] { action },
+            };
+
+            await config.ExecuteAsync();
+
+            logger.Verify(l => l.LogStart("test"), Times.Once);
+            logger.Verify(
+                l => l.LogFinish(It.Is<string>(s => s.StartsWith("test"))),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_UsesLabel_WhenLabelIsSet()
+        {
+            var logger = new Mock<ILogger>();
+            var action = new TestActionSpec { Label = "my custom label" };
+            var config = new CnctConfig
+            {
+                Logger = logger.Object,
+                ConfigRootDirectory = "/",
+                MachineTags = Array.Empty<string>(),
+                Actions = new ICnctActionSpec[] { action },
+            };
+
+            await config.ExecuteAsync();
+
+            logger.Verify(l => l.LogStart("test: my custom label"), Times.Once);
+            logger.Verify(
+                l => l.LogFinish(It.Is<string>(s => s.StartsWith("test: my custom label"))),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_UsesGetDisplayText_WhenLabelIsNotSet()
+        {
+            var logger = new Mock<ILogger>();
+            var action = new TestActionSpec();
+            var config = new CnctConfig
+            {
+                Logger = logger.Object,
+                ConfigRootDirectory = "/",
+                MachineTags = Array.Empty<string>(),
+                Actions = new ICnctActionSpec[] { action },
+            };
+
+            await config.ExecuteAsync();
+
+            logger.Verify(l => l.LogStart("test"), Times.Once);
+        }
+
         private static CnctConfig MakeConfig(IReadOnlyCollection<string> machineTags, params ICnctActionSpec[] actions)
         {
             return new CnctConfig

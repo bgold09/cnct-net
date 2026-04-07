@@ -8,6 +8,8 @@ namespace Cnct.Core.Configuration
     {
         string ActionType { get; }
 
+        string GetDisplayText();
+
         void Validate();
 
         Task ExecuteAsync(ILogger logger, string configDirectoryRoot);

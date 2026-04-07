@@ -75,5 +75,10 @@ namespace Cnct.Core.Configuration
 
             return cloneTask.ExecuteAsync();
         }
+
+        protected override string GetAdditionalDisplayText() =>
+            this.Repos != null && this.Repos.Count > 0
+                ? string.Join(", ", this.Repos.Keys)
+                : null;
     }
 }

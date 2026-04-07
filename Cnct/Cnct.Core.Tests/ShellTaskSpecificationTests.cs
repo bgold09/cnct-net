@@ -100,5 +100,29 @@ namespace Cnct.Core.Tests
             var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
             Assert.Null(spec.PlatformType);
         }
+
+        [Fact]
+        public void GetDisplayText_ReturnsShellAndCommand()
+        {
+            var spec = new ShellTaskSpecification
+            {
+                Shell = ShellTaskSpecification.ShellType.PowerShell,
+                Command = "Install-Module foo",
+            };
+
+            Assert.Equal("shell: 'PowerShell Install-Module foo'", spec.GetDisplayText());
+        }
+
+        [Fact]
+        public void GetDisplayText_ShellSh_ReturnsShellAndCommand()
+        {
+            var spec = new ShellTaskSpecification
+            {
+                Shell = ShellTaskSpecification.ShellType.Sh,
+                Command = "echo hello",
+            };
+
+            Assert.Equal("shell: 'Sh echo hello'", spec.GetDisplayText());
+        }
     }
 }
