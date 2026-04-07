@@ -25,5 +25,12 @@ namespace Cnct.Core.Tests
             var spec = Assert.IsType<LinkTaskSpecification>(specInterface);
             Assert.Equal(expectedLinks.Count, spec.Links.Count);
         }
+        [Fact]
+        public void GetDisplayText_ReturnsLink()
+        {
+            var spec = new LinkTaskSpecification();
+
+            Assert.Equal("link", spec.GetDisplayText());
+        }
     }
 }

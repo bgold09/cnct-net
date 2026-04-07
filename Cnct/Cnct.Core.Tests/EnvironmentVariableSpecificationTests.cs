@@ -26,5 +26,16 @@ namespace Cnct.Core.Tests
             Assert.Equal(expectedVarName, envVariableSpec.Name);
             Assert.Equal(expectedValue, envVariableSpec.Value);
         }
+        [Fact]
+        public void GetDisplayText_ReturnsNameEqualsValue()
+        {
+            var spec = new EnvironmentVariableTaskSpecification
+            {
+                Name = "MY_VAR",
+                Value = "hello",
+            };
+
+            Assert.Equal("environmentVariable: 'MY_VAR=hello'", spec.GetDisplayText());
+        }
     }
 }
