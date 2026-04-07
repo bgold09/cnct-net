@@ -110,7 +110,7 @@ namespace Cnct.Core.Tests
                 Command = "Install-Module foo",
             };
 
-            Assert.Equal("shell: 'PowerShell Install-Module foo'", spec.GetDisplayText());
+            Assert.Equal("shell: 'powerShell Install-Module foo'", spec.GetDisplayText());
         }
 
         [Fact]
@@ -122,7 +122,7 @@ namespace Cnct.Core.Tests
                 Command = "echo hello",
             };
 
-            Assert.Equal("shell: 'Sh echo hello'", spec.GetDisplayText());
+            Assert.Equal("shell: 'sh echo hello'", spec.GetDisplayText());
         }
     }
 }
