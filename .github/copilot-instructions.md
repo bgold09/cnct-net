@@ -76,6 +76,24 @@ The spec class should expose a constructor accepting the interface so tests can 
 - `ExecuteAsync` behaviour: construct the spec with a mocked `IGitRunner`/`IFileSystem`/`IFileManagement`, set up real temp-directory filesystem state where needed, verify mock calls with `Moq`.
 - Specs that check filesystem state (clone vs pull, link exists vs not) set up and tear down temp directories in `try/finally`.
 
+## Building and testing
+
+Build the solution with:
+
+```
+dotnet build Cnct/Cnct.sln
+```
+
+Run all tests with:
+
+```
+dotnet test Cnct/Cnct.sln
+```
+
+**After every change, verify that the build produces zero warnings and zero errors.**
+StyleCop warnings are treated as warnings (not errors) but must still be fixed — do not
+leave any `warning SA*` or `warning CA*` in the build output.
+
 ## JSON schema
 
 `schema/cnctConfig.vnext.json` must be kept in sync with the code. Each new task type needs:
@@ -100,6 +118,8 @@ lives in `Cnct/.editorconfig`. Key active rules to follow:
 - **SA1309**: Field names must not begin with underscore.
 - **SA1128**: Put constructor initializers on their own line.
 - **SA1502**: Element should not be on a single line.
+- **SA1513**: Closing brace must be followed by a blank line.
+- **SA1516**: Elements (methods, properties) must be separated by a blank line.
 
 The following rules are **suppressed** (severity = none):
 

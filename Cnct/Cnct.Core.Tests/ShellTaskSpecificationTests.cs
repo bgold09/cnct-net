@@ -100,6 +100,7 @@ namespace Cnct.Core.Tests
             var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
             Assert.Null(spec.PlatformType);
         }
+
         [Fact]
         public void GetDisplayText_ReturnsShellAndCommand()
         {

@@ -26,6 +26,7 @@ namespace Cnct.Core.Tests
             Assert.Equal(expectedVarName, envVariableSpec.Name);
             Assert.Equal(expectedValue, envVariableSpec.Value);
         }
+
         [Fact]
         public void GetDisplayText_ReturnsNameEqualsValue()
         {
