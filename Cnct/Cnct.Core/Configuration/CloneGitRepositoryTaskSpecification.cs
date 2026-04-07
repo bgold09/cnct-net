@@ -32,11 +32,6 @@ namespace Cnct.Core.Configuration
         [JsonProperty("repos")]
         public IReadOnlyDictionary<string, string> Repos { get; set; }
 
-        protected override string GetAdditionalDisplayText() =>
-            this.Repos != null && this.Repos.Count > 0
-                ? string.Join(", ", this.Repos.Keys)
-                : null;
-
         public override void Validate()
         {
             if (this.Repos == null || this.Repos.Count == 0)
@@ -80,5 +75,10 @@ namespace Cnct.Core.Configuration
 
             return cloneTask.ExecuteAsync();
         }
+
+        protected override string GetAdditionalDisplayText() =>
+            this.Repos != null && this.Repos.Count > 0
+                ? string.Join(", ", this.Repos.Keys)
+                : null;
     }
 }

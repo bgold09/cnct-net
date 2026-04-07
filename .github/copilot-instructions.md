@@ -93,6 +93,9 @@ StyleCop.Analyzers (v1.1.118) is enabled on all projects. Configuration
 lives in `Cnct/.editorconfig`. Key active rules to follow:
 
 - **SA1204**: Static members must appear before non-static members.
+- **SA1202**: `public` members must appear before `protected` members, which must appear
+  before `private` members. When adding a `protected` override (e.g. `GetAdditionalDisplayText()`),
+  place it **after** all `public` members in the class.
 - **SA1101**: Prefix local calls with `this.`.
 - **SA1309**: Field names must not begin with underscore.
 - **SA1128**: Put constructor initializers on their own line.

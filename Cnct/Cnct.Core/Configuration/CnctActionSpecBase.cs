@@ -24,10 +24,10 @@ namespace Cnct.Core.Configuration
                 : $"{this.ActionType}: {extra}";
         }
 
-        protected virtual string GetAdditionalDisplayText() => null;
-
         public abstract void Validate();
 
         public abstract Task ExecuteAsync(ILogger logger, string configDirectoryRoot);
+
+        protected virtual string GetAdditionalDisplayText() => null;
     }
 }

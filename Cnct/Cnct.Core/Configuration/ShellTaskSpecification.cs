@@ -22,9 +22,6 @@ namespace Cnct.Core.Configuration
 
         public bool Silent { get; set; }
 
-        protected override string GetAdditionalDisplayText() =>
-            $"'{this.Shell} {this.Command}'";
-
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             if (this.PlatformType?.Count > 0
@@ -58,6 +55,9 @@ namespace Cnct.Core.Configuration
                 throw new ArgumentException("A command must be specified.");
             }
         }
+
+        protected override string GetAdditionalDisplayText() =>
+            $"'{this.Shell} {this.Command}'";
 
         public enum ShellType
         {
