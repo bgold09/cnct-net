@@ -125,9 +125,9 @@ namespace Cnct.Core.Tests
 
             await config.ExecuteAsync();
 
-            logger.Verify(l => l.LogInformation("> my-action"), Times.Once);
+            logger.Verify(l => l.LogStart("my-action"), Times.Once);
             logger.Verify(
-                l => l.LogInformation(It.Is<string>(s => s.StartsWith("✓ my-action"))),
+                l => l.LogFinish(It.Is<string>(s => s.StartsWith("my-action"))),
                 Times.Once);
         }
 
@@ -146,9 +146,9 @@ namespace Cnct.Core.Tests
 
             await config.ExecuteAsync();
 
-            logger.Verify(l => l.LogInformation("> my-action: my custom label"), Times.Once);
+            logger.Verify(l => l.LogStart("my-action: my custom label"), Times.Once);
             logger.Verify(
-                l => l.LogInformation(It.Is<string>(s => s.StartsWith("✓ my-action: my custom label"))),
+                l => l.LogFinish(It.Is<string>(s => s.StartsWith("my-action: my custom label"))),
                 Times.Once);
         }
 
@@ -167,7 +167,7 @@ namespace Cnct.Core.Tests
 
             await config.ExecuteAsync();
 
-            logger.Verify(l => l.LogInformation("> my-action"), Times.Once);
+            logger.Verify(l => l.LogStart("my-action"), Times.Once);
         }
 
         private class TestActionSpec : CnctActionSpecBase

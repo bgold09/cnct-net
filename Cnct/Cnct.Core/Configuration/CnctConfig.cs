@@ -48,13 +48,13 @@ namespace Cnct.Core.Configuration
                 try
                 {
                     var start = DateTimeOffset.Now;
-                    this.Logger.LogInformation($"> {displayText}");
+                    this.Logger.LogStart(displayText);
 
-                    await action.ExecuteAsync(this.Logger, this.ConfigRootDirectory);
+                    await action.ExecuteAsync(new IndentedLogger(this.Logger), this.ConfigRootDirectory);
 
                     var end = DateTimeOffset.Now;
                     var elapsed = end - start;
-                    this.Logger.LogInformation($"✓ {displayText} ({elapsed.TotalSeconds:F1}s)");
+                    this.Logger.LogFinish($"{displayText} ({elapsed.TotalSeconds:F1}s)");
                 }
                 catch (Exception ex)
                 {
