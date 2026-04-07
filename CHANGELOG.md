@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Feature updates
+
+* Add `sh` shell type for running commands via `/bin/sh`
+  on Linux and macOS. The `os` property on shell actions
+  is now optional — when omitted, the action runs on all
+  platforms.
+
 ## 0.5.0
 
 ### Feature updates

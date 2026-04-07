@@ -17,7 +17,6 @@ namespace Cnct.Core.Configuration
         public string Command { get; set; }
 
         [JsonProperty("os")]
-        [JsonRequired]
         [JsonConverter(typeof(EnumCollectionConverter<PlatformType>))]
         public IReadOnlyCollection<PlatformType> PlatformType { get; set; }
 
@@ -25,14 +24,16 @@ namespace Cnct.Core.Configuration
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            if (!this.PlatformType.Contains(Platform.CurrentPlatform))
+            if (this.PlatformType?.Count > 0
+                && !this.PlatformType.Contains(Platform.CurrentPlatform))
             {
                 return;
             }
 
             IShellInvoker shellInvoker = this.Shell switch
             {
-                ShellType.PowerShell => new PowerShellInvoker(),
+                ShellType.PowerShell => new PowerShellInvoker(logger),
+                ShellType.Sh => new ShInvoker(logger),
                 _ => throw new ArgumentOutOfRangeException(
                     message: $"Shell type {this.Shell} is not supported.",
                     innerException: null),
@@ -45,17 +46,13 @@ namespace Cnct.Core.Configuration
         {
             if (this.Shell == ShellType.Unknown)
             {
-                throw new ArgumentException($"Shell type '{this.Shell}' not recognized.");
+                throw new ArgumentException(
+                    $"Shell type '{this.Shell}' not recognized.");
             }
 
             if (string.IsNullOrWhiteSpace(this.Command))
             {
                 throw new ArgumentException("A command must be specified.");
-            }
-
-            if (!this.PlatformType.Any())
-            {
-                throw new ArgumentException("At least one valid OS must be specified.");
             }
         }
 
@@ -63,6 +60,7 @@ namespace Cnct.Core.Configuration
         {
             Unknown = 0,
             PowerShell,
+            Sh,
         }
     }
 }

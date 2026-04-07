@@ -85,6 +85,30 @@ The spec class should expose a constructor accepting the interface so tests can 
 ## Code style
 
 - **Maximum line length is 120 characters** for all C# source files.
+- **One class per file.** Do not place multiple classes in the same file.
+
+### StyleCop rules
+
+StyleCop.Analyzers (v1.1.118) is enabled on all projects. Configuration
+lives in `Cnct/.editorconfig`. Key active rules to follow:
+
+- **SA1204**: Static members must appear before non-static members.
+- **SA1101**: Prefix local calls with `this.`.
+- **SA1309**: Field names must not begin with underscore.
+- **SA1128**: Put constructor initializers on their own line.
+- **SA1502**: Element should not be on a single line.
+
+The following rules are **suppressed** (severity = none):
+
+- SA0001 (XML comment analysis disabled)
+- SA1200 (using directive placement — configured to outside namespace)
+- SA1201 (element ordering — disabled)
+- SA1600, SA1601, SA1602 (XML documentation not required)
+- SA1633 (file header not required)
+- CA1303 (localized parameters not required)
+- CA2007 (ConfigureAwait not required)
+- CA1031 (catching general exceptions allowed)
+- CA1819 (array properties allowed)
 
 ## Changelog
 

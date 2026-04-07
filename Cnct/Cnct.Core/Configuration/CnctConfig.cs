@@ -42,7 +42,17 @@ namespace Cnct.Core.Configuration
 
                 try
                 {
+                    var start = DateTimeOffset.Now;
+                    this.Logger.LogVerbose(
+                        $"[{start:HH:mm:ss.fff}] Starting task '{action.ActionType}'");
+
                     await action.ExecuteAsync(this.Logger, this.ConfigRootDirectory);
+
+                    var end = DateTimeOffset.Now;
+                    var elapsed = end - start;
+                    this.Logger.LogVerbose(
+                        $"[{end:HH:mm:ss.fff}] Finished task '{action.ActionType}'"
+                        + $" ({elapsed.TotalSeconds:F1}s)");
                 }
                 catch (Exception ex)
                 {

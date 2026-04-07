@@ -11,6 +11,8 @@ namespace Cnct.Core.Tests
         [Theory]
         [InlineData(ShellTaskSpecification.ShellType.PowerShell, "PowerShell")]
         [InlineData(ShellTaskSpecification.ShellType.PowerShell, "powershell")]
+        [InlineData(ShellTaskSpecification.ShellType.Sh, "Sh")]
+        [InlineData(ShellTaskSpecification.ShellType.Sh, "sh")]
         public void CanDeserializeShellType(
             ShellTaskSpecification.ShellType expectedShellType,
             string shellTypeStr)
@@ -82,6 +84,21 @@ namespace Cnct.Core.Tests
             var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
             var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
             Assert.Empty(spec.Tags);
+        }
+
+        [Fact]
+        public void OsIsOptional()
+        {
+            var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                ["actionType"] = "shell",
+                ["shell"] = "powershell",
+                ["command"] = "echo hello",
+            });
+
+            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
+            Assert.Null(spec.PlatformType);
         }
     }
 }
