@@ -56,7 +56,12 @@ namespace Cnct.Core.Configuration
             }
         }
 
-        protected override string GetAdditionalDisplayText() => $"'{this.Shell} {this.Command}'";
+        protected override string GetAdditionalDisplayText()
+        {
+            string shellName = this.Shell.ToString();
+            string camelShell = char.ToLowerInvariant(shellName[0]) + shellName.Substring(1);
+            return $"'{camelShell} {this.Command}'";
+        }
 
         public enum ShellType
         {

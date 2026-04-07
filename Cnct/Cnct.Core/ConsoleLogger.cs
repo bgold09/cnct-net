@@ -46,7 +46,7 @@ namespace Cnct.Core
         {
             if (!this.loggerOptions.Quiet)
             {
-                LogWithColor($"▶ {message}", ConsoleColor.Cyan);
+                LogWithColor($"▶ {message}", ConsoleColor.DarkCyan);
             }
         }
 
@@ -54,7 +54,7 @@ namespace Cnct.Core
         {
             if (!this.loggerOptions.Quiet)
             {
-                LogWithColor($"✓ {message}", ConsoleColor.Green);
+                LogWithColor($"✓ {message}", ConsoleColor.DarkGreen);
             }
         }
 
