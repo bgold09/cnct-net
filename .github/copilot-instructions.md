@@ -133,10 +133,16 @@ The following rules are **suppressed** (severity = none):
 - CA1031 (catching general exceptions allowed)
 - CA1819 (array properties allowed)
 
+## Markdown
+
+All markdown files must comply with `.markdownlint.json`:
+
+- **Line length** — maximum **104 characters** (code blocks are exempt)
+- **no-duplicate-heading** — disabled (duplicate headings are allowed)
+- **ul-start-left** — disabled
+- Wrap continuation lines with 2-space indent to stay within the limit
+
 ## Changelog
 
 `CHANGELOG.md` — new features go under `## Unreleased → ### Feature updates`, fixes under
-`### Fixes`. All edits must comply with `.markdownlint.json`:
-
-- Maximum line length **104 characters** (code blocks are exempt)
-- Wrap continuation lines with 2-space indent to stay within the limit
+`### Fixes`.
