@@ -40,6 +40,13 @@ namespace Cnct.Core.Configuration
                     continue;
                 }
 
+                if (action is CnctActionSpecBase platformAction
+                    && !platformAction.ShouldExecuteOnCurrentPlatform())
+                {
+                    this.Logger.LogVerbose($"Skipping action '{action.ActionType}': not applicable to current OS.");
+                    continue;
+                }
+
                 string displayText = action is CnctActionSpecBase specBase
                     && !string.IsNullOrEmpty(specBase.Label)
                         ? $"{specBase.ActionType}: {specBase.Label}"

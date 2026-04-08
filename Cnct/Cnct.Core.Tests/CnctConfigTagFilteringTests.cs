@@ -159,6 +159,67 @@ namespace Cnct.Core.Tests
             logger.Verify(l => l.LogStart("test"), Times.Once);
         }
 
+        [Fact]
+        public async Task ExecuteAsync_SkipsAction_WhenOsDoesNotMatch()
+        {
+            var logger = new Mock<ILogger>();
+            var nonCurrentPlatform = Platform.CurrentPlatform == PlatformType.Windows
+                ? PlatformType.Linux
+                : PlatformType.Windows;
+            var action = new TestActionSpec
+            {
+                PlatformType = new[] { nonCurrentPlatform },
+            };
+            var config = new CnctConfig
+            {
+                Logger = logger.Object,
+                ConfigRootDirectory = "/",
+                MachineTags = Array.Empty<string>(),
+                Actions = new ICnctActionSpec[] { action },
+            };
+
+            await config.ExecuteAsync();
+
+            Assert.False(action.WasExecuted);
+            logger.Verify(
+                l => l.LogStart(It.IsAny<string>()),
+                Times.Never);
+            logger.Verify(
+                l => l.LogFinish(It.IsAny<string>()),
+                Times.Never);
+            logger.Verify(
+                l => l.LogVerbose(
+                    It.Is<string>(
+                        s => s.Contains("not applicable to current OS"))),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_RunsAction_WhenOsMatches()
+        {
+            var action = new TestActionSpec
+            {
+                PlatformType = new[] { Platform.CurrentPlatform },
+            };
+            var config = MakeConfig(Array.Empty<string>(), action);
+
+            await config.ExecuteAsync();
+
+            Assert.True(action.WasExecuted);
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_RunsAction_WhenOsNotSpecified()
+        {
+            var action = new TestActionSpec();
+            var config = MakeConfig(Array.Empty<string>(), action);
+
+            await config.ExecuteAsync();
+
+            Assert.True(action.WasExecuted);
+            Assert.Null(action.PlatformType);
+        }
+
         private static CnctConfig MakeConfig(IReadOnlyCollection<string> machineTags, params ICnctActionSpec[] actions)
         {
             return new CnctConfig
