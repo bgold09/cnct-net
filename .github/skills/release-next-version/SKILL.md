@@ -146,20 +146,20 @@ Create the versioned schema directory, copy the vnext schema into it, and update
 its `"id"` to the canonical versioned URI:
 
 ```powershell
-$schemaDir = "schema\$newVersion"
+$schemaDir = "schema\v$newVersion"
 New-Item -ItemType Directory -Force -Path $schemaDir | Out-Null
-Copy-Item "schema\cnctConfig.vnext.json" "$schemaDir\cnct.json"
-$newId = "https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/$newVersion/cnct.json"
-(Get-Content "$schemaDir\cnct.json") `
+Copy-Item "schema\cnctConfig.vnext.json" "$schemaDir\cnctConfig.json"
+$newId = "https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/v$newVersion/cnctConfig.json"
+(Get-Content "$schemaDir\cnctConfig.json") `
     -replace '"id": "https://raw\.githubusercontent\.com/bgold09/cnct-net/develop/schema/cnctConfig\.vnext\.json"', `
              "`"id`": `"$newId`"" |
-    Set-Content "$schemaDir\cnct.json"
+    Set-Content "$schemaDir\cnctConfig.json"
 ```
 
-The resulting file lives at `schema/<version>/cnct.json` with an `"id"` of:
+The resulting file lives at `schema/v<version>/cnctConfig.json` with an `"id"` of:
 
 ```
-https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/<version>/cnct.json
+https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/v<version>/cnctConfig.json
 ```
 
 ### 7. Commit the changes
@@ -167,7 +167,7 @@ https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/<version>/cnct.js
 Stage all three files and commit with the exact message format `Release <version>`:
 
 ```powershell
-git add CHANGELOG.md Cnct/Cnct.NetCore/Cnct.NetCore.csproj schema/<version>/cnct.json
+git add CHANGELOG.md Cnct/Cnct.NetCore/Cnct.NetCore.csproj schema/v<version>/cnctConfig.json
 git commit -m "Release <version>"
 # e.g. git commit -m "Release 0.4.0"
 ```
@@ -296,7 +296,7 @@ Do **not** use `--squash` or `--rebase`. This preserves full commit history on `
 - [ ] `CHANGELOG.md` updated: PR links added to each entry, unreleased items moved under new
   version heading, `## Unreleased` left empty
 - [ ] `<BaseVersion>` in `Cnct/Cnct.NetCore/Cnct.NetCore.csproj` updated
-- [ ] `schema/<version>/cnct.json` copied from vnext and `"id"` patched to versioned `main` URI
+- [ ] `schema/v<version>/cnctConfig.json` copied from vnext and `"id"` patched to versioned `main` URI
 - [ ] All three files staged and committed with message `Release <version>`
 - [ ] Branch pushed to origin
 - [ ] PR 1 created (`release-<version>` → `release`)
