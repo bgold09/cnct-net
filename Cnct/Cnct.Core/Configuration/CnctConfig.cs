@@ -32,18 +32,20 @@ namespace Cnct.Core.Configuration
         {
             foreach (var action in this.Actions.Where(a => a != null))
             {
-                if (action is CnctActionSpecBase taggedAction
-                    && taggedAction.Tags.Any()
-                    && !taggedAction.Tags.Any(t => this.MachineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
+                if (action.Tags.Any()
+                    && !action.Tags.Any(t => this.MachineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
                 {
                     this.Logger.LogVerbose($"Skipping action '{action.ActionType}': no matching machine tag.");
                     continue;
                 }
 
-                string displayText = action is CnctActionSpecBase specBase
-                    && !string.IsNullOrEmpty(specBase.Label)
-                        ? $"{specBase.ActionType}: {specBase.Label}"
-                        : action.GetDisplayText();
+                if (!action.ShouldExecuteOnCurrentPlatform())
+                {
+                    this.Logger.LogVerbose($"Skipping action '{action.ActionType}': not applicable to current OS.");
+                    continue;
+                }
+
+                string displayText = action.GetDisplayText();
 
                 try
                 {

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks.Shell;
 using Newtonsoft.Json;
@@ -16,20 +14,10 @@ namespace Cnct.Core.Configuration
         [JsonRequired]
         public string Command { get; set; }
 
-        [JsonProperty("os")]
-        [JsonConverter(typeof(EnumCollectionConverter<PlatformType>))]
-        public IReadOnlyCollection<PlatformType> PlatformType { get; set; }
-
         public bool Silent { get; set; }
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            if (this.PlatformType?.Count > 0
-                && !this.PlatformType.Contains(Platform.CurrentPlatform))
-            {
-                return;
-            }
-
             IShellInvoker shellInvoker = this.Shell switch
             {
                 ShellType.PowerShell => new PowerShellInvoker(logger),

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -8,7 +9,11 @@ namespace Cnct.Core.Configuration
     {
         string ActionType { get; }
 
+        IReadOnlyCollection<string> Tags { get; }
+
         string GetDisplayText();
+
+        bool ShouldExecuteOnCurrentPlatform();
 
         void Validate();
 

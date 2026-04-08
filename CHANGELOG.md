@@ -4,6 +4,8 @@
 
 ### Feature updates
 
+* The `os` property is now supported on all action types. When set, the action only runs
+  on the specified operating system(s).
 * Add `sh` shell type for running commands via `/bin/sh`
   on Linux and macOS. The `os` property on shell actions
   is now optional — when omitted, the action runs on all
