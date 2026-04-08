@@ -23,6 +23,11 @@ namespace Cnct.Core.Configuration
 
         public virtual string GetDisplayText()
         {
+            if (!string.IsNullOrEmpty(this.Label))
+            {
+                return $"{this.ActionType}: {this.Label}";
+            }
+
             string extra = this.GetAdditionalDisplayText();
             return string.IsNullOrEmpty(extra)
                 ? this.ActionType
