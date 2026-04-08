@@ -100,6 +100,14 @@ leave any `warning SA*` or `warning CA*` in the build output.
 1. A `$ref` added to `actions.items.oneOf`
 2. A new `definitions/<Name>Action` block with `allOf: [ActionBase, { required, properties }]`
 
+`definitions/ActionBase` mirrors the properties of `CnctActionSpecBase`. When a property is
+added to or removed from `CnctActionSpecBase` (or `ICnctActionSpec`), the `ActionBase`
+definition must be updated to match.
+
+Properties backed by `StringCollectionConverter` or `EnumCollectionConverter<T>` accept either
+a single string or an array in JSON. Represent them in the schema with `oneOf: [string, array]`
+(see the `os` and `tags` properties as examples).
+
 ## Code style
 
 - **Maximum line length is 120 characters** for all C# source files.
