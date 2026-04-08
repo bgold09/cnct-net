@@ -36,6 +36,14 @@
         }
     }, 
     "definitions": {
+        "OperatingSystemType": {
+            "type": "string",
+            "enum": [
+                "windows",
+                "linux",
+                "osx"
+            ]
+        },
         "ActionBase": {
             "type": "object",
             "required": [
@@ -43,12 +51,18 @@
             ],
             "properties": {
                 "os": {
-                    "description": "The operating system for which to execute the action.",
-                    "type": "string",
-                    "enum": [
-                        "windows",
-                        "linux",
-                        "osx"
+                    "description": "The operating system(s) for which to execute the action. If omitted, the action runs on all platforms.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/OperatingSystemType"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/OperatingSystemType"
+                            },
+                            "minItems": 1
+                        }
                     ]
                 },
                 "actionType": {
