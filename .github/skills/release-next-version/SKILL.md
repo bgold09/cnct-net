@@ -140,25 +140,47 @@ In `Cnct/Cnct.NetCore/Cnct.NetCore.csproj`, update the single `<BaseVersion>` el
 
 Only `<BaseVersion>` needs changing — `<Version>` is computed from it automatically.
 
-### 6. Commit the changes
+### 6. Copy and stamp the JSON schema
 
-Stage both files and commit with the exact message format `Release <version>`:
+Create the versioned schema directory, copy the vnext schema into it, and update
+its `"id"` to the canonical versioned URI:
 
 ```powershell
-git add CHANGELOG.md Cnct/Cnct.NetCore/Cnct.NetCore.csproj
+$schemaDir = "schema\$newVersion"
+New-Item -ItemType Directory -Force -Path $schemaDir | Out-Null
+Copy-Item "schema\cnctConfig.vnext.json" "$schemaDir\cnct.json"
+$newId = "https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/$newVersion/cnct.json"
+(Get-Content "$schemaDir\cnct.json") `
+    -replace '"id": "https://raw\.githubusercontent\.com/bgold09/cnct-net/develop/schema/cnctConfig\.vnext\.json"', `
+             "`"id`": `"$newId`"" |
+    Set-Content "$schemaDir\cnct.json"
+```
+
+The resulting file lives at `schema/<version>/cnct.json` with an `"id"` of:
+
+```
+https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/<version>/cnct.json
+```
+
+### 7. Commit the changes
+
+Stage all three files and commit with the exact message format `Release <version>`:
+
+```powershell
+git add CHANGELOG.md Cnct/Cnct.NetCore/Cnct.NetCore.csproj schema/<version>/cnct.json
 git commit -m "Release <version>"
 # e.g. git commit -m "Release 0.4.0"
 ```
 
 Do **not** include a `Co-authored-by` trailer in release commits — keep them clean.
 
-### 7. Push the branch
+### 8. Push the branch
 
 ```powershell
 git push -u origin release-<new-version>
 ```
 
-### 8. Create a pull request
+### 9. Create a pull request
 
 Create a PR from `release-<new-version>` → `release` branch:
 - **Title**: `Release <version>` (e.g. `Release 0.4.0`)
@@ -182,7 +204,7 @@ cause the command to hang in sync PowerShell sessions:
 
 The command prints the new PR URL on success (e.g. `https://github.com/bgold09/cnct-net/pull/65`).
 
-### 9. Wait for CI on PR 1 (`release-<version>` → `release`)
+### 10. Wait for CI on PR 1 (`release-<version>` → `release`)
 
 Stream CI status until all three matrix checks complete. Run in **async mode** and read output
 with `read_powershell` — this can take several minutes:
@@ -199,7 +221,7 @@ The three required checks are:
 
 If any check fails, **stop** — do not proceed to the merge step. Investigate the failure first.
 
-### 10. Merge PR 1
+### 11. Merge PR 1
 
 ```powershell
 & $gh pr merge --merge
@@ -208,7 +230,7 @@ If any check fails, **stop** — do not proceed to the merge step. Investigate t
 This merges `release-<version>` into `release`. The GitHub ruleset enforces the merge method;
 do **not** use `--squash` or `--rebase`.
 
-### 11. Create PR 2 (`release` → `main`)
+### 12. Create PR 2 (`release` → `main`)
 
 Run in **async mode** and capture the printed PR URL:
 
@@ -220,7 +242,7 @@ Run in **async mode** and capture the printed PR URL:
 The command prints the new PR URL (e.g. `https://github.com/bgold09/cnct-net/pull/66`).
 Store it as `$pr2`.
 
-### 12. Wait for CI on PR 2
+### 13. Wait for CI on PR 2
 
 ```powershell
 # async mode
@@ -230,7 +252,7 @@ Store it as `$pr2`.
 Wait for all three `build (ubuntu-latest)` / `build (windows-latest)` / `build (macos-latest)`
 checks to pass. Stop and investigate if any fail.
 
-### 13. Merge PR 2
+### 14. Merge PR 2
 
 ```powershell
 & $gh pr merge $pr2 --merge
@@ -238,7 +260,7 @@ checks to pass. Stop and investigate if any fail.
 
 Do **not** use `--squash` or `--rebase`.
 
-### 14. Create PR 3 (`main` → `develop`)
+### 15. Create PR 3 (`main` → `develop`)
 
 Run in **async mode** and capture the printed PR URL:
 
@@ -249,7 +271,7 @@ Run in **async mode** and capture the printed PR URL:
 
 Store the returned URL as `$pr3`.
 
-### 15. Wait for CI on PR 3
+### 16. Wait for CI on PR 3
 
 ```powershell
 # async mode
@@ -258,7 +280,7 @@ Store the returned URL as `$pr3`.
 
 Wait for all three matrix checks to pass. Stop and investigate if any fail.
 
-### 16. Merge PR 3
+### 17. Merge PR 3
 
 ```powershell
 & $gh pr merge $pr3 --merge
@@ -274,7 +296,8 @@ Do **not** use `--squash` or `--rebase`. This preserves full commit history on `
 - [ ] `CHANGELOG.md` updated: PR links added to each entry, unreleased items moved under new
   version heading, `## Unreleased` left empty
 - [ ] `<BaseVersion>` in `Cnct/Cnct.NetCore/Cnct.NetCore.csproj` updated
-- [ ] Both files staged and committed with message `Release <version>`
+- [ ] `schema/<version>/cnct.json` copied from vnext and `"id"` patched to versioned `main` URI
+- [ ] All three files staged and committed with message `Release <version>`
 - [ ] Branch pushed to origin
 - [ ] PR 1 created (`release-<version>` → `release`)
 - [ ] PR 1 CI passed (all three matrix checks green)
