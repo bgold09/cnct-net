@@ -36,7 +36,7 @@
         }
     }, 
     "definitions": {
-        "OsType": {
+        "OperatingSystemType": {
             "type": "string",
             "enum": [
                 "windows",
@@ -54,12 +54,12 @@
                     "description": "The operating system(s) for which to execute the action. If omitted, the action runs on all platforms.",
                     "oneOf": [
                         {
-                            "$ref": "#/definitions/OsType"
+                            "$ref": "#/definitions/OperatingSystemType"
                         },
                         {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/OsType"
+                                "$ref": "#/definitions/OperatingSystemType"
                             },
                             "minItems": 1
                         }
