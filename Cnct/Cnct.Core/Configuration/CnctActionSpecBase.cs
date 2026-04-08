@@ -21,7 +21,7 @@ namespace Cnct.Core.Configuration
 
         public abstract string ActionType { get; }
 
-        public virtual string GetDisplayText()
+        public string GetDisplayText()
         {
             if (!string.IsNullOrEmpty(this.Label))
             {
