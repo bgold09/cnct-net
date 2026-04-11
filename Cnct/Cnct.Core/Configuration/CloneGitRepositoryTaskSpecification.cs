@@ -12,25 +12,23 @@ namespace Cnct.Core.Configuration
     public sealed partial class CloneGitRepositoryTaskSpecification : CnctActionSpecBase
     {
         private readonly IFileSystem fileSystem;
-        private readonly IGitRunnerFactory gitRunnerFactory;
+        private readonly IGitRunner gitRunner;
         private readonly IPathResolver pathResolver;
 
         public CloneGitRepositoryTaskSpecification(
-            IGitRunnerFactory gitRunnerFactory,
+            IGitRunner gitRunner,
             IFileSystem fileSystem,
             IPathResolver pathResolver)
         {
-            this.gitRunnerFactory = gitRunnerFactory;
+            this.gitRunner = gitRunner;
             this.fileSystem = fileSystem;
             this.pathResolver = pathResolver;
         }
 
         public CloneGitRepositoryTaskSpecification()
-            : this(
-                  new GitRunnerFactory(),
-                  new FileSystem(),
-                  new PathResolver(new FileSystem()))
         {
+            this.fileSystem = new FileSystem();
+            this.pathResolver = new PathResolver(this.fileSystem);
         }
 
         [JsonProperty("repos")]
@@ -79,7 +77,7 @@ namespace Cnct.Core.Configuration
             var cloneTask = new CloneGitRepositoryTask(
                 logger,
                 normalizedRepos,
-                this.gitRunnerFactory.Create(logger),
+                this.gitRunner ?? new ProcessGitRunner(logger),
                 this.fileSystem);
 
             return cloneTask.ExecuteAsync();

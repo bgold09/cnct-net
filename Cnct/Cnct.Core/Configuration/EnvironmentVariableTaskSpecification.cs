@@ -11,8 +11,7 @@ namespace Cnct.Core.Configuration
     {
         private readonly IEnvironmentVariableWriter writer;
 
-        public EnvironmentVariableTaskSpecification(
-            IEnvironmentVariableWriter writer)
+        public EnvironmentVariableTaskSpecification(IEnvironmentVariableWriter writer)
         {
             this.writer = writer;
         }
@@ -28,9 +27,7 @@ namespace Cnct.Core.Configuration
         [JsonRequired]
         public string Value { get; set; }
 
-        public override async Task ExecuteAsync(
-            ILogger logger,
-            string configDirectoryRoot)
+        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
             var envVariableTask = new EnvironmentVariableTask(
                 logger,
@@ -40,22 +37,18 @@ namespace Cnct.Core.Configuration
             await envVariableTask.ExecuteAsync();
         }
 
-        public override IReadOnlyList<ValidationIssue> Validate(
-            string configDirectoryRoot)
+        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
             var issues = new List<ValidationIssue>();
-            if (!string.IsNullOrEmpty(this.Name)
-                && this.Name.Contains('='))
+            if (!string.IsNullOrEmpty(this.Name) && this.Name.Contains('='))
             {
                 issues.Add(this.CreateValidationError(
-                    $"Environment variable '{this.Name}' "
-                    + "contains '=', which is not valid."));
+                    $"Environment variable '{this.Name}' contains '=', which is not valid."));
             }
 
             return issues;
         }
 
-        protected override string GetAdditionalDisplayText() =>
-            $"'{this.Name}={this.Value}'";
+        protected override string GetAdditionalDisplayText() => $"'{this.Name}={this.Value}'";
     }
 }

@@ -14,9 +14,7 @@ namespace Cnct.Core.Configuration
         private readonly IFileManagement fileManagement;
         private readonly IFileSystem fileSystem;
 
-        public LinkTaskSpecification(
-            IFileManagement fileManagement,
-            IFileSystem fileSystem)
+        public LinkTaskSpecification(IFileManagement fileManagement, IFileSystem fileSystem)
         {
             this.fileManagement = fileManagement;
             this.fileSystem = fileSystem;

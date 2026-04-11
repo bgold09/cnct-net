@@ -31,9 +31,7 @@ namespace Cnct.Core.Configuration
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            IShellInvoker shellInvoker = this.shellInvokerFactory.Create(
-                this.Shell,
-                logger);
+            IShellInvoker shellInvoker = this.shellInvokerFactory.Create(this.Shell, logger);
 
             var options = new ShellExecutionOptions(this.Command, this.Silent);
             await shellInvoker.ExecuteAsync(options);

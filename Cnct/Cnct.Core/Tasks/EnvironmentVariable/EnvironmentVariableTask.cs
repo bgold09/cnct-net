@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Cnct.Core.Tasks.EnvironmentVariable
 {
@@ -25,8 +26,7 @@ namespace Cnct.Core.Tasks.EnvironmentVariable
         public override Task ExecuteAsync()
         {
             this.writer.SetVariable(this.Name, this.Value);
-            this.Logger.LogInformation(
-                $"Set environment variable '{this.Name}' to '{this.Value}'.");
+            this.Logger.LogInformation($"Set environment variable '{this.Name}' to '{this.Value}'.");
 
             return Task.CompletedTask;
         }

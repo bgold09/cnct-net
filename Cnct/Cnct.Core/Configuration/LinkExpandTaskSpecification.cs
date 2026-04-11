@@ -23,9 +23,7 @@ namespace Cnct.Core.Configuration
         }
 
         public LinkExpandTaskSpecification()
-            : this(
-                  new FileSystem(),
-                  new PathResolver(new FileSystem()))
+            : this(new FileSystem(), new PathResolver(new FileSystem()))
         {
         }
 
