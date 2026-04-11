@@ -51,14 +51,19 @@ namespace Cnct.Core.Configuration
 
         protected ValidationIssue CreateValidationError(string message)
         {
-            return new ValidationIssue(ValidationSeverity.Error, this.ActionType, this.Label, message);
+            return this.CreateValidationIssue(ValidationSeverity.Error, message);
         }
 
         protected ValidationIssue CreateValidationWarning(string message)
         {
-            return new ValidationIssue(ValidationSeverity.Warning, this.ActionType, this.Label, message);
+            return this.CreateValidationIssue(ValidationSeverity.Warning, message);
         }
 
         protected virtual string GetAdditionalDisplayText() => null;
+
+        private ValidationIssue CreateValidationIssue(ValidationSeverity severity, string message)
+        {
+            return new ValidationIssue(severity, this.ActionType, this.Label, message);
+        }
     }
 }
