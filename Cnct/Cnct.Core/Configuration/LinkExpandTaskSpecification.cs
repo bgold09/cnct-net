@@ -12,15 +12,25 @@ namespace Cnct.Core.Configuration
     public sealed partial class LinkExpandTaskSpecification : CnctActionSpecBase
     {
         private readonly IFileSystem fileSystem;
+        private readonly IPathResolver pathResolver;
 
         public LinkExpandTaskSpecification()
         {
             this.fileSystem = new FileSystem();
+            this.pathResolver = new PathResolver(this.fileSystem);
         }
 
         public LinkExpandTaskSpecification(IFileSystem fileSystem)
+            : this(fileSystem, new PathResolver(fileSystem))
+        {
+        }
+
+        public LinkExpandTaskSpecification(
+            IFileSystem fileSystem,
+            IPathResolver pathResolver)
         {
             this.fileSystem = fileSystem;
+            this.pathResolver = pathResolver;
         }
 
         [JsonProperty("source")]
@@ -44,12 +54,7 @@ namespace Cnct.Core.Configuration
 
             if (issues.Count == 0)
             {
-                string source = this.Source.NormalizePath();
-                if (!this.fileSystem.Path.IsPathRooted(source))
-                {
-                    source = this.fileSystem.Path.Combine(configDirectoryRoot, source);
-                }
-
+                string source = this.pathResolver.Resolve(this.Source, configDirectoryRoot);
                 if (!this.fileSystem.Directory.Exists(source))
                 {
                     issues.Add(this.CreateValidationError($"Source directory does not exist: {source}"));
@@ -61,12 +66,7 @@ namespace Cnct.Core.Configuration
 
         public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            string source = this.Source.NormalizePath();
-            if (!this.fileSystem.Path.IsPathRooted(source))
-            {
-                source = this.fileSystem.Path.Combine(configDirectoryRoot, source);
-            }
-
+            string source = this.pathResolver.Resolve(this.Source, configDirectoryRoot);
             string target = this.Target.NormalizePath();
             var linkExpandTask = new LinkExpandTask(logger, source, target, this.fileSystem);
             return linkExpandTask.ExecuteAsync();

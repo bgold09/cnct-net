@@ -7,6 +7,18 @@ namespace Cnct.Core.Configuration
 {
     public class FileManagement : IFileManagement
     {
+        private readonly IPathResolver pathResolver;
+
+        public FileManagement()
+            : this(new PathResolver())
+        {
+        }
+
+        public FileManagement(IPathResolver pathResolver)
+        {
+            this.pathResolver = pathResolver;
+        }
+
         public IDictionary<string, IEnumerable<string>> GetFileConfigurations(
             string configDirectoryRoot,
             IReadOnlyDictionary<string, object> fileConfigs)
@@ -14,7 +26,7 @@ namespace Cnct.Core.Configuration
             var fileCopyConfigs = new Dictionary<string, IEnumerable<string>>();
             foreach (var kvp in fileConfigs)
             {
-                string sourceFile = PathExtensions.NormalizePath($"{configDirectoryRoot}{Path.DirectorySeparatorChar}{kvp.Key}");
+                string sourceFile = this.pathResolver.Resolve(kvp.Key, configDirectoryRoot);
                 object destination = kvp.Value;
                 switch (destination)
                 {
