@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "id": "https://raw.githubusercontent.com/bgold09/cnct-net/develop/schema/cnctConfig.vnext.json",
+    "id": "https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/v0.6.0/cnctConfig.json",
     "type": "object",
     "additionalProperties": false,
     "properties": {

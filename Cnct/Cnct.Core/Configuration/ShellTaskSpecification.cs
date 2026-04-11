@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks.Shell;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -16,23 +16,14 @@ namespace Cnct.Core.Configuration
         [JsonRequired]
         public string Command { get; set; }
 
-        [JsonProperty("os")]
-        [JsonRequired]
-        [JsonConverter(typeof(EnumCollectionConverter<PlatformType>))]
-        public IReadOnlyCollection<PlatformType> PlatformType { get; set; }
-
         public bool Silent { get; set; }
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            if (!this.PlatformType.Contains(Platform.CurrentPlatform))
-            {
-                return;
-            }
-
             IShellInvoker shellInvoker = this.Shell switch
             {
-                ShellType.PowerShell => new PowerShellInvoker(),
+                ShellType.PowerShell => new PowerShellInvoker(logger),
+                ShellType.Sh => new ShInvoker(logger),
                 _ => throw new ArgumentOutOfRangeException(
                     message: $"Shell type {this.Shell} is not supported.",
                     innerException: null),
@@ -41,28 +32,34 @@ namespace Cnct.Core.Configuration
             await shellInvoker.ExecuteAsync(this);
         }
 
-        public override void Validate()
+        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
+            var issues = new List<ValidationIssue>();
             if (this.Shell == ShellType.Unknown)
             {
-                throw new ArgumentException($"Shell type '{this.Shell}' not recognized.");
+                issues.Add(this.CreateValidationError($"Shell type '{this.Shell}' not recognized."));
             }
 
             if (string.IsNullOrWhiteSpace(this.Command))
             {
-                throw new ArgumentException("A command must be specified.");
+                issues.Add(this.CreateValidationError("A command must be specified."));
             }
 
-            if (!this.PlatformType.Any())
-            {
-                throw new ArgumentException("At least one valid OS must be specified.");
-            }
+            return issues;
+        }
+
+        protected override string GetAdditionalDisplayText()
+        {
+            string shellName = this.Shell.ToString();
+            string camelShell = char.ToLowerInvariant(shellName[0]) + shellName.Substring(1);
+            return $"'{camelShell} {this.Command}'";
         }
 
         public enum ShellType
         {
             Unknown = 0,
             PowerShell,
+            Sh,
         }
     }
 }

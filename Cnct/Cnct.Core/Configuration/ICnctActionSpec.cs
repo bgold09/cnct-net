@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -8,7 +10,13 @@ namespace Cnct.Core.Configuration
     {
         string ActionType { get; }
 
-        void Validate();
+        IReadOnlyCollection<string> Tags { get; }
+
+        string GetDisplayText();
+
+        bool ShouldExecuteOnCurrentPlatform();
+
+        IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot);
 
         Task ExecuteAsync(ILogger logger, string configDirectoryRoot);
     }

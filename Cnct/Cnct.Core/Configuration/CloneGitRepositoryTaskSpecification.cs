@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -32,25 +33,34 @@ namespace Cnct.Core.Configuration
         [JsonProperty("repos")]
         public IReadOnlyDictionary<string, string> Repos { get; set; }
 
-        public override void Validate()
+        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
+            var issues = new List<ValidationIssue>();
             if (this.Repos == null || this.Repos.Count == 0)
             {
-                throw new InvalidOperationException("The collection of repositories cannot be null or empty.");
+                issues.Add(this.CreateValidationError("The collection of repositories cannot be null or empty."));
+                return issues;
             }
 
             foreach (var kvp in this.Repos)
             {
                 if (string.IsNullOrWhiteSpace(kvp.Key))
                 {
-                    throw new InvalidOperationException("Each repository entry must have a non-empty URL.");
+                    issues.Add(this.CreateValidationError("Each repository entry must have a non-empty URL."));
+                }
+                else if (!Uri.TryCreate(kvp.Key, UriKind.Absolute, out _))
+                {
+                    issues.Add(this.CreateValidationError($"Repository URL is not a valid absolute URI: {kvp.Key}"));
                 }
 
                 if (string.IsNullOrWhiteSpace(kvp.Value))
                 {
-                    throw new InvalidOperationException($"The destination path for repository '{kvp.Key}' cannot be null or empty.");
+                    issues.Add(this.CreateValidationError(
+                        $"The destination path for repository '{kvp.Key}' cannot be null or empty."));
                 }
             }
+
+            return issues;
         }
 
         public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
@@ -75,5 +85,10 @@ namespace Cnct.Core.Configuration
 
             return cloneTask.ExecuteAsync();
         }
+
+        protected override string GetAdditionalDisplayText() =>
+            this.Repos != null && this.Repos.Count > 0
+                ? string.Join(", ", this.Repos.Keys)
+                : null;
     }
 }
