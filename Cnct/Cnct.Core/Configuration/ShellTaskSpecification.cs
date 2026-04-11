@@ -41,8 +41,7 @@ namespace Cnct.Core.Configuration
                     innerException: null),
             };
 
-            var options = new ShellExecutionOptions(
-                this.Command, this.Silent);
+            var options = new ShellExecutionOptions(this.Command, this.Silent);
             await shellInvoker.ExecuteAsync(options);
         }
 
