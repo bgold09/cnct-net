@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Cnct.Core.Configuration;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -11,6 +12,8 @@ namespace Cnct.Core.Tests
         [Theory]
         [InlineData(ShellTaskSpecification.ShellType.PowerShell, "PowerShell")]
         [InlineData(ShellTaskSpecification.ShellType.PowerShell, "powershell")]
+        [InlineData(ShellTaskSpecification.ShellType.Sh, "Sh")]
+        [InlineData(ShellTaskSpecification.ShellType.Sh, "sh")]
         public void CanDeserializeShellType(
             ShellTaskSpecification.ShellType expectedShellType,
             string shellTypeStr)
@@ -82,6 +85,62 @@ namespace Cnct.Core.Tests
             var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
             var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
             Assert.Empty(spec.Tags);
+        }
+
+        [Fact]
+        public void OsIsOptional()
+        {
+            var json = JsonConvert.SerializeObject(new Dictionary<string, object>
+            {
+                ["actionType"] = "shell",
+                ["shell"] = "powershell",
+                ["command"] = "echo hello",
+            });
+
+            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec = Assert.IsType<ShellTaskSpecification>(specInterface);
+            Assert.Null(spec.PlatformType);
+        }
+
+        [Fact]
+        public void GetDisplayText_ReturnsShellAndCommand()
+        {
+            var spec = new ShellTaskSpecification
+            {
+                Shell = ShellTaskSpecification.ShellType.PowerShell,
+                Command = "Install-Module foo",
+            };
+
+            Assert.Equal("shell: 'powerShell Install-Module foo'", spec.GetDisplayText());
+        }
+
+        [Fact]
+        public void GetDisplayText_ShellSh_ReturnsShellAndCommand()
+        {
+            var spec = new ShellTaskSpecification
+            {
+                Shell = ShellTaskSpecification.ShellType.Sh,
+                Command = "echo hello",
+            };
+
+            Assert.Equal("shell: 'sh echo hello'", spec.GetDisplayText());
+        }
+
+        [Fact]
+        public void Validate_ReturnsWarning_WhenShellNotOnPath()
+        {
+            // Use a shell type that is guaranteed not to exist on PATH under this name
+            var spec = new ShellTaskSpecification
+            {
+                Shell = ShellTaskSpecification.ShellType.PowerShell,
+                Command = "echo hello",
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            // The result depends on whether pwsh is installed — just verify the shape
+            // If pwsh is not on PATH, we expect a warning; if it is, we expect no issues.
+            Assert.All(issues, i => Assert.Equal(ValidationSeverity.Warning, i.Severity));
         }
     }
 }

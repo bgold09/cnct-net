@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -20,29 +21,58 @@ namespace Cnct.Core.Configuration
         [JsonProperty(ItemConverterType = typeof(CnctActionConverter))]
         public ICnctActionSpec[] Actions { get; set; }
 
-        public void Validate()
+        public ConfigValidationResult Validate()
         {
-            foreach (var action in this.Actions)
+            if (this.Actions == null || this.Actions.Length == 0)
             {
-                action.Validate();
+                return new ConfigValidationResult(new[]
+                {
+                    new ValidationIssue(
+                        ValidationSeverity.Error,
+                        "config",
+                        null,
+                        "The configuration must contain at least one action."),
+                });
             }
+
+            var issues = new List<ValidationIssue>();
+            foreach (var action in this.Actions.Where(a => a != null))
+            {
+                issues.AddRange(action.Validate(this.ConfigRootDirectory));
+            }
+
+            return new ConfigValidationResult(issues);
         }
 
         public async Task<bool> ExecuteAsync()
         {
             foreach (var action in this.Actions.Where(a => a != null))
             {
-                if (action is CnctActionSpecBase taggedAction
-                    && taggedAction.Tags.Any()
-                    && !taggedAction.Tags.Any(t => this.MachineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
+                if (action.Tags.Any()
+                    && !action.Tags.Any(t => this.MachineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
                 {
                     this.Logger.LogVerbose($"Skipping action '{action.ActionType}': no matching machine tag.");
                     continue;
                 }
 
+                if (!action.ShouldExecuteOnCurrentPlatform())
+                {
+                    this.Logger.LogVerbose($"Skipping action '{action.ActionType}': not applicable to current OS.");
+                    continue;
+                }
+
+                string displayText = action.GetDisplayText();
+
                 try
                 {
-                    await action.ExecuteAsync(this.Logger, this.ConfigRootDirectory);
+                    var start = DateTimeOffset.Now;
+                    this.Logger.LogStart(displayText);
+
+                    await action.ExecuteAsync(new IndentedLogger(this.Logger), this.ConfigRootDirectory);
+
+                    var end = DateTimeOffset.Now;
+                    var elapsed = end - start;
+                    this.Logger.LogFinish($"{displayText} ({elapsed.TotalSeconds:F1}s)");
                 }
                 catch (Exception ex)
                 {

@@ -76,20 +76,81 @@ The spec class should expose a constructor accepting the interface so tests can 
 - `ExecuteAsync` behaviour: construct the spec with a mocked `IGitRunner`/`IFileSystem`/`IFileManagement`, set up real temp-directory filesystem state where needed, verify mock calls with `Moq`.
 - Specs that check filesystem state (clone vs pull, link exists vs not) set up and tear down temp directories in `try/finally`.
 
+## Building and testing
+
+Build the solution with:
+
+```
+dotnet build Cnct/Cnct.sln
+```
+
+Run all tests with:
+
+```
+dotnet test Cnct/Cnct.sln
+```
+
+**After every change, verify that the build produces zero warnings and zero errors.**
+StyleCop warnings are treated as warnings (not errors) but must still be fixed — do not
+leave any `warning SA*` or `warning CA*` in the build output.
+
 ## JSON schema
 
 `schema/cnctConfig.vnext.json` must be kept in sync with the code. Each new task type needs:
 1. A `$ref` added to `actions.items.oneOf`
 2. A new `definitions/<Name>Action` block with `allOf: [ActionBase, { required, properties }]`
 
+`definitions/ActionBase` mirrors the properties of `CnctActionSpecBase`. When a property is
+added to or removed from `CnctActionSpecBase` (or `ICnctActionSpec`), the `ActionBase`
+definition must be updated to match.
+
+Properties backed by `StringCollectionConverter` or `EnumCollectionConverter<T>` accept either
+a single string or an array in JSON. Represent them in the schema with `oneOf: [string, array]`
+(see the `os` and `tags` properties as examples).
+
 ## Code style
 
 - **Maximum line length is 120 characters** for all C# source files.
+- **One class per file.** Do not place multiple classes in the same file.
+
+### StyleCop rules
+
+StyleCop.Analyzers (v1.1.118) is enabled on all projects. Configuration
+lives in `Cnct/.editorconfig`. Key active rules to follow:
+
+- **SA1204**: Static members must appear before non-static members.
+- **SA1202**: `public` members must appear before `protected` members, which must appear
+  before `private` members. When adding a `protected` override (e.g. `GetAdditionalDisplayText()`),
+  place it **after** all `public` members in the class.
+- **SA1101**: Prefix local calls with `this.`.
+- **SA1309**: Field names must not begin with underscore.
+- **SA1128**: Put constructor initializers on their own line.
+- **SA1502**: Element should not be on a single line.
+- **SA1513**: Closing brace must be followed by a blank line.
+- **SA1516**: Elements (methods, properties) must be separated by a blank line.
+
+The following rules are **suppressed** (severity = none):
+
+- SA0001 (XML comment analysis disabled)
+- SA1200 (using directive placement — configured to outside namespace)
+- SA1201 (element ordering — disabled)
+- SA1600, SA1601, SA1602 (XML documentation not required)
+- SA1633 (file header not required)
+- CA1303 (localized parameters not required)
+- CA2007 (ConfigureAwait not required)
+- CA1031 (catching general exceptions allowed)
+- CA1819 (array properties allowed)
+
+## Markdown
+
+All markdown files must comply with `.markdownlint.json`:
+
+- **Line length** — maximum **104 characters** (code blocks are exempt)
+- **no-duplicate-heading** — disabled (duplicate headings are allowed)
+- **ul-start-left** — disabled
+- Wrap continuation lines with 2-space indent to stay within the limit
 
 ## Changelog
 
 `CHANGELOG.md` — new features go under `## Unreleased → ### Feature updates`, fixes under
-`### Fixes`. All edits must comply with `.markdownlint.json`:
-
-- Maximum line length **104 characters** (code blocks are exempt)
-- Wrap continuation lines with 2-space indent to stay within the limit
+`### Fixes`.

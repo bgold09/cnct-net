@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cnct.Core.Configuration;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -25,6 +26,48 @@ namespace Cnct.Core.Tests
                 Assert.IsType<EnvironmentVariableTaskSpecification>(spec);
             Assert.Equal(expectedVarName, envVariableSpec.Name);
             Assert.Equal(expectedValue, envVariableSpec.Value);
+        }
+
+        [Fact]
+        public void GetDisplayText_ReturnsNameEqualsValue()
+        {
+            var spec = new EnvironmentVariableTaskSpecification
+            {
+                Name = "MY_VAR",
+                Value = "hello",
+            };
+
+            Assert.Equal("environmentVariable: 'MY_VAR=hello'", spec.GetDisplayText());
+        }
+
+        [Fact]
+        public void Validate_ReturnsNoIssues_WhenNameIsValid()
+        {
+            var spec = new EnvironmentVariableTaskSpecification
+            {
+                Name = "MY_VAR",
+                Value = "hello",
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.Empty(issues);
+        }
+
+        [Fact]
+        public void Validate_ReturnsError_WhenNameContainsEquals()
+        {
+            var spec = new EnvironmentVariableTaskSpecification
+            {
+                Name = "MY=VAR",
+                Value = "hello",
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.Single(issues);
+            Assert.Equal(ValidationSeverity.Error, issues[0].Severity);
+            Assert.Contains("'='", issues[0].Message);
         }
     }
 }
