@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -8,15 +7,24 @@ namespace Cnct.Core.Configuration
     public class FileManagement : IFileManagement
     {
         private readonly IPathResolver pathResolver;
+        private readonly IPlatformPathSelector platformPathSelector;
 
         public FileManagement()
-            : this(new PathResolver())
+            : this(new PathResolver(), new PlatformPathSelector())
         {
         }
 
         public FileManagement(IPathResolver pathResolver)
+            : this(pathResolver, new PlatformPathSelector())
+        {
+        }
+
+        public FileManagement(
+            IPathResolver pathResolver,
+            IPlatformPathSelector platformPathSelector)
         {
             this.pathResolver = pathResolver;
+            this.platformPathSelector = platformPathSelector;
         }
 
         public IDictionary<string, IEnumerable<string>> GetFileConfigurations(
@@ -39,13 +47,8 @@ namespace Cnct.Core.Configuration
                         break;
 
                     case FileSpecification spec:
-                        string[] platformLinkPaths = Platform.CurrentPlatform switch
-                        {
-                            PlatformType.Windows => spec.Windows,
-                            PlatformType.Linux => spec.Linux,
-                            PlatformType.OSX => spec.Osx,
-                            _ => throw new NotImplementedException(),
-                        };
+                        string[] platformLinkPaths =
+                            this.platformPathSelector.GetPlatformPaths(spec);
 
                         string[] destinationPaths;
                         if (TryGetPlatformLinkPaths(sourceFile, platformLinkPaths, out destinationPaths))
@@ -53,7 +56,11 @@ namespace Cnct.Core.Configuration
                             fileCopyConfigs.Add(sourceFile, destinationPaths);
                         }
 
-                        if (Platform.CurrentPlatformIsUnix && TryGetPlatformLinkPaths(sourceFile, spec.Unix, out destinationPaths))
+                        if (this.platformPathSelector.IsCurrentPlatformUnix
+                            && TryGetPlatformLinkPaths(
+                                sourceFile,
+                                this.platformPathSelector.GetUnixPaths(spec),
+                                out destinationPaths))
                         {
                             fileCopyConfigs.Add(sourceFile, destinationPaths);
                         }
