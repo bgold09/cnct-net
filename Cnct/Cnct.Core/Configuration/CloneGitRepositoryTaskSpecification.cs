@@ -13,10 +13,12 @@ namespace Cnct.Core.Configuration
     {
         private readonly IFileSystem fileSystem;
         private readonly IGitRunner gitRunner;
+        private readonly IPathResolver pathResolver;
 
         public CloneGitRepositoryTaskSpecification()
         {
             this.fileSystem = new FileSystem();
+            this.pathResolver = new PathResolver(this.fileSystem);
         }
 
         public CloneGitRepositoryTaskSpecification(IGitRunner gitRunner)
@@ -24,10 +26,21 @@ namespace Cnct.Core.Configuration
         {
         }
 
-        public CloneGitRepositoryTaskSpecification(IGitRunner gitRunner, IFileSystem fileSystem)
+        public CloneGitRepositoryTaskSpecification(
+            IGitRunner gitRunner,
+            IFileSystem fileSystem)
+            : this(gitRunner, fileSystem, new PathResolver(fileSystem))
+        {
+        }
+
+        public CloneGitRepositoryTaskSpecification(
+            IGitRunner gitRunner,
+            IFileSystem fileSystem,
+            IPathResolver pathResolver)
         {
             this.gitRunner = gitRunner;
             this.fileSystem = fileSystem;
+            this.pathResolver = pathResolver;
         }
 
         [JsonProperty("repos")]
@@ -68,13 +81,9 @@ namespace Cnct.Core.Configuration
             var normalizedRepos = new Dictionary<string, string>();
             foreach (var kvp in this.Repos)
             {
-                string dest = kvp.Value.NormalizePath();
-                if (!this.fileSystem.Path.IsPathRooted(dest))
-                {
-                    dest = this.fileSystem.Path.Combine(configDirectoryRoot, dest);
-                }
-
-                normalizedRepos[kvp.Key] = dest;
+                normalizedRepos[kvp.Key] = this.pathResolver.Resolve(
+                    kvp.Value,
+                    configDirectoryRoot);
             }
 
             var cloneTask = new CloneGitRepositoryTask(
