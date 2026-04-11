@@ -39,16 +39,12 @@ namespace Cnct.Core.Configuration
             var issues = new List<ValidationIssue>();
             if (this.Shell == ShellType.Unknown)
             {
-                issues.Add(this.CreateValidationIssue(
-                    ValidationSeverity.Error,
-                    $"Shell type '{this.Shell}' not recognized."));
+                issues.Add(this.CreateValidationError($"Shell type '{this.Shell}' not recognized."));
             }
 
             if (string.IsNullOrWhiteSpace(this.Command))
             {
-                issues.Add(this.CreateValidationIssue(
-                    ValidationSeverity.Error,
-                    "A command must be specified."));
+                issues.Add(this.CreateValidationError("A command must be specified."));
             }
 
             string executable = this.Shell switch
@@ -60,9 +56,7 @@ namespace Cnct.Core.Configuration
 
             if (executable != null && !IsOnPath(executable))
             {
-                issues.Add(this.CreateValidationIssue(
-                    ValidationSeverity.Warning,
-                    $"Shell executable '{executable}' was not found on PATH."));
+                issues.Add(this.CreateValidationWarning($"Shell executable '{executable}' was not found on PATH."));
             }
 
             return issues;

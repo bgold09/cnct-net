@@ -34,16 +34,12 @@ namespace Cnct.Core.Configuration
             var issues = new List<ValidationIssue>();
             if (string.IsNullOrWhiteSpace(this.Source))
             {
-                issues.Add(this.CreateValidationIssue(
-                    ValidationSeverity.Error,
-                    "A source directory must be specified."));
+                issues.Add(this.CreateValidationError("A source directory must be specified."));
             }
 
             if (string.IsNullOrWhiteSpace(this.Target))
             {
-                issues.Add(this.CreateValidationIssue(
-                    ValidationSeverity.Error,
-                    "A target directory must be specified."));
+                issues.Add(this.CreateValidationError("A target directory must be specified."));
             }
 
             if (issues.Count == 0)
@@ -56,9 +52,7 @@ namespace Cnct.Core.Configuration
 
                 if (!this.fileSystem.Directory.Exists(source))
                 {
-                    issues.Add(this.CreateValidationIssue(
-                        ValidationSeverity.Error,
-                        $"Source directory does not exist: {source}"));
+                    issues.Add(this.CreateValidationError($"Source directory does not exist: {source}"));
                 }
             }
 

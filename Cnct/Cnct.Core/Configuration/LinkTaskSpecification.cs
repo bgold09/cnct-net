@@ -38,9 +38,7 @@ namespace Cnct.Core.Configuration
             var issues = new List<ValidationIssue>();
             if (this.Links == null || this.Links.Count == 0)
             {
-                issues.Add(this.CreateValidationIssue(
-                    ValidationSeverity.Error,
-                    "The collection of links cannot be null or empty."));
+                issues.Add(this.CreateValidationError("The collection of links cannot be null or empty."));
                 return issues;
             }
 
@@ -48,9 +46,7 @@ namespace Cnct.Core.Configuration
             {
                 if (!this.fileSystem.File.Exists(sourcePath) && !this.fileSystem.Directory.Exists(sourcePath))
                 {
-                    issues.Add(this.CreateValidationIssue(
-                        ValidationSeverity.Error,
-                        $"Source path does not exist: {sourcePath}"));
+                    issues.Add(this.CreateValidationError($"Source path does not exist: {sourcePath}"));
                 }
             }
 
