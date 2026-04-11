@@ -3,7 +3,7 @@ namespace Cnct.Core.Validation
     public enum ValidationSeverity
     {
         None = 0,
-        Error = 1,
-        Warning = 2,
+        Error,
+        Warning,
     }
 }
