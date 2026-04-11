@@ -36,7 +36,6 @@ namespace Cnct.Core.Configuration
             }
 
             var issues = new List<ValidationIssue>();
-
             foreach (var action in this.Actions.Where(a => a != null))
             {
                 issues.AddRange(action.Validate(this.ConfigRootDirectory));

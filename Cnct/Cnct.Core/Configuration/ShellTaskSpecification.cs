@@ -37,7 +37,6 @@ namespace Cnct.Core.Configuration
         public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
             var issues = new List<ValidationIssue>();
-
             if (this.Shell == ShellType.Unknown)
             {
                 issues.Add(this.CreateValidationIssue(

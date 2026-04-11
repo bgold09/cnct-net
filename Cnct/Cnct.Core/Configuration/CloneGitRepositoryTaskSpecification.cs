@@ -36,7 +36,6 @@ namespace Cnct.Core.Configuration
         public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
             var issues = new List<ValidationIssue>();
-
             if (this.Repos == null || this.Repos.Count == 0)
             {
                 issues.Add(this.CreateValidationIssue(

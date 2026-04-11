@@ -41,14 +41,12 @@ namespace Cnct.Core
         {
             var logger = new ConsoleLogger(new LoggerOptions(quiet, debug));
             var parser = new CnctConfigurationParser(logger);
-            string configFilePath = config?.FullName
-                ?? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
+            string configFilePath = config?.FullName ?? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
 
             CnctConfig cnctConfig = parser.Parse(configFilePath);
             cnctConfig.MachineTags = (await new MachineSettingsLoader().LoadAsync()).Tags;
 
             ConfigValidationResult validation = cnctConfig.Validate();
-
             if (validate)
             {
                 Console.WriteLine(validation.ToJson());
