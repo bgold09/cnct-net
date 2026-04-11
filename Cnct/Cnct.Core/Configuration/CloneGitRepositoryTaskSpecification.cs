@@ -78,13 +78,7 @@ namespace Cnct.Core.Configuration
 
         public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            var normalizedRepos = new Dictionary<string, string>();
-            foreach (var kvp in this.Repos)
-            {
-                normalizedRepos[kvp.Key] = this.pathResolver.Resolve(
-                    kvp.Value,
-                    configDirectoryRoot);
-            }
+            var normalizedRepos = this.ResolveRepoPaths(configDirectoryRoot);
 
             var cloneTask = new CloneGitRepositoryTask(
                 logger,
@@ -99,5 +93,19 @@ namespace Cnct.Core.Configuration
             this.Repos != null && this.Repos.Count > 0
                 ? string.Join(", ", this.Repos.Keys)
                 : null;
+
+        private Dictionary<string, string> ResolveRepoPaths(
+            string configDirectoryRoot)
+        {
+            var resolved = new Dictionary<string, string>();
+            foreach (var kvp in this.Repos)
+            {
+                resolved[kvp.Key] = this.pathResolver.Resolve(
+                    kvp.Value,
+                    configDirectoryRoot);
+            }
+
+            return resolved;
+        }
     }
 }

@@ -54,10 +54,11 @@ namespace Cnct.Core.Configuration
 
             if (issues.Count == 0)
             {
-                string source = this.pathResolver.Resolve(this.Source, configDirectoryRoot);
+                string source = this.ResolveSourcePath(configDirectoryRoot);
                 if (!this.fileSystem.Directory.Exists(source))
                 {
-                    issues.Add(this.CreateValidationError($"Source directory does not exist: {source}"));
+                    issues.Add(this.CreateValidationError(
+                        $"Source directory does not exist: {source}"));
                 }
             }
 
@@ -66,10 +67,13 @@ namespace Cnct.Core.Configuration
 
         public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            string source = this.pathResolver.Resolve(this.Source, configDirectoryRoot);
+            string source = this.ResolveSourcePath(configDirectoryRoot);
             string target = this.Target.NormalizePath();
             var linkExpandTask = new LinkExpandTask(logger, source, target, this.fileSystem);
             return linkExpandTask.ExecuteAsync();
         }
+
+        private string ResolveSourcePath(string configDirectoryRoot) =>
+            this.pathResolver.Resolve(this.Source, configDirectoryRoot);
     }
 }
