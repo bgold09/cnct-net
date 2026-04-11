@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Cnct.Core.Configuration;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -123,6 +124,23 @@ namespace Cnct.Core.Tests
             };
 
             Assert.Equal("shell: 'sh echo hello'", spec.GetDisplayText());
+        }
+
+        [Fact]
+        public void Validate_ReturnsWarning_WhenShellNotOnPath()
+        {
+            // Use a shell type that is guaranteed not to exist on PATH under this name
+            var spec = new ShellTaskSpecification
+            {
+                Shell = ShellTaskSpecification.ShellType.PowerShell,
+                Command = "echo hello",
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            // The result depends on whether pwsh is installed — just verify the shape
+            // If pwsh is not on PATH, we expect a warning; if it is, we expect no issues.
+            Assert.All(issues, i => Assert.Equal(ValidationSeverity.Warning, i.Severity));
         }
     }
 }

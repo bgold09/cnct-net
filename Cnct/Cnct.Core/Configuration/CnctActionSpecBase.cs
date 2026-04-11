@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -41,10 +42,28 @@ namespace Cnct.Core.Configuration
                 || this.PlatformType.Contains(Platform.CurrentPlatform);
         }
 
-        public abstract void Validate();
+        public virtual IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        {
+            return Array.Empty<ValidationIssue>();
+        }
 
         public abstract Task ExecuteAsync(ILogger logger, string configDirectoryRoot);
 
+        protected ValidationIssue CreateValidationError(string message)
+        {
+            return this.CreateValidationIssue(ValidationSeverity.Error, message);
+        }
+
+        protected ValidationIssue CreateValidationWarning(string message)
+        {
+            return this.CreateValidationIssue(ValidationSeverity.Warning, message);
+        }
+
         protected virtual string GetAdditionalDisplayText() => null;
+
+        private ValidationIssue CreateValidationIssue(ValidationSeverity severity, string message)
+        {
+            return new ValidationIssue(severity, this.ActionType, this.Label, message);
+        }
     }
 }

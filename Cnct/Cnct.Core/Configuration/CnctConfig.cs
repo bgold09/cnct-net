@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -20,12 +21,27 @@ namespace Cnct.Core.Configuration
         [JsonProperty(ItemConverterType = typeof(CnctActionConverter))]
         public ICnctActionSpec[] Actions { get; set; }
 
-        public void Validate()
+        public ConfigValidationResult Validate()
         {
-            foreach (var action in this.Actions)
+            if (this.Actions == null || this.Actions.Length == 0)
             {
-                action.Validate();
+                return new ConfigValidationResult(new[]
+                {
+                    new ValidationIssue(
+                        ValidationSeverity.Error,
+                        "config",
+                        null,
+                        "The configuration must contain at least one action."),
+                });
             }
+
+            var issues = new List<ValidationIssue>();
+            foreach (var action in this.Actions.Where(a => a != null))
+            {
+                issues.AddRange(action.Validate(this.ConfigRootDirectory));
+            }
+
+            return new ConfigValidationResult(issues);
         }
 
         public async Task<bool> ExecuteAsync()

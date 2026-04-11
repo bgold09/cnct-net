@@ -12,6 +12,13 @@
   platforms.
 * Each action now logs a start (`>`) and finish (`✓`) event. An optional `"label"`
   property can be added to actions in `cnct.json` to add context to the display.
+* Add `--validate` / `-v` option to validate a `cnct.json` config file without executing
+  it. Results are written to stdout as JSON (`{ "valid": bool, "issues": [...] }`) so the
+  output can be consumed by scripts and CI/CD pipelines. Exit code is `0` when the config
+  is valid and `1` when there are errors. Validation checks include:
+  * `link` / `copy`: each source file or directory must exist on disk.
+  * `linkExpand`: the source directory must exist on disk.
+  * `cloneGitRepository`: each repository URL must be a valid absolute URI.
 
 ## 0.5.0
 

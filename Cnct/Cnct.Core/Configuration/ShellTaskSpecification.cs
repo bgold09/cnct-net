@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks.Shell;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -30,18 +32,20 @@ namespace Cnct.Core.Configuration
             await shellInvoker.ExecuteAsync(this);
         }
 
-        public override void Validate()
+        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
+            var issues = new List<ValidationIssue>();
             if (this.Shell == ShellType.Unknown)
             {
-                throw new ArgumentException(
-                    $"Shell type '{this.Shell}' not recognized.");
+                issues.Add(this.CreateValidationError($"Shell type '{this.Shell}' not recognized."));
             }
 
             if (string.IsNullOrWhiteSpace(this.Command))
             {
-                throw new ArgumentException("A command must be specified.");
+                issues.Add(this.CreateValidationError("A command must be specified."));
             }
+
+            return issues;
         }
 
         protected override string GetAdditionalDisplayText()
