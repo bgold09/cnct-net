@@ -17,10 +17,7 @@ namespace Cnct.Core.Tasks
         {
         }
 
-        public LinkTask(
-            ILogger logger,
-            IDictionary<string, IEnumerable<string>> links,
-            IFileSystem fileSystem)
+        public LinkTask(ILogger logger, IDictionary<string, IEnumerable<string>> links, IFileSystem fileSystem)
             : this(logger, links, fileSystem, CreateDefaultSymlinkCreator())
         {
         }

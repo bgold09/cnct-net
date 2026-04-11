@@ -4,11 +4,7 @@ namespace Cnct.Core.Tasks
 {
     internal class UnixSymlinkCreator : ISymlinkCreator
     {
-        public void CreateSymlink(
-            string linkPath,
-            string targetPath,
-            LinkType linkType,
-            ILogger logger)
+        public void CreateSymlink(string linkPath, string targetPath, LinkType linkType, ILogger logger)
         {
             if (NativeMethods.CreateLinuxSymlink(targetPath, linkPath) != 0)
             {

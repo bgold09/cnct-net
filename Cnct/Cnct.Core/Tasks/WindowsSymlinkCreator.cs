@@ -4,11 +4,7 @@ namespace Cnct.Core.Tasks
 {
     internal class WindowsSymlinkCreator : ISymlinkCreator
     {
-        public void CreateSymlink(
-            string linkPath,
-            string targetPath,
-            LinkType linkType,
-            ILogger logger)
+        public void CreateSymlink(string linkPath, string targetPath, LinkType linkType, ILogger logger)
         {
             if (!NativeMethods.CreateSymbolicLink(linkPath, targetPath, linkType))
             {
