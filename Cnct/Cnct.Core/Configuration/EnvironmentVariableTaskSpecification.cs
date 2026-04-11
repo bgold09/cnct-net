@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks.EnvironmentVariable;
 using Cnct.Core.Validation;
@@ -12,6 +9,18 @@ namespace Cnct.Core.Configuration
     [CnctActionType("environmentVariable")]
     public partial class EnvironmentVariableTaskSpecification : CnctActionSpecBase
     {
+        private readonly IEnvironmentVariableWriter writer;
+
+        public EnvironmentVariableTaskSpecification(IEnvironmentVariableWriter writer)
+        {
+            this.writer = writer;
+        }
+
+        public EnvironmentVariableTaskSpecification()
+            : this(new EnvironmentVariableWriter())
+        {
+        }
+
         [JsonRequired]
         public string Name { get; set; }
 
@@ -20,7 +29,11 @@ namespace Cnct.Core.Configuration
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            var envVariableTask = new EnvironmentVariableTask(logger, this.Name, this.Value);
+            var envVariableTask = new EnvironmentVariableTask(
+                logger,
+                this.writer,
+                this.Name,
+                this.Value);
             await envVariableTask.ExecuteAsync();
         }
 

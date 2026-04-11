@@ -15,24 +15,6 @@ namespace Cnct.Core.Configuration
         private readonly IGitRunner gitRunner;
         private readonly IPathResolver pathResolver;
 
-        public CloneGitRepositoryTaskSpecification()
-        {
-            this.fileSystem = new FileSystem();
-            this.pathResolver = new PathResolver(this.fileSystem);
-        }
-
-        public CloneGitRepositoryTaskSpecification(IGitRunner gitRunner)
-            : this(gitRunner, new FileSystem())
-        {
-        }
-
-        public CloneGitRepositoryTaskSpecification(
-            IGitRunner gitRunner,
-            IFileSystem fileSystem)
-            : this(gitRunner, fileSystem, new PathResolver(fileSystem))
-        {
-        }
-
         public CloneGitRepositoryTaskSpecification(
             IGitRunner gitRunner,
             IFileSystem fileSystem,
@@ -41,6 +23,12 @@ namespace Cnct.Core.Configuration
             this.gitRunner = gitRunner;
             this.fileSystem = fileSystem;
             this.pathResolver = pathResolver;
+        }
+
+        public CloneGitRepositoryTaskSpecification()
+        {
+            this.fileSystem = new FileSystem();
+            this.pathResolver = new PathResolver(this.fileSystem);
         }
 
         [JsonProperty("repos")]

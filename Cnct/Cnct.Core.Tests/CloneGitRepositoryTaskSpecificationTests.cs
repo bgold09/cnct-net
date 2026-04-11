@@ -129,7 +129,7 @@ namespace Cnct.Core.Tests
             var mockRunner = new Mock<IGitRunner>();
             mockRunner.Setup(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
             {
                 Repos = new Dictionary<string, string> { [url] = relativeDest },
             };
@@ -151,7 +151,7 @@ namespace Cnct.Core.Tests
             var mockRunner = new Mock<IGitRunner>();
             mockRunner.Setup(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
             {
                 Repos = new Dictionary<string, string> { [url] = dest },
             };
@@ -173,7 +173,7 @@ namespace Cnct.Core.Tests
             var mockRunner = new Mock<IGitRunner>();
             mockRunner.Setup(r => r.PullAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
             {
                 Repos = new Dictionary<string, string> { [url] = dest },
             };
@@ -198,7 +198,7 @@ namespace Cnct.Core.Tests
             var mockRunner = new Mock<IGitRunner>();
             mockRunner.Setup(r => r.PullAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
             {
                 Repos = new Dictionary<string, string> { [url] = dest },
             };
@@ -220,7 +220,7 @@ namespace Cnct.Core.Tests
             var mockRunner = new Mock<IGitRunner>();
             var logger = new Mock<ILogger>();
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
             {
                 Repos = new Dictionary<string, string> { [url] = dest },
             };

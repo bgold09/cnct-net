@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks.Shell;
 using Cnct.Core.Validation;
@@ -32,14 +31,7 @@ namespace Cnct.Core.Configuration
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            IShellInvoker shellInvoker = this.Shell switch
-            {
-                ShellType.PowerShell => new PowerShellInvoker(logger),
-                ShellType.Sh => new ShInvoker(logger),
-                _ => throw new ArgumentOutOfRangeException(
-                    message: $"Shell type {this.Shell} is not supported.",
-                    innerException: null),
-            };
+            IShellInvoker shellInvoker = this.shellInvokerFactory.Create(this.Shell, logger);
 
             var options = new ShellExecutionOptions(this.Command, this.Silent);
             await shellInvoker.ExecuteAsync(options);
