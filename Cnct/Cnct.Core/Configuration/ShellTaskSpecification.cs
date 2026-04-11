@@ -10,6 +10,18 @@ namespace Cnct.Core.Configuration
     [CnctActionType("shell")]
     public partial class ShellTaskSpecification : CnctActionSpecBase
     {
+        private readonly IShellInvokerFactory shellInvokerFactory;
+
+        public ShellTaskSpecification()
+            : this(new ShellInvokerFactory())
+        {
+        }
+
+        public ShellTaskSpecification(IShellInvokerFactory shellInvokerFactory)
+        {
+            this.shellInvokerFactory = shellInvokerFactory;
+        }
+
         [JsonRequired]
         public ShellType Shell { get; set; }
 
@@ -20,15 +32,7 @@ namespace Cnct.Core.Configuration
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            IShellInvoker shellInvoker = this.Shell switch
-            {
-                ShellType.PowerShell => new PowerShellInvoker(logger),
-                ShellType.Sh => new ShInvoker(logger),
-                _ => throw new ArgumentOutOfRangeException(
-                    message: $"Shell type {this.Shell} is not supported.",
-                    innerException: null),
-            };
-
+            IShellInvoker shellInvoker = this.shellInvokerFactory.Create(this.Shell, logger);
             await shellInvoker.ExecuteAsync(this);
         }
 
