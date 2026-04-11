@@ -4,6 +4,7 @@ using System.IO.Abstractions;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks;
+using Cnct.Core.Validation;
 
 namespace Cnct.Core.Configuration
 {
@@ -32,12 +33,33 @@ namespace Cnct.Core.Configuration
         {
         }
 
-        public override void Validate()
+        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
+            var issues = new List<ValidationIssue>();
+
             if (this.Files == null || this.Files.Count == 0)
             {
-                throw new InvalidOperationException("The collection of files cannot be null or empty.");
+                issues.Add(new ValidationIssue(
+                    ValidationSeverity.Error,
+                    this.ActionType,
+                    this.Label,
+                    "The collection of files cannot be null or empty."));
+                return issues;
             }
+
+            foreach (string sourcePath in this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Files).Keys)
+            {
+                if (!this.fileSystem.File.Exists(sourcePath) && !this.fileSystem.Directory.Exists(sourcePath))
+                {
+                    issues.Add(new ValidationIssue(
+                        ValidationSeverity.Error,
+                        this.ActionType,
+                        this.Label,
+                        $"Source path does not exist: {sourcePath}"));
+                }
+            }
+
+            return issues;
         }
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)

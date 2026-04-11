@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cnct.Core.Tasks.EnvironmentVariable;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -23,8 +24,20 @@ namespace Cnct.Core.Configuration
             await envVariableTask.ExecuteAsync();
         }
 
-        public override void Validate()
+        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
+            var issues = new List<ValidationIssue>();
+
+            if (!string.IsNullOrEmpty(this.Name) && this.Name.Contains('='))
+            {
+                issues.Add(new ValidationIssue(
+                    ValidationSeverity.Error,
+                    this.ActionType,
+                    this.Label,
+                    $"Environment variable '{this.Name}' contains '=', which is not valid."));
+            }
+
+            return issues;
         }
 
         protected override string GetAdditionalDisplayText() => $"'{this.Name}={this.Value}'";

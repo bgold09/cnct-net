@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
@@ -41,7 +42,10 @@ namespace Cnct.Core.Configuration
                 || this.PlatformType.Contains(Platform.CurrentPlatform);
         }
 
-        public abstract void Validate();
+        public virtual IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        {
+            return Array.Empty<ValidationIssue>();
+        }
 
         public abstract Task ExecuteAsync(ILogger logger, string configDirectoryRoot);
 

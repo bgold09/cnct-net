@@ -5,9 +5,9 @@ namespace Cnct
 {
     public static class Program
     {
-        public static async Task Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            await CnctCommandLine.Invoke(args);
+            return await CnctCommandLine.Invoke(args);
         }
     }
 }

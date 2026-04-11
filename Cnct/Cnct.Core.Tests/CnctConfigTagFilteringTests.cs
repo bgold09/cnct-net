@@ -237,10 +237,6 @@ namespace Cnct.Core.Tests
 
             public override string ActionType => "test";
 
-            public override void Validate()
-            {
-            }
-
             public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
             {
                 this.WasExecuted = true;

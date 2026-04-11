@@ -6,6 +6,7 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 using Cnct.Core.Tasks;
+using Cnct.Core.Validation;
 using Moq;
 using Newtonsoft.Json;
 using Xunit;
@@ -59,25 +60,30 @@ namespace Cnct.Core.Tests
         }
 
         [Fact]
-        public void Validate_ThrowsWhenReposIsNull()
+        public void Validate_ReturnsError_WhenReposIsNull()
         {
             var spec = new CloneGitRepositoryTaskSpecification { Repos = null };
-            Assert.Throws<InvalidOperationException>(() => spec.Validate());
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
         }
 
         [Fact]
-        public void Validate_ThrowsWhenReposIsEmpty()
+        public void Validate_ReturnsError_WhenReposIsEmpty()
         {
             var spec = new CloneGitRepositoryTaskSpecification
             {
                 Repos = new Dictionary<string, string>(),
             };
 
-            Assert.Throws<InvalidOperationException>(() => spec.Validate());
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
         }
 
         [Fact]
-        public void Validate_DoesNotThrowWithValidSpec()
+        public void Validate_ReturnsNoErrors_WhenSpecIsValid()
         {
             var spec = new CloneGitRepositoryTaskSpecification
             {
@@ -87,14 +93,16 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            spec.Validate();
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.DoesNotContain(issues, i => i.Severity == ValidationSeverity.Error);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Validate_ThrowsWhenEntryValueIsNullOrWhiteSpace(string dest)
+        public void Validate_ReturnsError_WhenEntryValueIsNullOrWhiteSpace(string dest)
         {
             var spec = new CloneGitRepositoryTaskSpecification
             {
@@ -104,7 +112,9 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            Assert.Throws<InvalidOperationException>(() => spec.Validate());
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
         }
 
         [Fact]
@@ -261,6 +271,41 @@ namespace Cnct.Core.Tests
             var spec = new CloneGitRepositoryTaskSpecification();
 
             Assert.Equal("cloneGitRepository", spec.GetDisplayText());
+        }
+
+        [Fact]
+        public void Validate_ReturnsNoIssues_WhenAllUrlsAreValidAbsoluteUris()
+        {
+            var spec = new CloneGitRepositoryTaskSpecification
+            {
+                Repos = new Dictionary<string, string>
+                {
+                    ["https://github.com/user/repo"] = "~/dev/repo",
+                    ["ssh://git@github.com/user/repo.git"] = "~/dev/repo2",
+                },
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.Empty(issues);
+        }
+
+        [Fact]
+        public void Validate_ReturnsError_WhenUrlIsNotAValidAbsoluteUri()
+        {
+            var spec = new CloneGitRepositoryTaskSpecification
+            {
+                Repos = new Dictionary<string, string>
+                {
+                    ["not a valid url"] = "~/dev/repo",
+                },
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+
+            Assert.Single(issues);
+            Assert.Equal(ValidationSeverity.Error, issues[0].Severity);
+            Assert.Contains("not a valid absolute URI", issues[0].Message);
         }
     }
 }
