@@ -1,0 +1,331 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "id": "https://raw.githubusercontent.com/bgold09/cnct-net/main/schema/v0.6.0/cnctConfig.json",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "actions": {
+            "description": "The actions to execute.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/ShellAction"
+                    },
+                    {
+                        "$ref": "#/definitions/LinkAction"
+                    },
+                    {
+                        "$ref": "#/definitions/CopyAction"
+                    },
+                    {
+                        "$ref": "#/definitions/EnvironmentVariableAction"
+                    },
+                    {
+                        "$ref": "#/definitions/LinkExpandAction"
+                    },
+                    {
+                        "$ref": "#/definitions/CloneGitRepositoryAction"
+                    }
+                ]
+            }
+        }
+    }, 
+    "definitions": {
+        "OperatingSystemType": {
+            "type": "string",
+            "enum": [
+                "windows",
+                "linux",
+                "osx"
+            ]
+        },
+        "ActionBase": {
+            "type": "object",
+            "required": [
+                "actionType"
+            ],
+            "properties": {
+                "os": {
+                    "description": "The operating system(s) for which to execute the action. If omitted, the action runs on all platforms.",
+                    "oneOf": [
+                        {
+                            "$ref": "#/definitions/OperatingSystemType"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/OperatingSystemType"
+                            },
+                            "minItems": 1
+                        }
+                    ]
+                },
+                "actionType": {
+                    "description": "The type of the action.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "A description for the action.",
+                    "type": "string"
+                },
+                "label": {
+                    "description": "An optional display label shown when the action starts and finishes. Overrides the default display format for the action type.",
+                    "type": "string"
+                },
+                "tags": {
+                    "description": "Machine tags required for this action to run. If omitted or empty, the action runs on all machines. If specified, the action only runs when the machine's settings.json includes at least one matching tag.",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "minItems": 1
+                        }
+                    ]
+                }
+            }
+        },
+        "DestinationLinks": {
+            "oneOf": [
+                {
+                    "type": "null"
+                },
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "PlatformLinks": {
+            "type": "object",
+            "properties": {
+                "windows": {
+                    "description": "Symlinks to create in a Windows environment.",
+                    "$ref": "#/definitions/DestinationLinks"
+                },
+                "linux": {
+                    "description": "Symlinks to create in a Linux environment.",
+                    "$ref": "#/definitions/DestinationLinks"
+                },
+                "osx": {
+                    "description": "Symlinks to create in an OSX environment.",
+                    "$ref": "#/definitions/DestinationLinks"
+                },
+                "unix": {
+                    "description": "Symlinks to create in a UNIX environment.",
+                    "$ref": "#/definitions/DestinationLinks"
+                }
+            }
+        },
+        "ShellAction": {
+            "description": "An action that invokes a command or script in a shell.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "command"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "shell"
+                            ]
+                        },
+                        "command": {
+                            "description": "The command to invoke.",
+                            "type": "string"
+                        },
+                        "shell": {
+                            "description": "The type of shell to use when invoking the command.",
+                            "enum": [
+                                "sh",
+                                "powershell"
+                            ]
+                        },
+                        "silent": {
+                            "description": "If true, do not direct output from the shell to the console.",
+                            "type": "boolean"
+                        }
+                    }
+                }
+            ]
+        },
+        "LinkAction": {
+            "allOf":[
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "links"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "link"
+                            ]
+                        },
+                        "links": {
+                            "description": "The target and destination for symlinks to create.",
+                            "type": "object", 
+                            "minItems": 1,
+                            "additionalProperties": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/definitions/DestinationLinks"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/PlatformLinks"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "CopyAction": {
+            "allOf":[
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "files"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "copy"
+                            ]
+                        },
+                        "files": {
+                            "description": "The target and destination for files to copy.",
+                            "type": "object",
+                            "minItems": 1,
+                            "additionalProperties": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#/definitions/DestinationLinks"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/PlatformLinks"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "EnvironmentVariableAction": {
+            "description": "Set an environment variable.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "value"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "environmentVariable"
+                            ]
+                        },
+                        "name": {
+                            "description": "The name of the environment variable to set.",
+                            "type": "string"
+                        },
+                        "value": {
+                            "description": "The value of the environment variable to set.",
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "LinkExpandAction": {
+            "description": "An action that creates individual symlinks for each subdirectory of a source directory into a target directory.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "source",
+                        "target"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "linkExpand"
+                            ]
+                        },
+                        "source": {
+                            "description": "The directory whose subdirectories will be symlinked.",
+                            "type": "string"
+                        },
+                        "target": {
+                            "description": "The directory in which to create the symlinks.",
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        },
+        "CloneGitRepositoryAction": {
+            "description": "An action that clones git repositories and keeps them up to date.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ActionBase"
+                },
+                {
+                    "type": "object",
+                    "required": [
+                        "repos"
+                    ],
+                    "properties": {
+                        "actionType": {
+                            "enum": [
+                                "cloneGitRepository"
+                            ]
+                        },
+                        "repos": {
+                            "description": "A map of repository URLs to local destination paths.",
+                            "type": "object",
+                            "minProperties": 1,
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}
