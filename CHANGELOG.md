@@ -2,23 +2,30 @@
 
 ## Unreleased
 
+## 0.6.0
+
 ### Feature updates
 
-* The `os` property is now supported on all action types. When set, the action only runs
-  on the specified operating system(s).
-* Add `sh` shell type for running commands via `/bin/sh`
-  on Linux and macOS. The `os` property on shell actions
-  is now optional — when omitted, the action runs on all
-  platforms.
-* Each action now logs a start (`>`) and finish (`✓`) event. An optional `"label"`
-  property can be added to actions in `cnct.json` to add context to the display.
-* Add `--validate` / `-v` option to validate a `cnct.json` config file without executing
-  it. Results are written to stdout as JSON (`{ "valid": bool, "issues": [...] }`) so the
-  output can be consumed by scripts and CI/CD pipelines. Exit code is `0` when the config
-  is valid and `1` when there are errors. Validation checks include:
+* The `os` property is now supported on all action types. When set, the action
+  only runs on the specified operating system(s).
+  ([#78](https://github.com/bgold09/cnct-net/pull/78))
+* Add `sh` shell type for running commands via `/bin/sh` on Linux and macOS.
+  The `os` property on shell actions is now optional — when omitted, the action
+  runs on all platforms.
+  ([#78](https://github.com/bgold09/cnct-net/pull/78))
+* Each action now logs a start (`>`) and finish (`✓`) event. An optional
+  `"label"` property can be added to actions in `cnct.json` to add context to
+  the display.
+  ([#79](https://github.com/bgold09/cnct-net/pull/79))
+* Add `--validate` / `-v` option to validate a `cnct.json` config file without
+  executing it. Results are written to stdout as JSON
+  (`{ "valid": bool, "issues": [...] }`) so the output can be consumed by
+  scripts and CI/CD pipelines. Exit code is `0` when the config is valid and
+  `1` when there are errors. Validation checks include:
   * `link` / `copy`: each source file or directory must exist on disk.
   * `linkExpand`: the source directory must exist on disk.
   * `cloneGitRepository`: each repository URL must be a valid absolute URI.
+  ([#84](https://github.com/bgold09/cnct-net/pull/84))
 
 ## 0.5.0
 
