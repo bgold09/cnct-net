@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO.Abstractions;
-using System.Threading.Tasks;
-using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
@@ -11,26 +8,6 @@ namespace Cnct.Core.Configuration
     [CnctActionType("cloneGitRepository")]
     public sealed partial class CloneGitRepositoryTaskSpecification : CnctActionSpecBase
     {
-        private readonly IFileSystem fileSystem;
-        private readonly IGitRunner gitRunner;
-        private readonly IPathResolver pathResolver;
-
-        public CloneGitRepositoryTaskSpecification(
-            IGitRunner gitRunner,
-            IFileSystem fileSystem,
-            IPathResolver pathResolver)
-        {
-            this.gitRunner = gitRunner;
-            this.fileSystem = fileSystem;
-            this.pathResolver = pathResolver;
-        }
-
-        public CloneGitRepositoryTaskSpecification()
-        {
-            this.fileSystem = new FileSystem();
-            this.pathResolver = new PathResolver(this.fileSystem);
-        }
-
         [JsonProperty("repos")]
         public IReadOnlyDictionary<string, string> Repos { get; set; }
 
@@ -62,25 +39,6 @@ namespace Cnct.Core.Configuration
             }
 
             return issues;
-        }
-
-        public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
-        {
-            var normalizedRepos = new Dictionary<string, string>();
-            foreach (var kvp in this.Repos)
-            {
-                normalizedRepos[kvp.Key] = this.pathResolver.Resolve(
-                    kvp.Value,
-                    configDirectoryRoot);
-            }
-
-            var cloneTask = new CloneGitRepositoryTask(
-                logger,
-                normalizedRepos,
-                this.gitRunner ?? new ProcessGitRunner(logger),
-                this.fileSystem);
-
-            return cloneTask.ExecuteAsync();
         }
 
         protected override string GetAdditionalDisplayText() =>

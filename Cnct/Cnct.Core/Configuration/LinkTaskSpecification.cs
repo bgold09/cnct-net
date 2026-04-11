@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Threading.Tasks;
-using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
@@ -46,16 +44,6 @@ namespace Cnct.Core.Configuration
             }
 
             return issues;
-        }
-
-        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
-        {
-            var linkTask = new LinkTask(
-                logger,
-                this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Links),
-                this.fileSystem);
-
-            await linkTask.ExecuteAsync();
         }
     }
 }

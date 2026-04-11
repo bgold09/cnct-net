@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.IO.Abstractions.TestingHelpers;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 using Cnct.Core.Validation;
-using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -66,33 +63,6 @@ namespace Cnct.Core.Tests
             IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
 
             Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error && i.Message.Contains("target"));
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_ResolvesRelativeSourceAgainstConfigDirectoryRoot()
-        {
-            string configRoot = Path.GetTempPath();
-            const string relativeSource = "skills";
-            string expectedResolvedSource = Path.Combine(configRoot, relativeSource);
-
-            var logger = new Mock<ILogger>();
-            logger.Setup(l => l.LogWarning(It.IsAny<string>()));
-
-            // Source dir doesn't exist in the mock filesystem → task logs a warning
-            var mockFileSystem = new MockFileSystem();
-            var spec = new LinkExpandTaskSpecification(
-                mockFileSystem,
-                new PathResolver(mockFileSystem))
-            {
-                Source = relativeSource,
-                Target = "~/some/target",
-            };
-
-            await spec.ExecuteAsync(logger.Object, configRoot);
-
-            logger.Verify(
-                l => l.LogWarning(It.Is<string>(s => s.Contains(expectedResolvedSource))),
-                Times.Once);
         }
 
         [Fact]

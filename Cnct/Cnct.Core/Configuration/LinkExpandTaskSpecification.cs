@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Threading.Tasks;
-using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
@@ -56,14 +54,6 @@ namespace Cnct.Core.Configuration
             }
 
             return issues;
-        }
-
-        public override Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
-        {
-            string source = this.pathResolver.Resolve(this.Source, configDirectoryRoot);
-            string target = this.Target.NormalizePath();
-            var linkExpandTask = new LinkExpandTask(logger, source, target, this.fileSystem);
-            return linkExpandTask.ExecuteAsync();
         }
     }
 }

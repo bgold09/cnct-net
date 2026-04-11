@@ -17,9 +17,11 @@ namespace Cnct.SourceGeneration
         public void Execute(GeneratorExecutionContext context)
         {
             const string CnctActionConverterClassName = "CnctActionConverter";
+            const string ActionRunnerClassName = "ActionRunner";
             const string AttributeName = "CnctActionType";
             var syntaxReceiver = context.SyntaxReceiver as ActionSpecSyntaxReceiver;
             var actionTypeToClassNameMap = new List<(string actionType, string className)>();
+            var taskClassInfoList = new List<(string specClassName, string taskClassName, string taskNamespace, string accessibility)>();
             foreach (ClassDeclarationSyntax cds in syntaxReceiver.ClassesToAugment)
             {
                 AttributeSyntax result = cds.AttributeLists
@@ -35,6 +37,22 @@ namespace Cnct.SourceGeneration
                     string className = cds.Identifier.ValueText;
                     this.AddActionSpecGeneratedSource(context, value, className);
                     actionTypeToClassNameMap.Add((value, className));
+
+                    string taskClassName = className.Replace("Specification", string.Empty);
+                    var taskSymbol = context.Compilation
+                        .GetSymbolsWithName(taskClassName, SymbolFilter.Type)
+                        .OfType<INamedTypeSymbol>()
+                        .FirstOrDefault();
+
+                    if (taskSymbol != null)
+                    {
+                        string taskNamespace = taskSymbol.ContainingNamespace.ToDisplayString();
+                        string accessibility = taskSymbol.DeclaredAccessibility == Accessibility.Public
+                            ? "public"
+                            : "internal";
+                        taskClassInfoList.Add((className, taskClassName, taskNamespace, accessibility));
+                        this.AddTaskGeneratedSource(context, taskClassName, taskNamespace, accessibility);
+                    }
                 }
             }
 
@@ -65,6 +83,8 @@ namespace {NamespaceCnctCoreConfiguration}
             context.AddSource(
                 $"{CnctActionConverterClassName}.g.cs",
                 SourceText.From(actionConverterSourceBuilder.ToString(), Encoding.UTF8));
+
+            this.AddActionRunnerGeneratedSource(context, ActionRunnerClassName, taskClassInfoList);
         }
 
         public void Initialize(GeneratorInitializationContext context)
@@ -88,6 +108,64 @@ namespace {NamespaceCnctCoreConfiguration}
 ";
 
             context.AddSource($"{className}.g.cs", SourceText.From(source, Encoding.UTF8));
+        }
+
+        private void AddTaskGeneratedSource(
+            GeneratorExecutionContext context,
+            string taskClassName,
+            string taskNamespace,
+            string accessibility)
+        {
+            string source = @$"
+namespace {taskNamespace}
+{{
+    {accessibility} partial class {taskClassName} : Cnct.Core.Tasks.CnctTaskBase
+    {{
+    }}
+}}
+";
+
+            context.AddSource($"{taskClassName}.g.cs", SourceText.From(source, Encoding.UTF8));
+        }
+
+        private void AddActionRunnerGeneratedSource(
+            GeneratorExecutionContext context,
+            string actionRunnerClassName,
+            List<(string specClassName, string taskClassName, string taskNamespace, string accessibility)> taskClassInfoList)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("using System;");
+            sb.AppendLine("using System.Threading.Tasks;");
+            sb.AppendLine("using Cnct.Core.Configuration;");
+            sb.AppendLine();
+            sb.AppendLine("namespace Cnct.Core.Tasks");
+            sb.AppendLine("{");
+            sb.AppendLine($"    public partial class {actionRunnerClassName}");
+            sb.AppendLine("    {");
+            sb.AppendLine("        private static async Task DispatchAsync(");
+            sb.AppendLine("            ICnctActionSpec spec,");
+            sb.AppendLine("            ILogger logger,");
+            sb.AppendLine("            string configDirectoryRoot)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            ICnctTask task = spec switch");
+            sb.AppendLine("            {");
+
+            foreach (var (specClassName, taskClassName, taskNamespace, _) in taskClassInfoList)
+            {
+                string fullTaskName = $"{taskNamespace}.{taskClassName}";
+                sb.AppendLine($"                {specClassName} s => {fullTaskName}.FromTaskSpecification(s, logger, configDirectoryRoot),");
+            }
+
+            sb.AppendLine(@"                _ => throw new NotSupportedException($""Action type '{spec.ActionType}' is not supported.""),");
+            sb.AppendLine("            };");
+            sb.AppendLine("            await task.ExecuteAsync();");
+            sb.AppendLine("        }");
+            sb.AppendLine("    }");
+            sb.AppendLine("}");
+
+            context.AddSource(
+                $"{actionRunnerClassName}.g.cs",
+                SourceText.From(sb.ToString(), Encoding.UTF8));
         }
 
         private class ActionSpecSyntaxReceiver : ISyntaxReceiver

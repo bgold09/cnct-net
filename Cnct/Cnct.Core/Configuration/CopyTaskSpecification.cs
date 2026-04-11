@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
 
 namespace Cnct.Core.Configuration
@@ -46,16 +44,6 @@ namespace Cnct.Core.Configuration
             }
 
             return issues;
-        }
-
-        public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
-        {
-            var copyTask = new CopyTask(
-                logger,
-                this.fileSystem,
-                this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Files));
-
-            await copyTask.ExecuteAsync();
         }
     }
 }

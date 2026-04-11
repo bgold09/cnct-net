@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Cnct.Core.Configuration;
+using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
 
 namespace Cnct.Core
@@ -45,6 +46,7 @@ namespace Cnct.Core
 
             CnctConfig cnctConfig = parser.Parse(configFilePath);
             cnctConfig.MachineTags = (await new MachineSettingsLoader().LoadAsync()).Tags;
+            cnctConfig.Runner = new ActionRunner();
 
             ConfigValidationResult validation = cnctConfig.Validate();
             if (validate)
