@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks.Shell
 {
@@ -23,12 +22,12 @@ namespace Cnct.Core.Tasks.Shell
         }
 
         public async Task ExecuteAsync(
-            ShellTaskSpecification specification)
+            ShellExecutionOptions options)
         {
-            if (specification == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(
-                    nameof(specification));
+                    nameof(options));
             }
 
             var startInfo = new ProcessStartInfo
@@ -40,10 +39,10 @@ namespace Cnct.Core.Tasks.Shell
             };
 
             startInfo.ArgumentList.Add("-c");
-            startInfo.ArgumentList.Add(specification.Command);
+            startInfo.ArgumentList.Add(options.Command);
 
             await this.processRunner.ExecuteAsync(
-                startInfo, specification, this.logger);
+                startInfo, options, this.logger);
         }
     }
 }

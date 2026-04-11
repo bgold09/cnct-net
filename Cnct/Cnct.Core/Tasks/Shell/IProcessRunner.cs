@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks.Shell
 {
@@ -8,7 +7,7 @@ namespace Cnct.Core.Tasks.Shell
     {
         Task ExecuteAsync(
             ProcessStartInfo startInfo,
-            ShellTaskSpecification specification,
+            ShellExecutionOptions options,
             ILogger logger);
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Cnct.Core.Configuration;
 using Cnct.Core.Tasks.Shell;
 using Moq;
 using Xunit;
@@ -11,7 +10,7 @@ namespace Cnct.Core.Tests
     public class PowerShellInvokerTests
     {
         [Fact]
-        public async Task ExecuteAsync_ThrowsWhenSpecIsNull()
+        public async Task ExecuteAsync_ThrowsWhenOptionsIsNull()
         {
             var invoker = new PowerShellInvoker();
 
@@ -33,28 +32,24 @@ namespace Cnct.Core.Tests
 
             runner.Setup(r => r.ExecuteAsync(
                     It.IsAny<ProcessStartInfo>(),
-                    It.IsAny<ShellTaskSpecification>(),
+                    It.IsAny<ShellExecutionOptions>(),
                     It.IsAny<ILogger>()))
                 .Callback<ProcessStartInfo,
-                    ShellTaskSpecification, ILogger>(
+                    ShellExecutionOptions, ILogger>(
                     (si, _, __) => captured = si)
                 .Returns(Task.CompletedTask);
 
-            var spec = new ShellTaskSpecification
-            {
-                Shell =
-                    ShellTaskSpecification.ShellType.PowerShell,
-                Command = "./bootstrap.ps1",
-            };
+            var options = new ShellExecutionOptions(
+                "./bootstrap.ps1", silent: false);
 
             var invoker = new PowerShellInvoker(
                 logger.Object, runner.Object);
-            await invoker.ExecuteAsync(spec);
+            await invoker.ExecuteAsync(options);
 
             runner.Verify(
                 r => r.ExecuteAsync(
                     It.IsAny<ProcessStartInfo>(),
-                    spec,
+                    options,
                     logger.Object),
                 Times.Once);
 
@@ -69,7 +64,7 @@ namespace Cnct.Core.Tests
         }
 
         [Fact]
-        public async Task ExecuteAsync_SilentSpec_StillCallsRunner()
+        public async Task ExecuteAsync_SilentOptions_StillCallsRunner()
         {
             if (OperatingSystem.IsWindows())
             {
@@ -80,26 +75,21 @@ namespace Cnct.Core.Tests
             var runner = new Mock<IProcessRunner>();
             runner.Setup(r => r.ExecuteAsync(
                     It.IsAny<ProcessStartInfo>(),
-                    It.IsAny<ShellTaskSpecification>(),
+                    It.IsAny<ShellExecutionOptions>(),
                     It.IsAny<ILogger>()))
                 .Returns(Task.CompletedTask);
 
-            var spec = new ShellTaskSpecification
-            {
-                Shell =
-                    ShellTaskSpecification.ShellType.PowerShell,
-                Command = "./script.ps1",
-                Silent = true,
-            };
+            var options = new ShellExecutionOptions(
+                "./script.ps1", silent: true);
 
             var invoker = new PowerShellInvoker(
                 logger.Object, runner.Object);
-            await invoker.ExecuteAsync(spec);
+            await invoker.ExecuteAsync(options);
 
             runner.Verify(
                 r => r.ExecuteAsync(
                     It.IsAny<ProcessStartInfo>(),
-                    spec,
+                    options,
                     logger.Object),
                 Times.Once);
         }

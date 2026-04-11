@@ -4,7 +4,6 @@ using System.IO;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Threading.Tasks;
-using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks.Shell
 {
@@ -26,26 +25,26 @@ namespace Cnct.Core.Tasks.Shell
         }
 
         public async Task ExecuteAsync(
-            ShellTaskSpecification specification)
+            ShellExecutionOptions options)
         {
-            if (specification == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(
-                    nameof(specification));
+                    nameof(options));
             }
 
             if (OperatingSystem.IsWindows())
             {
-                await ExecuteInProcessAsync(specification);
+                await ExecuteInProcessAsync(options);
             }
             else
             {
-                await this.ExecuteAsProcessAsync(specification);
+                await this.ExecuteAsProcessAsync(options);
             }
         }
 
         private static async Task ExecuteInProcessAsync(
-            ShellTaskSpecification specification)
+            ShellExecutionOptions options)
         {
             var sessionState =
                 InitialSessionState.CreateDefault2();
@@ -54,13 +53,13 @@ namespace Cnct.Core.Tasks.Shell
 
             using var powershell =
                 PowerShell.Create(sessionState);
-            powershell.AddScript(specification.Command);
+            powershell.AddScript(options.Command);
 
             powershell.Streams.Error.DataAdded +=
                 ToStandardError<ErrorRecord>;
             powershell.Streams.Warning.DataAdded +=
                 ToStandardOutput<WarningRecord>;
-            if (!specification.Silent)
+            if (!options.Silent)
             {
                 powershell.Streams.Information.DataAdded +=
                     ToStandardOutput<InformationRecord>;
@@ -100,7 +99,7 @@ namespace Cnct.Core.Tasks.Shell
         }
 
         private async Task ExecuteAsProcessAsync(
-            ShellTaskSpecification specification)
+            ShellExecutionOptions options)
         {
             var startInfo = new ProcessStartInfo
             {
@@ -113,10 +112,10 @@ namespace Cnct.Core.Tasks.Shell
             startInfo.ArgumentList.Add("-NoProfile");
             startInfo.ArgumentList.Add("-NoLogo");
             startInfo.ArgumentList.Add("-File");
-            startInfo.ArgumentList.Add(specification.Command);
+            startInfo.ArgumentList.Add(options.Command);
 
             await this.processRunner.ExecuteAsync(
-                startInfo, specification, this.logger);
+                startInfo, options, this.logger);
         }
     }
 }
