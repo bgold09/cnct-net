@@ -32,8 +32,18 @@ namespace Cnct.Core.Configuration
 
         public override async Task ExecuteAsync(ILogger logger, string configDirectoryRoot)
         {
-            IShellInvoker shellInvoker = this.shellInvokerFactory.Create(this.Shell, logger);
-            await shellInvoker.ExecuteAsync(this);
+            IShellInvoker shellInvoker = this.Shell switch
+            {
+                ShellType.PowerShell => new PowerShellInvoker(logger),
+                ShellType.Sh => new ShInvoker(logger),
+                _ => throw new ArgumentOutOfRangeException(
+                    message: $"Shell type {this.Shell} is not supported.",
+                    innerException: null),
+            };
+
+            var options = new ShellExecutionOptions(
+                this.Command, this.Silent);
+            await shellInvoker.ExecuteAsync(options);
         }
 
         public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)

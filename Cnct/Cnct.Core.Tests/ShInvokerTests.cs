@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Cnct.Core.Configuration;
 using Cnct.Core.Tasks.Shell;
 using Moq;
 using Xunit;
@@ -11,7 +10,7 @@ namespace Cnct.Core.Tests
     public class ShInvokerTests
     {
         [Fact]
-        public async Task ExecuteAsync_ThrowsWhenSpecIsNull()
+        public async Task ExecuteAsync_ThrowsWhenOptionsIsNull()
         {
             var logger = new Mock<ILogger>();
             var invoker = new ShInvoker(logger.Object);
@@ -29,27 +28,24 @@ namespace Cnct.Core.Tests
 
             runner.Setup(r => r.ExecuteAsync(
                     It.IsAny<ProcessStartInfo>(),
-                    It.IsAny<ShellTaskSpecification>(),
+                    It.IsAny<ShellExecutionOptions>(),
                     It.IsAny<ILogger>()))
                 .Callback<ProcessStartInfo,
-                    ShellTaskSpecification, ILogger>(
+                    ShellExecutionOptions, ILogger>(
                     (si, _, __) => captured = si)
                 .Returns(Task.CompletedTask);
 
-            var spec = new ShellTaskSpecification
-            {
-                Shell = ShellTaskSpecification.ShellType.Sh,
-                Command = "./bootstrap.sh",
-            };
+            var options = new ShellExecutionOptions(
+                "./bootstrap.sh", silent: false);
 
             var invoker = new ShInvoker(
                 logger.Object, runner.Object);
-            await invoker.ExecuteAsync(spec);
+            await invoker.ExecuteAsync(options);
 
             runner.Verify(
                 r => r.ExecuteAsync(
                     It.IsAny<ProcessStartInfo>(),
-                    spec,
+                    options,
                     logger.Object),
                 Times.Once);
 

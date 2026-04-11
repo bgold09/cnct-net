@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
-using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks.Shell
 {
@@ -10,7 +9,7 @@ namespace Cnct.Core.Tasks.Shell
     {
         public async Task ExecuteAsync(
             ProcessStartInfo startInfo,
-            ShellTaskSpecification specification,
+            ShellExecutionOptions options,
             ILogger logger)
         {
             using var process = Process.Start(startInfo)
@@ -19,7 +18,7 @@ namespace Cnct.Core.Tasks.Shell
 
             var stderr = new StringBuilder();
 
-            if (!specification.Silent)
+            if (!options.Silent)
             {
                 process.OutputDataReceived += (_, e) =>
                 {
@@ -35,7 +34,7 @@ namespace Cnct.Core.Tasks.Shell
                 if (e.Data != null)
                 {
                     stderr.AppendLine(e.Data);
-                    if (!specification.Silent)
+                    if (!options.Silent)
                     {
                         logger.LogWarning(e.Data);
                     }
