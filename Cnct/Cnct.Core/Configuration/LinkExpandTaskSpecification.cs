@@ -14,23 +14,19 @@ namespace Cnct.Core.Configuration
         private readonly IFileSystem fileSystem;
         private readonly IPathResolver pathResolver;
 
-        public LinkExpandTaskSpecification()
-        {
-            this.fileSystem = new FileSystem();
-            this.pathResolver = new PathResolver(this.fileSystem);
-        }
-
-        public LinkExpandTaskSpecification(IFileSystem fileSystem)
-            : this(fileSystem, new PathResolver(fileSystem))
-        {
-        }
-
         public LinkExpandTaskSpecification(
             IFileSystem fileSystem,
             IPathResolver pathResolver)
         {
             this.fileSystem = fileSystem;
             this.pathResolver = pathResolver;
+        }
+
+        public LinkExpandTaskSpecification()
+            : this(
+                  new FileSystem(),
+                  new PathResolver(new FileSystem()))
+        {
         }
 
         [JsonProperty("source")]

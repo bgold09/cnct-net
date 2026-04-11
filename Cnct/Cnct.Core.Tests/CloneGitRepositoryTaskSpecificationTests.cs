@@ -23,20 +23,26 @@ namespace Cnct.Core.Tests
                 ["https://example.com/org/repo-a"] = "~/dev/repo-a",
             };
 
-            var json = JsonConvert.SerializeObject(new Dictionary<string, object>
-            {
-                ["actionType"] = "cloneGitRepository",
-                ["repos"] = expectedRepos,
-            });
+            var json = JsonConvert.SerializeObject(
+                new Dictionary<string, object>
+                {
+                    ["actionType"] = "cloneGitRepository",
+                    ["repos"] = expectedRepos,
+                });
 
-            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
-            var spec = Assert.IsType<CloneGitRepositoryTaskSpecification>(specInterface);
+            var specInterface =
+                JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec =
+                Assert.IsType<CloneGitRepositoryTaskSpecification>(
+                    specInterface);
             Assert.Equal(expectedRepos.Count, spec.Repos.Count);
-            Assert.Equal(expectedRepos["https://example.com/org/repo-a"], spec.Repos["https://example.com/org/repo-a"]);
+            Assert.Equal(
+                expectedRepos["https://example.com/org/repo-a"],
+                spec.Repos["https://example.com/org/repo-a"]);
         }
 
         [Fact]
-        public void CanDeserializeCloneGitRepositoryTaskSpecWithMultipleRepos()
+        public void CanDeserializeWithMultipleRepos()
         {
             var expectedRepos = new Dictionary<string, string>
             {
@@ -44,14 +50,18 @@ namespace Cnct.Core.Tests
                 ["https://example.com/org/repo-b"] = "~/dev/repo-b",
             };
 
-            var json = JsonConvert.SerializeObject(new Dictionary<string, object>
-            {
-                ["actionType"] = "cloneGitRepository",
-                ["repos"] = expectedRepos,
-            });
+            var json = JsonConvert.SerializeObject(
+                new Dictionary<string, object>
+                {
+                    ["actionType"] = "cloneGitRepository",
+                    ["repos"] = expectedRepos,
+                });
 
-            var specInterface = JsonConvert.DeserializeObject<ICnctActionSpec>(json);
-            var spec = Assert.IsType<CloneGitRepositoryTaskSpecification>(specInterface);
+            var specInterface =
+                JsonConvert.DeserializeObject<ICnctActionSpec>(json);
+            var spec =
+                Assert.IsType<CloneGitRepositoryTaskSpecification>(
+                    specInterface);
             Assert.Equal(expectedRepos.Count, spec.Repos.Count);
             foreach (var kvp in expectedRepos)
             {
@@ -62,11 +72,17 @@ namespace Cnct.Core.Tests
         [Fact]
         public void Validate_ReturnsError_WhenReposIsNull()
         {
-            var spec = new CloneGitRepositoryTaskSpecification { Repos = null };
+            var spec = new CloneGitRepositoryTaskSpecification
+            {
+                Repos = null,
+            };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate("/config");
 
-            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
+            Assert.Contains(
+                issues,
+                i => i.Severity == ValidationSeverity.Error);
         }
 
         [Fact]
@@ -77,9 +93,12 @@ namespace Cnct.Core.Tests
                 Repos = new Dictionary<string, string>(),
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate("/config");
 
-            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
+            Assert.Contains(
+                issues,
+                i => i.Severity == ValidationSeverity.Error);
         }
 
         [Fact]
@@ -89,20 +108,25 @@ namespace Cnct.Core.Tests
             {
                 Repos = new Dictionary<string, string>
                 {
-                    ["https://example.com/org/repo-a"] = "~/dev/repo-a",
+                    ["https://example.com/org/repo-a"] =
+                        "~/dev/repo-a",
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate("/config");
 
-            Assert.DoesNotContain(issues, i => i.Severity == ValidationSeverity.Error);
+            Assert.DoesNotContain(
+                issues,
+                i => i.Severity == ValidationSeverity.Error);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Validate_ReturnsError_WhenEntryValueIsNullOrWhiteSpace(string dest)
+        public void Validate_ReturnsError_WhenDestIsBlank(
+            string dest)
         {
             var spec = new CloneGitRepositoryTaskSpecification
             {
@@ -112,29 +136,42 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate("/config");
 
-            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
+            Assert.Contains(
+                issues,
+                i => i.Severity == ValidationSeverity.Error);
         }
 
         [Fact]
-        public async Task ExecuteAsync_ResolvesRelativeDestAgainstConfigDirectoryRoot()
+        public async Task ExecuteAsync_ResolvesRelativeDest()
         {
             string configRoot = Path.GetTempPath();
-            const string url = "https://example.com/org/repo-a";
-            string relativeDest = Path.Combine("dev", "repo-a");
-            string expectedDest = Path.Combine(configRoot, relativeDest);
+            const string url =
+                "https://example.com/org/repo-a";
+            string relativeDest =
+                Path.Combine("dev", "repo-a");
+            string expectedDest =
+                Path.Combine(configRoot, relativeDest);
 
             var mockFileSystem = new MockFileSystem();
             var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+            mockRunner
+                .Setup(r => r.CloneAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = CreateSpec(
+                mockRunner, mockFileSystem);
+            spec.Repos = new Dictionary<string, string>
             {
-                Repos = new Dictionary<string, string> { [url] = relativeDest },
+                [url] = relativeDest,
             };
 
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), configRoot);
+            await spec.ExecuteAsync(
+                Mock.Of<ILogger>(), configRoot);
 
             mockRunner.Verify(
                 r => r.CloneAsync(url, expectedDest),
@@ -142,127 +179,191 @@ namespace Cnct.Core.Tests
         }
 
         [Fact]
-        public async Task ExecuteAsync_ClonesWhenDestDoesNotExist()
+        public async Task ExecuteAsync_ClonesWhenDestNotExist()
         {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "repo-a");
-            const string url = "https://example.com/org/repo-a";
+            string dest = Path.Combine(
+                Path.GetTempPath(),
+                Guid.NewGuid().ToString(),
+                "repo-a");
+            const string url =
+                "https://example.com/org/repo-a";
 
             var mockFileSystem = new MockFileSystem();
             var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+            mockRunner
+                .Setup(r => r.CloneAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = CreateSpec(
+                mockRunner, mockFileSystem);
+            spec.Repos = new Dictionary<string, string>
             {
-                Repos = new Dictionary<string, string> { [url] = dest },
+                [url] = dest,
             };
 
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), Path.GetTempPath());
+            await spec.ExecuteAsync(
+                Mock.Of<ILogger>(), Path.GetTempPath());
 
-            mockRunner.Verify(r => r.CloneAsync(url, dest), Times.Once);
-            mockRunner.Verify(r => r.PullAsync(It.IsAny<string>()), Times.Never);
+            mockRunner.Verify(
+                r => r.CloneAsync(url, dest), Times.Once);
+            mockRunner.Verify(
+                r => r.PullAsync(It.IsAny<string>()),
+                Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsync_PullsWhenDotGitDirectoryExists()
+        public async Task ExecuteAsync_PullsWhenDotGitDirExists()
         {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            string dest = Path.Combine(
+                Path.GetTempPath(),
+                Guid.NewGuid().ToString());
             var mockFileSystem = new MockFileSystem();
-            mockFileSystem.Directory.CreateDirectory(mockFileSystem.Path.Combine(dest, ".git"));
+            mockFileSystem.Directory.CreateDirectory(
+                mockFileSystem.Path.Combine(dest, ".git"));
 
-            const string url = "https://example.com/org/repo-a";
+            const string url =
+                "https://example.com/org/repo-a";
             var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.PullAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+            mockRunner
+                .Setup(r => r.PullAsync(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = CreateSpec(
+                mockRunner, mockFileSystem);
+            spec.Repos = new Dictionary<string, string>
             {
-                Repos = new Dictionary<string, string> { [url] = dest },
+                [url] = dest,
             };
 
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), Path.GetTempPath());
+            await spec.ExecuteAsync(
+                Mock.Of<ILogger>(), Path.GetTempPath());
 
-            mockRunner.Verify(r => r.PullAsync(dest), Times.Once);
-            mockRunner.Verify(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            mockRunner.Verify(
+                r => r.PullAsync(dest), Times.Once);
+            mockRunner.Verify(
+                r => r.CloneAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Never);
         }
 
         [Fact]
         public async Task ExecuteAsync_PullsWhenDotGitFileExists()
         {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            string dest = Path.Combine(
+                Path.GetTempPath(),
+                Guid.NewGuid().ToString());
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.Directory.CreateDirectory(dest);
             mockFileSystem.File.WriteAllText(
                 mockFileSystem.Path.Combine(dest, ".git"),
                 "gitdir: ../.git/worktrees/worktree1");
 
-            const string url = "https://example.com/org/repo-a";
+            const string url =
+                "https://example.com/org/repo-a";
             var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.PullAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
+            mockRunner
+                .Setup(r => r.PullAsync(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = CreateSpec(
+                mockRunner, mockFileSystem);
+            spec.Repos = new Dictionary<string, string>
             {
-                Repos = new Dictionary<string, string> { [url] = dest },
+                [url] = dest,
             };
 
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), Path.GetTempPath());
+            await spec.ExecuteAsync(
+                Mock.Of<ILogger>(), Path.GetTempPath());
 
-            mockRunner.Verify(r => r.PullAsync(dest), Times.Once);
-            mockRunner.Verify(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            mockRunner.Verify(
+                r => r.PullAsync(dest), Times.Once);
+            mockRunner.Verify(
+                r => r.CloneAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Never);
         }
 
         [Fact]
-        public async Task ExecuteAsync_LogsWarningWhenDestExistsButIsNotGitRepo()
+        public async Task ExecuteAsync_LogsWarningWhenNotGitRepo()
         {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            string dest = Path.Combine(
+                Path.GetTempPath(),
+                Guid.NewGuid().ToString());
             var mockFileSystem = new MockFileSystem();
             mockFileSystem.Directory.CreateDirectory(dest);
 
-            const string url = "https://example.com/org/repo-a";
+            const string url =
+                "https://example.com/org/repo-a";
             var mockRunner = new Mock<IGitRunner>();
             var logger = new Mock<ILogger>();
 
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem)
+            var spec = CreateSpec(
+                mockRunner, mockFileSystem);
+            spec.Repos = new Dictionary<string, string>
             {
-                Repos = new Dictionary<string, string> { [url] = dest },
+                [url] = dest,
             };
 
-            await spec.ExecuteAsync(logger.Object, Path.GetTempPath());
+            await spec.ExecuteAsync(
+                logger.Object, Path.GetTempPath());
 
-            logger.Verify(l => l.LogWarning(It.Is<string>(s => s.Contains(dest))), Times.Once);
-            mockRunner.Verify(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            mockRunner.Verify(r => r.PullAsync(It.IsAny<string>()), Times.Never);
+            logger.Verify(
+                l => l.LogWarning(
+                    It.Is<string>(s => s.Contains(dest))),
+                Times.Once);
+            mockRunner.Verify(
+                r => r.CloneAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                Times.Never);
+            mockRunner.Verify(
+                r => r.PullAsync(It.IsAny<string>()),
+                Times.Never);
         }
 
         [Fact]
-        public void GetDisplayText_SingleRepo_ReturnsActionTypeAndUri()
+        public void GetDisplayText_SingleRepo_ReturnsUri()
         {
             var spec = new CloneGitRepositoryTaskSpecification
             {
                 Repos = new ReadOnlyDictionary<string, string>(
                     new Dictionary<string, string>
                     {
-                        ["https://github.com/user/repo"] = "~/repos/repo",
-                    }),
-            };
-
-            Assert.Equal("cloneGitRepository: https://github.com/user/repo", spec.GetDisplayText());
-        }
-
-        [Fact]
-        public void GetDisplayText_MultipleRepos_ReturnsAllUris()
-        {
-            var spec = new CloneGitRepositoryTaskSpecification
-            {
-                Repos = new ReadOnlyDictionary<string, string>(
-                    new Dictionary<string, string>
-                    {
-                        ["https://github.com/user/repo1"] = "~/repos/repo1",
-                        ["https://github.com/user/repo2"] = "~/repos/repo2",
+                        ["https://github.com/user/repo"] =
+                            "~/repos/repo",
                     }),
             };
 
             Assert.Equal(
-                "cloneGitRepository: https://github.com/user/repo1, https://github.com/user/repo2",
+                "cloneGitRepository: "
+                + "https://github.com/user/repo",
                 spec.GetDisplayText());
+        }
+
+        [Fact]
+        public void GetDisplayText_MultipleRepos_ReturnsAll()
+        {
+            var spec = new CloneGitRepositoryTaskSpecification
+            {
+                Repos = new ReadOnlyDictionary<string, string>(
+                    new Dictionary<string, string>
+                    {
+                        ["https://github.com/user/repo1"] =
+                            "~/repos/repo1",
+                        ["https://github.com/user/repo2"] =
+                            "~/repos/repo2",
+                    }),
+            };
+
+            string expected =
+                "cloneGitRepository: "
+                + "https://github.com/user/repo1, "
+                + "https://github.com/user/repo2";
+            Assert.Equal(expected, spec.GetDisplayText());
         }
 
         [Fact]
@@ -270,28 +371,32 @@ namespace Cnct.Core.Tests
         {
             var spec = new CloneGitRepositoryTaskSpecification();
 
-            Assert.Equal("cloneGitRepository", spec.GetDisplayText());
+            Assert.Equal(
+                "cloneGitRepository", spec.GetDisplayText());
         }
 
         [Fact]
-        public void Validate_ReturnsNoIssues_WhenAllUrlsAreValidAbsoluteUris()
+        public void Validate_NoIssues_WhenUrlsAreValidAbsolute()
         {
             var spec = new CloneGitRepositoryTaskSpecification
             {
                 Repos = new Dictionary<string, string>
                 {
-                    ["https://github.com/user/repo"] = "~/dev/repo",
-                    ["ssh://git@github.com/user/repo.git"] = "~/dev/repo2",
+                    ["https://github.com/user/repo"] =
+                        "~/dev/repo",
+                    ["ssh://git@github.com/user/repo.git"] =
+                        "~/dev/repo2",
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate("/config");
 
             Assert.Empty(issues);
         }
 
         [Fact]
-        public void Validate_ReturnsError_WhenUrlIsNotAValidAbsoluteUri()
+        public void Validate_Error_WhenUrlIsNotAbsoluteUri()
         {
             var spec = new CloneGitRepositoryTaskSpecification
             {
@@ -301,11 +406,32 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate("/config");
 
             Assert.Single(issues);
-            Assert.Equal(ValidationSeverity.Error, issues[0].Severity);
-            Assert.Contains("not a valid absolute URI", issues[0].Message);
+            Assert.Equal(
+                ValidationSeverity.Error,
+                issues[0].Severity);
+            Assert.Contains(
+                "not a valid absolute URI",
+                issues[0].Message);
+        }
+
+        private static CloneGitRepositoryTaskSpecification
+            CreateSpec(
+                Mock<IGitRunner> mockRunner,
+                MockFileSystem mockFileSystem)
+        {
+            var mockFactory = new Mock<IGitRunnerFactory>();
+            mockFactory
+                .Setup(f => f.Create(It.IsAny<ILogger>()))
+                .Returns(mockRunner.Object);
+
+            return new CloneGitRepositoryTaskSpecification(
+                mockFactory.Object,
+                mockFileSystem,
+                new PathResolver(mockFileSystem));
         }
     }
 }

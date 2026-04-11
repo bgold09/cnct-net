@@ -17,12 +17,9 @@ namespace Cnct.Core.Configuration
         [JsonConverter(typeof(FileSpecificationCollectionConverter))]
         public IReadOnlyDictionary<string, object> Files { get; set; }
 
-        public CopyTaskSpecification(IFileManagement fileManagement)
-            : this(fileManagement, new FileSystem())
-        {
-        }
-
-        public CopyTaskSpecification(IFileManagement fileManagement, IFileSystem fileSystem)
+        public CopyTaskSpecification(
+            IFileManagement fileManagement,
+            IFileSystem fileSystem)
         {
             this.fileManagement = fileManagement;
             this.fileSystem = fileSystem;

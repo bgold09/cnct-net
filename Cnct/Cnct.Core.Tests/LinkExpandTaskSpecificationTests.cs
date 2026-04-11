@@ -39,7 +39,7 @@ namespace Cnct.Core.Tests
         public void Validate_ReturnsError_WhenSourceIsNullOrWhiteSpace(string source)
         {
             var mockFs = new MockFileSystem();
-            var spec = new LinkExpandTaskSpecification(mockFs)
+            var spec = new LinkExpandTaskSpecification(mockFs, new PathResolver(mockFs))
             {
                 Source = source,
                 Target = "~/some/target",
@@ -57,7 +57,7 @@ namespace Cnct.Core.Tests
         public void Validate_ReturnsError_WhenTargetIsNullOrWhiteSpace(string target)
         {
             var mockFs = new MockFileSystem();
-            var spec = new LinkExpandTaskSpecification(mockFs)
+            var spec = new LinkExpandTaskSpecification(mockFs, new PathResolver(mockFs))
             {
                 Source = "~/some/source",
                 Target = target,
@@ -80,7 +80,9 @@ namespace Cnct.Core.Tests
 
             // Source dir doesn't exist in the mock filesystem → task logs a warning
             var mockFileSystem = new MockFileSystem();
-            var spec = new LinkExpandTaskSpecification(mockFileSystem)
+            var spec = new LinkExpandTaskSpecification(
+                mockFileSystem,
+                new PathResolver(mockFileSystem))
             {
                 Source = relativeSource,
                 Target = "~/some/target",
@@ -111,7 +113,7 @@ namespace Cnct.Core.Tests
             var mockFs = new MockFileSystem();
             mockFs.AddDirectory(fullSourcePath);
 
-            var spec = new LinkExpandTaskSpecification(mockFs)
+            var spec = new LinkExpandTaskSpecification(mockFs, new PathResolver(mockFs))
             {
                 Source = source,
                 Target = "~/some/target",
@@ -130,7 +132,7 @@ namespace Cnct.Core.Tests
 
             var mockFs = new MockFileSystem();
 
-            var spec = new LinkExpandTaskSpecification(mockFs)
+            var spec = new LinkExpandTaskSpecification(mockFs, new PathResolver(mockFs))
             {
                 Source = source,
                 Target = "~/some/target",
