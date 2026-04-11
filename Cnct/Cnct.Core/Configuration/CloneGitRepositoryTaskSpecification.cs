@@ -39,10 +39,8 @@ namespace Cnct.Core.Configuration
 
             if (this.Repos == null || this.Repos.Count == 0)
             {
-                issues.Add(new ValidationIssue(
+                issues.Add(this.CreateValidationIssue(
                     ValidationSeverity.Error,
-                    this.ActionType,
-                    this.Label,
                     "The collection of repositories cannot be null or empty."));
                 return issues;
             }
@@ -51,27 +49,21 @@ namespace Cnct.Core.Configuration
             {
                 if (string.IsNullOrWhiteSpace(kvp.Key))
                 {
-                    issues.Add(new ValidationIssue(
+                    issues.Add(this.CreateValidationIssue(
                         ValidationSeverity.Error,
-                        this.ActionType,
-                        this.Label,
                         "Each repository entry must have a non-empty URL."));
                 }
                 else if (!Uri.TryCreate(kvp.Key, UriKind.Absolute, out _))
                 {
-                    issues.Add(new ValidationIssue(
+                    issues.Add(this.CreateValidationIssue(
                         ValidationSeverity.Error,
-                        this.ActionType,
-                        this.Label,
                         $"Repository URL is not a valid absolute URI: {kvp.Key}"));
                 }
 
                 if (string.IsNullOrWhiteSpace(kvp.Value))
                 {
-                    issues.Add(new ValidationIssue(
+                    issues.Add(this.CreateValidationIssue(
                         ValidationSeverity.Error,
-                        this.ActionType,
-                        this.Label,
                         $"The destination path for repository '{kvp.Key}' cannot be null or empty."));
                 }
             }

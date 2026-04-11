@@ -4,7 +4,8 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Cnct.Core</AssemblyName>
     <RootNamespace>Cnct.Core</RootNamespace>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
+    <NoWarn>AD0001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

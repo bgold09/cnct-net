@@ -30,10 +30,8 @@ namespace Cnct.Core.Configuration
 
             if (!string.IsNullOrEmpty(this.Name) && this.Name.Contains('='))
             {
-                issues.Add(new ValidationIssue(
+                issues.Add(this.CreateValidationIssue(
                     ValidationSeverity.Error,
-                    this.ActionType,
-                    this.Label,
                     $"Environment variable '{this.Name}' contains '=', which is not valid."));
             }
 

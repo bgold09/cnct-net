@@ -35,19 +35,15 @@ namespace Cnct.Core.Configuration
 
             if (string.IsNullOrWhiteSpace(this.Source))
             {
-                issues.Add(new ValidationIssue(
+                issues.Add(this.CreateValidationIssue(
                     ValidationSeverity.Error,
-                    this.ActionType,
-                    this.Label,
                     "A source directory must be specified."));
             }
 
             if (string.IsNullOrWhiteSpace(this.Target))
             {
-                issues.Add(new ValidationIssue(
+                issues.Add(this.CreateValidationIssue(
                     ValidationSeverity.Error,
-                    this.ActionType,
-                    this.Label,
                     "A target directory must be specified."));
             }
 
@@ -61,10 +57,8 @@ namespace Cnct.Core.Configuration
 
                 if (!this.fileSystem.Directory.Exists(source))
                 {
-                    issues.Add(new ValidationIssue(
+                    issues.Add(this.CreateValidationIssue(
                         ValidationSeverity.Error,
-                        this.ActionType,
-                        this.Label,
                         $"Source directory does not exist: {source}"));
                 }
             }

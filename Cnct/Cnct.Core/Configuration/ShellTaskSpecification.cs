@@ -40,19 +40,15 @@ namespace Cnct.Core.Configuration
 
             if (this.Shell == ShellType.Unknown)
             {
-                issues.Add(new ValidationIssue(
+                issues.Add(this.CreateValidationIssue(
                     ValidationSeverity.Error,
-                    this.ActionType,
-                    this.Label,
                     $"Shell type '{this.Shell}' not recognized."));
             }
 
             if (string.IsNullOrWhiteSpace(this.Command))
             {
-                issues.Add(new ValidationIssue(
+                issues.Add(this.CreateValidationIssue(
                     ValidationSeverity.Error,
-                    this.ActionType,
-                    this.Label,
                     "A command must be specified."));
             }
 
@@ -65,10 +61,8 @@ namespace Cnct.Core.Configuration
 
             if (executable != null && !IsOnPath(executable))
             {
-                issues.Add(new ValidationIssue(
+                issues.Add(this.CreateValidationIssue(
                     ValidationSeverity.Warning,
-                    this.ActionType,
-                    this.Label,
                     $"Shell executable '{executable}' was not found on PATH."));
             }
 

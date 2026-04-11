@@ -23,9 +23,21 @@ namespace Cnct.Core.Configuration
 
         public ConfigValidationResult Validate()
         {
+            if (this.Actions == null || this.Actions.Length == 0)
+            {
+                return new ConfigValidationResult(new[]
+                {
+                    new ValidationIssue(
+                        ValidationSeverity.Error,
+                        "config",
+                        null,
+                        "The configuration must contain at least one action."),
+                });
+            }
+
             var issues = new List<ValidationIssue>();
 
-            foreach (var action in (this.Actions ?? Array.Empty<ICnctActionSpec>()).Where(a => a != null))
+            foreach (var action in this.Actions.Where(a => a != null))
             {
                 issues.AddRange(action.Validate(this.ConfigRootDirectory));
             }

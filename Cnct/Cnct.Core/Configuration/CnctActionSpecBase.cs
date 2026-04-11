@@ -49,6 +49,11 @@ namespace Cnct.Core.Configuration
 
         public abstract Task ExecuteAsync(ILogger logger, string configDirectoryRoot);
 
+        protected ValidationIssue CreateValidationIssue(ValidationSeverity severity, string message)
+        {
+            return new ValidationIssue(severity, this.ActionType, this.Label, message);
+        }
+
         protected virtual string GetAdditionalDisplayText() => null;
     }
 }

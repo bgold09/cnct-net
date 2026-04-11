@@ -2,7 +2,8 @@ namespace Cnct.Core.Validation
 {
     public enum ValidationSeverity
     {
-        Error,
-        Warning,
+        None = 0,
+        Error = 1,
+        Warning = 2,
     }
 }

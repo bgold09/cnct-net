@@ -35,3 +35,10 @@ dotnet_diagnostic.CA1819.severity = none
 
 # SA1201: Elements should appear in the correct order
 dotnet_diagnostic.SA1201.severity = none
+
+# SA1313: Parameter names should begin with lower-case letter
+# Suppressed for record types where positional parameters define PascalCase properties.
+dotnet_diagnostic.SA1313.severity = none
+
+# AD0001: StyleCop analyzer exception for RecordDeclaration (known bug in StyleCop.Analyzers 1.1.118)
+dotnet_diagnostic.AD0001.severity = none
