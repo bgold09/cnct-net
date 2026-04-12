@@ -25,11 +25,7 @@ namespace Cnct.Core.Tasks.EnvironmentVariable
             ILogger logger,
             string configDirectoryRoot)
         {
-            return new EnvironmentVariableTask(
-                logger,
-                new EnvironmentVariableWriter(),
-                spec.Name,
-                spec.Value);
+            return new EnvironmentVariableTask(logger, new EnvironmentVariableWriter(), spec.Name, spec.Value);
         }
 
         public string Name { get; set; }
