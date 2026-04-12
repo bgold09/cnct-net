@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Cnct.Core.Configuration;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {
@@ -91,7 +86,7 @@ namespace Cnct.Core.Tests
         {
             TestPlatformFiles(PlatformType.Windows, new FileSpecification
             {
-                Windows = Array.Empty<string>(),
+                Windows = [],
             });
         }
 
@@ -103,7 +98,7 @@ namespace Cnct.Core.Tests
         {
             TestPlatformFiles(PlatformType.Linux, new FileSpecification
             {
-                Linux = Array.Empty<string>(),
+                Linux = [],
             });
         }
 
@@ -115,7 +110,7 @@ namespace Cnct.Core.Tests
         {
             TestPlatformFiles(PlatformType.OSX, new FileSpecification
             {
-                Osx = Array.Empty<string>(),
+                Osx = [],
             });
         }
 
@@ -130,7 +125,7 @@ namespace Cnct.Core.Tests
                 Platform.CurrentPlatformIsUnix,
                 new FileSpecification
                 {
-                    Unix = Array.Empty<string>(),
+                    Unix = [],
                 });
         }
 

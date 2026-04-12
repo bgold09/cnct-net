@@ -1,5 +1,3 @@
-﻿using System.Collections.Generic;
-
 namespace Cnct.Core.Configuration
 {
     public interface IFileManagement

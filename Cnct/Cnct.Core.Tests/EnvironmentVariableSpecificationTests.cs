@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
 using Cnct.Core.Configuration;
 using Cnct.Core.Validation;
-using Newtonsoft.Json;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {

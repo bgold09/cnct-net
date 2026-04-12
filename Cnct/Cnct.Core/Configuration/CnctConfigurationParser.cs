@@ -1,8 +1,3 @@
-﻿using System;
-using System.IO;
-using System.IO.Abstractions;
-using Newtonsoft.Json;
-
 namespace Cnct.Core.Configuration
 {
     public class CnctConfigurationParser

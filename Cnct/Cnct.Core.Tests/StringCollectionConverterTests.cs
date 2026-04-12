@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using Cnct.Core.Configuration;
-using Newtonsoft.Json;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {
@@ -13,7 +9,7 @@ namespace Cnct.Core.Tests
         {
             var json = JsonConvert.SerializeObject(new { tags = "personal" });
             var result = JsonConvert.DeserializeObject<TagsWrapper>(json);
-            Assert.Equal(new[] { "personal" }, result.Tags);
+            Assert.Equal(["personal"], result.Tags);
         }
 
         [Fact]
@@ -54,7 +50,7 @@ namespace Cnct.Core.Tests
         {
             [JsonProperty("tags")]
             [JsonConverter(typeof(StringCollectionConverter))]
-            public IReadOnlyCollection<string> Tags { get; set; } = System.Array.Empty<string>();
+            public IReadOnlyCollection<string> Tags { get; set; } = [];
         }
     }
 }

@@ -1,5 +1,3 @@
-﻿using System;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks.EnvironmentVariable

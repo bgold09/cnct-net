@@ -1,7 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
 namespace Cnct.Core.Tasks
 {
     public class ProcessGitRunner : IGitRunner
@@ -14,10 +10,10 @@ namespace Cnct.Core.Tasks
         }
 
         public Task CloneAsync(string url, string destination)
-            => this.RunGitProcessAsync(new[] { "clone", url, destination });
+            => this.RunGitProcessAsync(["clone", url, destination]);
 
         public Task PullAsync(string repositoryPath)
-            => this.RunGitProcessAsync(new[] { "-C", repositoryPath, "pull" });
+            => this.RunGitProcessAsync(["-C", repositoryPath, "pull"]);
 
         private async Task RunGitProcessAsync(string[] arguments)
         {

@@ -1,9 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace Cnct.Core.Configuration
 {
     public class EnumCollectionConverter<T> : JsonConverter<IReadOnlyCollection<T>>
@@ -15,7 +9,7 @@ namespace Cnct.Core.Configuration
             return token.Type switch
             {
                 JTokenType.Array => Convert(((JArray)token).Select(e => e.Value<string>())),
-                JTokenType.String => Convert(new[] { token.Value<string>() }),
+                JTokenType.String => Convert([token.Value<string>()]),
                 JTokenType.Null => new HashSet<T>(),
                 _ => throw new JsonSerializationException(),
             };

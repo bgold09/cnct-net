@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Abstractions;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks

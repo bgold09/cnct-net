@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 using Cnct.Core.Tasks;
-using Moq;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {

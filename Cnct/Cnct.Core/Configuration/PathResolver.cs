@@ -1,5 +1,3 @@
-using System.IO.Abstractions;
-
 namespace Cnct.Core.Configuration
 {
     public class PathResolver : IPathResolver

@@ -1,5 +1,3 @@
-using System;
-
 namespace Cnct.Core.Tasks.EnvironmentVariable
 {
     public class EnvironmentVariableWriter : IEnvironmentVariableWriter

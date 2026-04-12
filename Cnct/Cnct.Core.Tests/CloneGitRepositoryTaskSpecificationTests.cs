@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Cnct.Core.Configuration;
 using Cnct.Core.Validation;
-using Newtonsoft.Json;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {

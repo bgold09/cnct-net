@@ -1,7 +1,3 @@
-﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace Cnct.Core.Configuration
 {
     public partial class CnctActionConverter : JsonConverter<ICnctActionSpec>

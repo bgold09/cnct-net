@@ -141,6 +141,10 @@ The following rules are **suppressed** (severity = none):
 - CA1031 (catching general exceptions allowed)
 - CA1819 (array properties allowed)
 
+## Branching
+
+Feature PRs must always target the `develop` branch, not `main`.
+
 ## Markdown
 
 All markdown files must comply with `.markdownlint.json`:

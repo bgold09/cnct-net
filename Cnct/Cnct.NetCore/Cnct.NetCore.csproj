@@ -37,7 +37,7 @@
   <PropertyGroup>
     <AssemblyName>Cnct</AssemblyName>
     <RootNamespace>Cnct</RootNamespace>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>12.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

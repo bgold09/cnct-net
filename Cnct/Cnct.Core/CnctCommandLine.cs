@@ -1,9 +1,5 @@
-﻿using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
@@ -73,7 +69,7 @@ namespace Cnct.Core
         private static Option CreateOption<T>(char shortName, string longName, string description)
         {
             return new Option(
-                new[] { $"-{shortName}", $"--{longName}" },
+                [$"-{shortName}", $"--{longName}"],
                 description)
             {
                 Argument = new Argument<T>(),
