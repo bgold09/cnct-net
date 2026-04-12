@@ -32,7 +32,7 @@ namespace Cnct.Core.Configuration
 
         public bool ShouldExecuteOnCurrentPlatform()
         {
-            return this.PlatformType is null
+            return this.PlatformType == null
                 || this.PlatformType.Count == 0
                 || this.PlatformType.Contains(Platform.CurrentPlatform);
         }

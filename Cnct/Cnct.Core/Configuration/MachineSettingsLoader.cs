@@ -33,13 +33,11 @@ namespace Cnct.Core.Configuration
 
         private static string GetSettingsDirectory() => Platform.CurrentPlatform switch
         {
-            PlatformType.Windows =>
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            PlatformType.Windows => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             PlatformType.Linux or PlatformType.OSX =>
                 Environment.GetEnvironmentVariable("XDG_CONFIG_HOME")
                 ?? Path.Combine(Platform.Home, ".config"),
-            _ => throw new NotImplementedException(
-                $"Platform '{Platform.CurrentPlatform}' is not supported."),
+            _ => throw new NotImplementedException($"Platform '{Platform.CurrentPlatform}' is not supported."),
         };
     }
 }

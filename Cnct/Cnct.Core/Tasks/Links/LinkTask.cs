@@ -91,8 +91,7 @@ namespace Cnct.Core.Tasks
                 this.fileSystem.Directory.Delete(linkPath);
             }
 
-            int lastSepIndex = linkPath.LastIndexOf(this.fileSystem.Path.DirectorySeparatorChar);
-            string destinationLinkDirectory = linkPath[..lastSepIndex];
+            string destinationLinkDirectory = linkPath[..linkPath.LastIndexOf(this.fileSystem.Path.DirectorySeparatorChar)];
             if (!this.fileSystem.Directory.Exists(destinationLinkDirectory))
             {
                 this.fileSystem.Directory.CreateDirectory(destinationLinkDirectory);
