@@ -18,7 +18,7 @@ namespace Cnct.Core.Tasks.Shell
             this.options = options;
         }
 
-        public static ShellTask FromTaskSpecification(
+        public static partial ShellTask FromTaskSpecification(
             ShellTaskSpecification spec,
             ILogger logger,
             string configDirectoryRoot)

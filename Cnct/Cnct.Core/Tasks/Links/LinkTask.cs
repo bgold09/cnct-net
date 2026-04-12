@@ -34,7 +34,7 @@ namespace Cnct.Core.Tasks
             this.symlinkCreator = symlinkCreator;
         }
 
-        public static LinkTask FromTaskSpecification(
+        public static partial LinkTask FromTaskSpecification(
             LinkTaskSpecification spec,
             ILogger logger,
             string configDirectoryRoot)

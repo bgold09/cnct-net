@@ -24,7 +24,7 @@ namespace Cnct.Core.Tasks
             this.fileSystem = fileSystem;
         }
 
-        public static LinkExpandTask FromTaskSpecification(
+        public static partial LinkExpandTask FromTaskSpecification(
             LinkExpandTaskSpecification spec,
             ILogger logger,
             string configDirectoryRoot)

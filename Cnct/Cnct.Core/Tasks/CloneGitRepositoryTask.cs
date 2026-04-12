@@ -24,7 +24,7 @@ namespace Cnct.Core.Tasks
             this.fileSystem = fileSystem;
         }
 
-        public static CloneGitRepositoryTask FromTaskSpecification(
+        public static partial CloneGitRepositoryTask FromTaskSpecification(
             CloneGitRepositoryTaskSpecification spec,
             ILogger logger,
             string configDirectoryRoot)

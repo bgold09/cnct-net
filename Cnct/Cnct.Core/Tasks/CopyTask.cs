@@ -20,7 +20,7 @@ namespace Cnct.Core.Tasks
             this.fileMap = fileMap;
         }
 
-        public static CopyTask FromTaskSpecification(
+        public static partial CopyTask FromTaskSpecification(
             CopyTaskSpecification spec,
             ILogger logger,
             string configDirectoryRoot)

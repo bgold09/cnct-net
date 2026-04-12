@@ -20,7 +20,7 @@ namespace Cnct.Core.Tasks.EnvironmentVariable
             this.Value = value;
         }
 
-        public static EnvironmentVariableTask FromTaskSpecification(
+        public static partial EnvironmentVariableTask FromTaskSpecification(
             EnvironmentVariableTaskSpecification spec,
             ILogger logger,
             string configDirectoryRoot)

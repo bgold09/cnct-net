@@ -51,7 +51,7 @@ namespace Cnct.SourceGeneration
                             ? "public"
                             : "internal";
                         taskClassInfoList.Add((className, taskClassName, taskNamespace, accessibility));
-                        this.AddTaskGeneratedSource(context, taskClassName, taskNamespace, accessibility);
+                        this.AddTaskGeneratedSource(context, className, taskClassName, taskNamespace, accessibility);
                     }
                 }
             }
@@ -112,6 +112,7 @@ namespace {NamespaceCnctCoreConfiguration}
 
         private void AddTaskGeneratedSource(
             GeneratorExecutionContext context,
+            string specClassName,
             string taskClassName,
             string taskNamespace,
             string accessibility)
@@ -121,6 +122,10 @@ namespace {taskNamespace}
 {{
     {accessibility} partial class {taskClassName} : Cnct.Core.Tasks.CnctTaskBase
     {{
+        public static partial {taskClassName} FromTaskSpecification(
+            {NamespaceCnctCoreConfiguration}.{specClassName} spec,
+            ILogger logger,
+            string configDirectoryRoot);
     }}
 }}
 ";
