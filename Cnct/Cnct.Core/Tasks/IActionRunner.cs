@@ -5,9 +5,6 @@ namespace Cnct.Core.Tasks
 {
     public interface IActionRunner
     {
-        Task ExecuteAsync(
-            ICnctActionSpec spec,
-            ILogger logger,
-            string configDirectoryRoot);
+        Task ExecuteAsync(ICnctActionSpec spec, ILogger logger, string configDirectoryRoot);
     }
 }

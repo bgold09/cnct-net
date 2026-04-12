@@ -40,12 +40,10 @@ namespace Cnct.Core.Tasks
             string configDirectoryRoot)
         {
             var fileManagement = new FileManagement();
-            var fileSystem = new FileSystem();
             return new LinkTask(
                 logger,
-                fileManagement.GetFileConfigurations(
-                    configDirectoryRoot, spec.Links),
-                fileSystem);
+                fileManagement.GetFileConfigurations(configDirectoryRoot, spec.Links),
+                new FileSystem());
         }
 
         public override Task ExecuteAsync()

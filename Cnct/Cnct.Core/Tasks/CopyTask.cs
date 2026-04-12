@@ -26,12 +26,11 @@ namespace Cnct.Core.Tasks
             string configDirectoryRoot)
         {
             var fileManagement = new FileManagement();
-            var fileSystem = new FileSystem();
+
             return new CopyTask(
                 logger,
-                fileSystem,
-                fileManagement.GetFileConfigurations(
-                    configDirectoryRoot, spec.Files));
+                new FileSystem(),
+                fileManagement.GetFileConfigurations(configDirectoryRoot, spec.Files));
         }
 
         public override Task ExecuteAsync()

@@ -25,11 +25,11 @@ namespace Cnct.Core.Tasks.Shell
             string configDirectoryRoot)
         {
             var factory = new ShellInvokerFactory();
-            IShellInvoker invoker = factory.Create(
-                spec.Shell, logger);
-            var options = new ShellExecutionOptions(
-                spec.Command, spec.Silent);
-            return new ShellTask(logger, invoker, options);
+
+            return new ShellTask(
+                logger,
+                factory.Create(spec.Shell, logger),
+                new ShellExecutionOptions(spec.Command, spec.Silent));
         }
 
         public override Task ExecuteAsync()

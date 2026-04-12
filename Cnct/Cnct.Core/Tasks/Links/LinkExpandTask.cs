@@ -31,11 +31,10 @@ namespace Cnct.Core.Tasks
         {
             var fileSystem = new FileSystem();
             var pathResolver = new PathResolver(fileSystem);
-            string source = pathResolver.Resolve(
-                spec.Source, configDirectoryRoot);
+            string source = pathResolver.Resolve(spec.Source, configDirectoryRoot);
             string target = spec.Target.NormalizePath();
-            return new LinkExpandTask(
-                logger, source, target, fileSystem);
+
+            return new LinkExpandTask(logger, source, target, fileSystem);
         }
 
         public override Task ExecuteAsync()

@@ -34,8 +34,7 @@ namespace Cnct.Core.Tasks
             var normalizedRepos = new Dictionary<string, string>();
             foreach (var kvp in spec.Repos)
             {
-                normalizedRepos[kvp.Key] = pathResolver.Resolve(
-                    kvp.Value, configDirectoryRoot);
+                normalizedRepos[kvp.Key] = pathResolver.Resolve(kvp.Value, configDirectoryRoot);
             }
 
             return new CloneGitRepositoryTask(
