@@ -20,7 +20,7 @@ namespace Cnct.Core.Configuration
         public IReadOnlyCollection<string> MachineTags { get; set; } = Array.Empty<string>();
 
         [JsonIgnore]
-        public IActionRunner Runner { get; set; }
+        public IActionRunner Runner { get; set; } = new ActionRunner();
 
         [JsonProperty(ItemConverterType = typeof(CnctActionConverter))]
         public ICnctActionSpec[] Actions { get; set; }

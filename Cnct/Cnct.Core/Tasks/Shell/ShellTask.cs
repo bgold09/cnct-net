@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Cnct.Core.Configuration;
-using static Cnct.Core.Configuration.ShellTaskSpecification;
 
 namespace Cnct.Core.Tasks.Shell
 {
