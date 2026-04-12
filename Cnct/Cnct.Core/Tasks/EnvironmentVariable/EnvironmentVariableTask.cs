@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks.EnvironmentVariable
 {
-    internal class EnvironmentVariableTask : CnctTaskBase
+    internal partial class EnvironmentVariableTask
     {
         private readonly IEnvironmentVariableWriter writer;
-
-        public string Name { get; set; }
-
-        public string Value { get; set; }
 
         public EnvironmentVariableTask(
             ILogger logger,
@@ -22,6 +19,18 @@ namespace Cnct.Core.Tasks.EnvironmentVariable
             this.Name = name;
             this.Value = value;
         }
+
+        public static partial EnvironmentVariableTask FromTaskSpecification(
+            EnvironmentVariableTaskSpecification spec,
+            ILogger logger,
+            string configDirectoryRoot)
+        {
+            return new EnvironmentVariableTask(logger, new EnvironmentVariableWriter(), spec.Name, spec.Value);
+        }
+
+        public string Name { get; set; }
+
+        public string Value { get; set; }
 
         public override Task ExecuteAsync()
         {

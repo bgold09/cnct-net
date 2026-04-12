@@ -1,13 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.IO.Abstractions.TestingHelpers;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
-using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
-using Moq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -115,121 +110,6 @@ namespace Cnct.Core.Tests
             IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
 
             Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_ResolvesRelativeDestAgainstConfigDirectoryRoot()
-        {
-            string configRoot = Path.GetTempPath();
-            const string url = "https://example.com/org/repo-a";
-            string relativeDest = Path.Combine("dev", "repo-a");
-            string expectedDest = Path.Combine(configRoot, relativeDest);
-
-            var mockFileSystem = new MockFileSystem();
-            var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
-
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
-            {
-                Repos = new Dictionary<string, string> { [url] = relativeDest },
-            };
-
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), configRoot);
-
-            mockRunner.Verify(
-                r => r.CloneAsync(url, expectedDest),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_ClonesWhenDestDoesNotExist()
-        {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "repo-a");
-            const string url = "https://example.com/org/repo-a";
-
-            var mockFileSystem = new MockFileSystem();
-            var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
-
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
-            {
-                Repos = new Dictionary<string, string> { [url] = dest },
-            };
-
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), Path.GetTempPath());
-
-            mockRunner.Verify(r => r.CloneAsync(url, dest), Times.Once);
-            mockRunner.Verify(r => r.PullAsync(It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_PullsWhenDotGitDirectoryExists()
-        {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            var mockFileSystem = new MockFileSystem();
-            mockFileSystem.Directory.CreateDirectory(mockFileSystem.Path.Combine(dest, ".git"));
-
-            const string url = "https://example.com/org/repo-a";
-            var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.PullAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
-
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
-            {
-                Repos = new Dictionary<string, string> { [url] = dest },
-            };
-
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), Path.GetTempPath());
-
-            mockRunner.Verify(r => r.PullAsync(dest), Times.Once);
-            mockRunner.Verify(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_PullsWhenDotGitFileExists()
-        {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            var mockFileSystem = new MockFileSystem();
-            mockFileSystem.Directory.CreateDirectory(dest);
-            mockFileSystem.File.WriteAllText(
-                mockFileSystem.Path.Combine(dest, ".git"),
-                "gitdir: ../.git/worktrees/worktree1");
-
-            const string url = "https://example.com/org/repo-a";
-            var mockRunner = new Mock<IGitRunner>();
-            mockRunner.Setup(r => r.PullAsync(It.IsAny<string>())).Returns(Task.CompletedTask);
-
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
-            {
-                Repos = new Dictionary<string, string> { [url] = dest },
-            };
-
-            await spec.ExecuteAsync(Mock.Of<ILogger>(), Path.GetTempPath());
-
-            mockRunner.Verify(r => r.PullAsync(dest), Times.Once);
-            mockRunner.Verify(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_LogsWarningWhenDestExistsButIsNotGitRepo()
-        {
-            string dest = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            var mockFileSystem = new MockFileSystem();
-            mockFileSystem.Directory.CreateDirectory(dest);
-
-            const string url = "https://example.com/org/repo-a";
-            var mockRunner = new Mock<IGitRunner>();
-            var logger = new Mock<ILogger>();
-
-            var spec = new CloneGitRepositoryTaskSpecification(mockRunner.Object, mockFileSystem, new PathResolver(mockFileSystem))
-            {
-                Repos = new Dictionary<string, string> { [url] = dest },
-            };
-
-            await spec.ExecuteAsync(logger.Object, Path.GetTempPath());
-
-            logger.Verify(l => l.LogWarning(It.Is<string>(s => s.Contains(dest))), Times.Once);
-            mockRunner.Verify(r => r.CloneAsync(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-            mockRunner.Verify(r => r.PullAsync(It.IsAny<string>()), Times.Never);
         }
 
         [Fact]

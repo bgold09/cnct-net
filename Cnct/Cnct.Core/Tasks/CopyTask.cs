@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
+using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks
 {
-    public class CopyTask : CnctTaskBase
+    public partial class CopyTask
     {
         private readonly IFileSystem fileSystem;
         private readonly IDictionary<string, IEnumerable<string>> fileMap;
@@ -17,6 +18,19 @@ namespace Cnct.Core.Tasks
         {
             this.fileSystem = fileSystem;
             this.fileMap = fileMap;
+        }
+
+        public static partial CopyTask FromTaskSpecification(
+            CopyTaskSpecification spec,
+            ILogger logger,
+            string configDirectoryRoot)
+        {
+            var fileManagement = new FileManagement();
+
+            return new CopyTask(
+                logger,
+                new FileSystem(),
+                fileManagement.GetFileConfigurations(configDirectoryRoot, spec.Files));
         }
 
         public override Task ExecuteAsync()

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
@@ -46,8 +45,6 @@ namespace Cnct.Core.Configuration
         {
             return Array.Empty<ValidationIssue>();
         }
-
-        public abstract Task ExecuteAsync(ILogger logger, string configDirectoryRoot);
 
         protected ValidationIssue CreateValidationError(string message)
         {

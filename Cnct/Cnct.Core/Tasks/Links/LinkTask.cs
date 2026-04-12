@@ -6,7 +6,7 @@ using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks
 {
-    internal class LinkTask : CnctTaskBase
+    internal partial class LinkTask
     {
         private readonly IFileSystem fileSystem;
         private readonly IDictionary<string, IEnumerable<string>> links;
@@ -32,6 +32,18 @@ namespace Cnct.Core.Tasks
             this.links = links;
             this.fileSystem = fileSystem;
             this.symlinkCreator = symlinkCreator;
+        }
+
+        public static partial LinkTask FromTaskSpecification(
+            LinkTaskSpecification spec,
+            ILogger logger,
+            string configDirectoryRoot)
+        {
+            var fileManagement = new FileManagement();
+            return new LinkTask(
+                logger,
+                fileManagement.GetFileConfigurations(configDirectoryRoot, spec.Links),
+                new FileSystem());
         }
 
         public override Task ExecuteAsync()

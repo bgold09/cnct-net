@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
 using Newtonsoft.Json;
 
@@ -17,6 +18,9 @@ namespace Cnct.Core.Configuration
 
         [JsonIgnore]
         public IReadOnlyCollection<string> MachineTags { get; set; } = Array.Empty<string>();
+
+        [JsonIgnore]
+        public IActionRunner Runner { get; set; } = new ActionRunner();
 
         [JsonProperty(ItemConverterType = typeof(CnctActionConverter))]
         public ICnctActionSpec[] Actions { get; set; }
@@ -68,7 +72,7 @@ namespace Cnct.Core.Configuration
                     var start = DateTimeOffset.Now;
                     this.Logger.LogStart(displayText);
 
-                    await action.ExecuteAsync(new IndentedLogger(this.Logger), this.ConfigRootDirectory);
+                    await this.Runner.ExecuteAsync(action, new IndentedLogger(this.Logger), this.ConfigRootDirectory);
 
                     var end = DateTimeOffset.Now;
                     var elapsed = end - start;

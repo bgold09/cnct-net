@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
+using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks
 {
-    internal class CloneGitRepositoryTask : CnctTaskBase
+    internal partial class CloneGitRepositoryTask
     {
         private readonly IFileSystem fileSystem;
         private readonly IReadOnlyDictionary<string, string> repos;
@@ -21,6 +22,26 @@ namespace Cnct.Core.Tasks
             this.repos = repos;
             this.gitRunner = gitRunner;
             this.fileSystem = fileSystem;
+        }
+
+        public static partial CloneGitRepositoryTask FromTaskSpecification(
+            CloneGitRepositoryTaskSpecification spec,
+            ILogger logger,
+            string configDirectoryRoot)
+        {
+            var fileSystem = new FileSystem();
+            var pathResolver = new PathResolver(fileSystem);
+            var normalizedRepos = new Dictionary<string, string>();
+            foreach (var kvp in spec.Repos)
+            {
+                normalizedRepos[kvp.Key] = pathResolver.Resolve(kvp.Value, configDirectoryRoot);
+            }
+
+            return new CloneGitRepositoryTask(
+                logger,
+                normalizedRepos,
+                new ProcessGitRunner(logger),
+                fileSystem);
         }
 
         public override async Task ExecuteAsync()

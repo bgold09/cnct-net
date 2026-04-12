@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.Threading.Tasks;
+using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks
 {
-    internal class LinkExpandTask : CnctTaskBase
+    internal partial class LinkExpandTask
     {
         private readonly IFileSystem fileSystem;
         private readonly string source;
@@ -21,6 +22,19 @@ namespace Cnct.Core.Tasks
             this.source = source;
             this.target = target;
             this.fileSystem = fileSystem;
+        }
+
+        public static partial LinkExpandTask FromTaskSpecification(
+            LinkExpandTaskSpecification spec,
+            ILogger logger,
+            string configDirectoryRoot)
+        {
+            var fileSystem = new FileSystem();
+            var pathResolver = new PathResolver(fileSystem);
+            string source = pathResolver.Resolve(spec.Source, configDirectoryRoot);
+            string target = spec.Target.NormalizePath();
+
+            return new LinkExpandTask(logger, source, target, fileSystem);
         }
 
         public override Task ExecuteAsync()
