@@ -1,8 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 namespace Cnct.Core.Configuration
 {
     public class FileManagement : IFileManagement
@@ -31,11 +26,11 @@ namespace Cnct.Core.Configuration
                 switch (destination)
                 {
                     case null:
-                        fileCopyConfigs.Add(sourceFile, new[] { GetDotFileLinkPath(sourceFile) });
+                        fileCopyConfigs.Add(sourceFile, [GetDotFileLinkPath(sourceFile)]);
                         break;
 
                     case string s:
-                        fileCopyConfigs.Add(sourceFile, new[] { s.NormalizePath() });
+                        fileCopyConfigs.Add(sourceFile, [s.NormalizePath()]);
                         break;
 
                     case FileSpecification spec:
@@ -74,7 +69,7 @@ namespace Cnct.Core.Configuration
             }
             else if (platformDestinations.Length == 0)
             {
-                destinations = new[] { GetDotFileLinkPath(sourceFile) };
+                destinations = [GetDotFileLinkPath(sourceFile)];
                 return true;
             }
             else

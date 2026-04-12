@@ -1,6 +1,4 @@
-﻿using System;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Cnct.Core.Tasks;
 
 namespace Cnct.Core

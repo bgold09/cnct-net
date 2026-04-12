@@ -1,7 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO.Abstractions;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks
@@ -95,7 +91,8 @@ namespace Cnct.Core.Tasks
                 this.fileSystem.Directory.Delete(linkPath);
             }
 
-            string destinationLinkDirectory = linkPath[..linkPath.LastIndexOf(this.fileSystem.Path.DirectorySeparatorChar)];
+            int lastSepIndex = linkPath.LastIndexOf(this.fileSystem.Path.DirectorySeparatorChar);
+            string destinationLinkDirectory = linkPath[..lastSepIndex];
             if (!this.fileSystem.Directory.Exists(destinationLinkDirectory))
             {
                 this.fileSystem.Directory.CreateDirectory(destinationLinkDirectory);

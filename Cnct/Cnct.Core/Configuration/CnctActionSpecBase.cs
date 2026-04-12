@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Cnct.Core.Validation;
-using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {
@@ -13,7 +9,7 @@ namespace Cnct.Core.Configuration
 
         [JsonProperty("tags")]
         [JsonConverter(typeof(StringCollectionConverter))]
-        public IReadOnlyCollection<string> Tags { get; set; } = Array.Empty<string>();
+        public IReadOnlyCollection<string> Tags { get; set; } = [];
 
         [JsonProperty("os")]
         [JsonConverter(typeof(EnumCollectionConverter<PlatformType>))]
@@ -36,14 +32,14 @@ namespace Cnct.Core.Configuration
 
         public bool ShouldExecuteOnCurrentPlatform()
         {
-            return this.PlatformType == null
+            return this.PlatformType is null
                 || this.PlatformType.Count == 0
                 || this.PlatformType.Contains(Platform.CurrentPlatform);
         }
 
         public virtual IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
         {
-            return Array.Empty<ValidationIssue>();
+            return [];
         }
 
         protected ValidationIssue CreateValidationError(string message)

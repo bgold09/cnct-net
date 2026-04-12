@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace Cnct.Core
 {
     public class ConsoleLogger : ILogger

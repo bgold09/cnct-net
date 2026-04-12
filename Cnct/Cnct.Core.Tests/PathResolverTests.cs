@@ -1,7 +1,4 @@
-using System.IO;
-using System.IO.Abstractions.TestingHelpers;
 using Cnct.Core.Configuration;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {

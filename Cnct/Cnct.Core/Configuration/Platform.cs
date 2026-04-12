@@ -1,44 +1,25 @@
-﻿using System;
-using System.Runtime.InteropServices;
-
 namespace Cnct.Core.Configuration
 {
     public static class Platform
     {
-        private static readonly Lazy<PlatformType> CurrentPlatformLazy = new Lazy<PlatformType>(GetCurrentPlatformType);
+        private static readonly Lazy<PlatformType> CurrentPlatformLazy = new(GetCurrentPlatformType);
 
-        public static string Home
+        public static string Home => CurrentPlatform switch
         {
-            get
-            {
-                switch (CurrentPlatform)
-                {
-                    case PlatformType.Windows:
-                        return Environment.GetEnvironmentVariable("USERPROFILE");
-                    case PlatformType.Linux:
-                    case PlatformType.OSX:
-                        return Environment.GetEnvironmentVariable("HOME");
-                    default:
-                        return null;
-                }
-            }
-        }
+            PlatformType.Windows => Environment.GetEnvironmentVariable("USERPROFILE"),
+            PlatformType.Linux or PlatformType.OSX => Environment.GetEnvironmentVariable("HOME"),
+            _ => null,
+        };
 
         public static PlatformType CurrentPlatform => CurrentPlatformLazy.Value;
 
         public static bool CurrentPlatformIsUnix { get; } = IsUnix();
 
-        private static bool IsUnix()
+        private static bool IsUnix() => CurrentPlatform switch
         {
-            switch (CurrentPlatform)
-            {
-                case PlatformType.Linux:
-                case PlatformType.OSX:
-                    return true;
-                default:
-                    return false;
-            }
-        }
+            PlatformType.Linux or PlatformType.OSX => true,
+            _ => false,
+        };
 
         private static PlatformType GetCurrentPlatformType()
         {

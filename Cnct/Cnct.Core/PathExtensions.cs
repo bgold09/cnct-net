@@ -1,5 +1,3 @@
-﻿using System;
-using System.IO;
 using Cnct.Core.Configuration;
 
 namespace Cnct.Core

@@ -1,12 +1,10 @@
-using System;
 using Cnct.Core.Tasks.Shell;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {
     public class ShellInvokerFactoryTests
     {
-        private readonly ShellInvokerFactory factory = new ShellInvokerFactory();
+        private readonly ShellInvokerFactory factory = new();
 
         [Fact]
         public void Create_PowerShell_ReturnsPowerShellInvoker()

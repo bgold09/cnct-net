@@ -1,7 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
 namespace Cnct.Core.Tasks.Shell
 {
     public class ShInvoker : IShellInvoker

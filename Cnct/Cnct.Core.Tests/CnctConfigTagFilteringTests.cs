@@ -14,7 +14,7 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsUntaggedAction_WhenMachineHasNoTags()
         {
             var action = new TestActionSpec();
-            var (config, runner) = MakeConfig(Array.Empty<string>(), action);
+            var (config, runner) = MakeConfig([], action);
 
             await config.ExecuteAsync();
 
@@ -27,7 +27,7 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsUntaggedAction_WhenMachineHasTags()
         {
             var action = new TestActionSpec();
-            var (config, runner) = MakeConfig(new[] { "personal" }, action);
+            var (config, runner) = MakeConfig(["personal"], action);
 
             await config.ExecuteAsync();
 
@@ -39,8 +39,8 @@ namespace Cnct.Core.Tests
         [Fact]
         public async Task ExecuteAsync_RunsTaggedAction_WhenMachineTagMatches()
         {
-            var action = new TestActionSpec { Tags = new[] { "personal" } };
-            var (config, runner) = MakeConfig(new[] { "personal" }, action);
+            var action = new TestActionSpec { Tags = ["personal"] };
+            var (config, runner) = MakeConfig(["personal"], action);
 
             await config.ExecuteAsync();
 
@@ -52,8 +52,8 @@ namespace Cnct.Core.Tests
         [Fact]
         public async Task ExecuteAsync_SkipsTaggedAction_WhenNoMachineTags()
         {
-            var action = new TestActionSpec { Tags = new[] { "personal" } };
-            var (config, runner) = MakeConfig(Array.Empty<string>(), action);
+            var action = new TestActionSpec { Tags = ["personal"] };
+            var (config, runner) = MakeConfig([], action);
 
             await config.ExecuteAsync();
 
@@ -68,8 +68,8 @@ namespace Cnct.Core.Tests
         [Fact]
         public async Task ExecuteAsync_SkipsTaggedAction_WhenMachineTagsDoNotMatch()
         {
-            var action = new TestActionSpec { Tags = new[] { "personal" } };
-            var (config, runner) = MakeConfig(new[] { "work" }, action);
+            var action = new TestActionSpec { Tags = ["personal"] };
+            var (config, runner) = MakeConfig(["work"], action);
 
             await config.ExecuteAsync();
 
@@ -84,8 +84,8 @@ namespace Cnct.Core.Tests
         [Fact]
         public async Task ExecuteAsync_RunsTaggedAction_CaseInsensitiveMatch()
         {
-            var action = new TestActionSpec { Tags = new[] { "Personal" } };
-            var (config, runner) = MakeConfig(new[] { "personal" }, action);
+            var action = new TestActionSpec { Tags = ["Personal"] };
+            var (config, runner) = MakeConfig(["personal"], action);
 
             await config.ExecuteAsync();
 
@@ -97,8 +97,8 @@ namespace Cnct.Core.Tests
         [Fact]
         public async Task ExecuteAsync_RunsTaggedAction_WhenAnyTagMatches()
         {
-            var action = new TestActionSpec { Tags = new[] { "personal", "home" } };
-            var (config, runner) = MakeConfig(new[] { "work", "home" }, action);
+            var action = new TestActionSpec { Tags = ["personal", "home"] };
+            var (config, runner) = MakeConfig(["work", "home"], action);
 
             await config.ExecuteAsync();
 
@@ -111,9 +111,9 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsUntaggedAndSkipsTagged_Mixed()
         {
             var untaggedAction = new TestActionSpec();
-            var taggedAction = new TestActionSpec { Tags = new[] { "personal" } };
+            var taggedAction = new TestActionSpec { Tags = ["personal"] };
             var (config, runner) = MakeConfig(
-                Array.Empty<string>(), untaggedAction, taggedAction);
+                [], untaggedAction, taggedAction);
 
             await config.ExecuteAsync();
 
@@ -138,8 +138,8 @@ namespace Cnct.Core.Tests
                 Logger = logger.Object,
                 Runner = runner.Object,
                 ConfigRootDirectory = "/",
-                MachineTags = Array.Empty<string>(),
-                Actions = new ICnctActionSpec[] { action },
+                MachineTags = [],
+                Actions = [action],
             };
 
             await config.ExecuteAsync();
@@ -161,8 +161,8 @@ namespace Cnct.Core.Tests
                 Logger = logger.Object,
                 Runner = runner.Object,
                 ConfigRootDirectory = "/",
-                MachineTags = Array.Empty<string>(),
-                Actions = new ICnctActionSpec[] { action },
+                MachineTags = [],
+                Actions = [action],
             };
 
             await config.ExecuteAsync();
@@ -184,8 +184,8 @@ namespace Cnct.Core.Tests
                 Logger = logger.Object,
                 Runner = runner.Object,
                 ConfigRootDirectory = "/",
-                MachineTags = Array.Empty<string>(),
-                Actions = new ICnctActionSpec[] { action },
+                MachineTags = [],
+                Actions = [action],
             };
 
             await config.ExecuteAsync();
@@ -203,15 +203,15 @@ namespace Cnct.Core.Tests
                 : PlatformType.Windows;
             var action = new TestActionSpec
             {
-                PlatformType = new[] { nonCurrentPlatform },
+                PlatformType = [nonCurrentPlatform],
             };
             var config = new CnctConfig
             {
                 Logger = logger.Object,
                 Runner = runner.Object,
                 ConfigRootDirectory = "/",
-                MachineTags = Array.Empty<string>(),
-                Actions = new ICnctActionSpec[] { action },
+                MachineTags = [],
+                Actions = [action],
             };
 
             await config.ExecuteAsync();
@@ -240,9 +240,9 @@ namespace Cnct.Core.Tests
         {
             var action = new TestActionSpec
             {
-                PlatformType = new[] { Platform.CurrentPlatform },
+                PlatformType = [Platform.CurrentPlatform],
             };
-            var (config, runner) = MakeConfig(Array.Empty<string>(), action);
+            var (config, runner) = MakeConfig([], action);
 
             await config.ExecuteAsync();
 
@@ -255,7 +255,7 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsAction_WhenOsNotSpecified()
         {
             var action = new TestActionSpec();
-            var (config, runner) = MakeConfig(Array.Empty<string>(), action);
+            var (config, runner) = MakeConfig([], action);
 
             await config.ExecuteAsync();
 

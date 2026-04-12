@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Cnct.Core.Tasks
 {
     internal class UnixSymlinkCreator : ISymlinkCreator

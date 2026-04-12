@@ -1,4 +1,3 @@
-using System;
 using static Cnct.Core.Configuration.ShellTaskSpecification;
 
 namespace Cnct.Core.Tasks.Shell

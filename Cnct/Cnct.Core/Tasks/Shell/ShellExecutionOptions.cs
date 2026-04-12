@@ -1,5 +1,3 @@
-using System;
-
 namespace Cnct.Core.Tasks.Shell
 {
     public class ShellExecutionOptions

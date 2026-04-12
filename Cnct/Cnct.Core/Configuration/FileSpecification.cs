@@ -1,5 +1,3 @@
-﻿using Newtonsoft.Json;
-
 namespace Cnct.Core.Configuration
 {
     public class FileSpecification

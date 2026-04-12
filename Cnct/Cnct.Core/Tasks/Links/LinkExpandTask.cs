@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.IO.Abstractions;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
 
 namespace Cnct.Core.Tasks
@@ -50,7 +47,7 @@ namespace Cnct.Core.Tasks
             {
                 string name = this.fileSystem.Path.GetFileName(subdirectory);
                 string linkPath = this.fileSystem.Path.Combine(this.target, name);
-                links[subdirectory] = new[] { linkPath };
+                links[subdirectory] = [linkPath];
             }
 
             var linkTask = new LinkTask(this.Logger, links, this.fileSystem);

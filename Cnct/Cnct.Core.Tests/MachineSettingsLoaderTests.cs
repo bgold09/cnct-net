@@ -1,8 +1,4 @@
-using System.IO.Abstractions.TestingHelpers;
-using System.Threading.Tasks;
 using Cnct.Core.Configuration;
-using Newtonsoft.Json;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {

@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 namespace Cnct.Core.Configuration
 {
     public class StringCollectionConverter : JsonConverter<IReadOnlyCollection<string>>

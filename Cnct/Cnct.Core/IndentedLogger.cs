@@ -1,5 +1,3 @@
-using System;
-
 namespace Cnct.Core
 {
     internal class IndentedLogger : ILogger

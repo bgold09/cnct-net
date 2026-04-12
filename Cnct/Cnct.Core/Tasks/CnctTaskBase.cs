@@ -1,5 +1,3 @@
-﻿using System.Threading.Tasks;
-
 namespace Cnct.Core.Tasks
 {
     public abstract class CnctTaskBase : ICnctTask

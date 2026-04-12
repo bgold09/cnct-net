@@ -1,0 +1,9 @@
+global using System;
+global using System.Collections.Generic;
+global using System.IO;
+global using System.IO.Abstractions.TestingHelpers;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using Moq;
+global using Newtonsoft.Json;
+global using Xunit;

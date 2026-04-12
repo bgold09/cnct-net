@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Cnct.Core.Tasks;
 using Cnct.Core.Validation;
-using Newtonsoft.Json;
 
 namespace Cnct.Core.Configuration
 {
@@ -17,7 +12,7 @@ namespace Cnct.Core.Configuration
         public string ConfigRootDirectory { get; set; }
 
         [JsonIgnore]
-        public IReadOnlyCollection<string> MachineTags { get; set; } = Array.Empty<string>();
+        public IReadOnlyCollection<string> MachineTags { get; set; } = [];
 
         [JsonIgnore]
         public IActionRunner Runner { get; set; } = new ActionRunner();

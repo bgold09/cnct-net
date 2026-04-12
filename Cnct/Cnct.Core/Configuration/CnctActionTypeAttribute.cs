@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace Cnct.Core.Configuration
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]

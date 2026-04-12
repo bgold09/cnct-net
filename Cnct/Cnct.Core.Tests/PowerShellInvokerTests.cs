@@ -1,9 +1,5 @@
-using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Cnct.Core.Tasks.Shell;
-using Moq;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {

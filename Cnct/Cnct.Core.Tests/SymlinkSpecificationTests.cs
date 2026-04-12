@@ -1,7 +1,4 @@
-﻿using System;
 using Cnct.Core.Configuration;
-using Newtonsoft.Json;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {
@@ -17,9 +14,9 @@ namespace Cnct.Core.Tests
 }";
 
             var s = JsonConvert.DeserializeObject<FileSpecification>(json);
-            Assert.Equal(Array.Empty<string>(), s.Windows);
-            Assert.Equal(Array.Empty<string>(), s.Linux);
-            Assert.Equal(Array.Empty<string>(), s.Osx);
+            Assert.Equal((string[])[], s.Windows);
+            Assert.Equal((string[])[], s.Linux);
+            Assert.Equal((string[])[], s.Osx);
         }
 
         [Fact]
@@ -30,7 +27,7 @@ namespace Cnct.Core.Tests
 }";
 
             var s = JsonConvert.DeserializeObject<FileSpecification>(json);
-            Assert.Equal(Array.Empty<string>(), s.Windows);
+            Assert.Equal((string[])[], s.Windows);
             Assert.Null(s.Linux);
             Assert.Null(s.Osx);
         }
@@ -40,10 +37,10 @@ namespace Cnct.Core.Tests
         {
             string expectedLink = "some/path";
             string json = @"{
-  ""windows"": """ + expectedLink + "\"}";
+      ""windows"": """ + expectedLink + "\"}";
 
             var s = JsonConvert.DeserializeObject<FileSpecification>(json);
-            Assert.Equal(new[] { expectedLink }, s.Windows);
+            Assert.Equal([expectedLink], s.Windows);
             Assert.Null(s.Linux);
             Assert.Null(s.Osx);
         }

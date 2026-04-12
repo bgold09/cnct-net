@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -24,6 +22,7 @@ namespace Cnct.Core.Validation
         [JsonPropertyName("issues")]
         public IReadOnlyList<ValidationIssue> Issues { get; }
 
-        public string ToJson() => JsonSerializer.Serialize(this, SerializerOptions);
+        public string ToJson() =>
+            System.Text.Json.JsonSerializer.Serialize(this, SerializerOptions);
     }
 }

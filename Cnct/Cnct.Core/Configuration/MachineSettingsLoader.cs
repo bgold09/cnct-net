@@ -1,9 +1,3 @@
-using System;
-using System.IO;
-using System.IO.Abstractions;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-
 namespace Cnct.Core.Configuration
 {
     public class MachineSettingsLoader
@@ -37,18 +31,15 @@ namespace Cnct.Core.Configuration
             return JsonConvert.DeserializeObject<MachineSettings>(json) ?? MachineSettings.Empty;
         }
 
-        private static string GetSettingsDirectory()
+        private static string GetSettingsDirectory() => Platform.CurrentPlatform switch
         {
-            switch (Platform.CurrentPlatform)
-            {
-                case PlatformType.Windows:
-                    return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                case PlatformType.Linux:
-                case PlatformType.OSX:
-                    return Environment.GetEnvironmentVariable("XDG_CONFIG_HOME") ?? Path.Combine(Platform.Home, ".config");
-                default:
-                    throw new NotImplementedException($"Platform '{Platform.CurrentPlatform}' is not supported.");
-            }
-        }
+            PlatformType.Windows =>
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            PlatformType.Linux or PlatformType.OSX =>
+                Environment.GetEnvironmentVariable("XDG_CONFIG_HOME")
+                ?? Path.Combine(Platform.Home, ".config"),
+            _ => throw new NotImplementedException(
+                $"Platform '{Platform.CurrentPlatform}' is not supported."),
+        };
     }
 }

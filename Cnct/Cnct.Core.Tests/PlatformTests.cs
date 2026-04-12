@@ -1,7 +1,5 @@
-﻿using System;
 using System.Runtime.InteropServices;
 using Cnct.Core.Configuration;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {

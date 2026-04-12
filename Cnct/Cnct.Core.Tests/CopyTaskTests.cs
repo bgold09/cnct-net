@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Threading.Tasks;
 using Cnct.Core.Tasks;
-using Moq;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {
@@ -13,7 +9,7 @@ namespace Cnct.Core.Tests
         public async Task CanCopyExistingFiles()
         {
             string sourceFile = "sourceFile";
-            var destinations = new[] { "d1", "d2" };
+            string[] destinations = ["d1", "d2"];
             var map = new Dictionary<string, IEnumerable<string>>
             {
                 [sourceFile] = destinations,
@@ -53,7 +49,7 @@ namespace Cnct.Core.Tests
         public async Task ThrowsForNonexistentSourceFile()
         {
             string sourceFile = "sourceFile";
-            var destinations = new[] { "d1", "d2" };
+            string[] destinations = ["d1", "d2"];
             var map = new Dictionary<string, IEnumerable<string>>
             {
                 [sourceFile] = destinations,
@@ -84,7 +80,7 @@ namespace Cnct.Core.Tests
             string sourceFile = "sourceFile";
             string existingDestinationFile = "ed1";
             string nonexistentDestinationFile = "ned1";
-            var destinations = new[] { existingDestinationFile, nonexistentDestinationFile };
+            string[] destinations = [existingDestinationFile, nonexistentDestinationFile];
             var map = new Dictionary<string, IEnumerable<string>>
             {
                 [sourceFile] = destinations,

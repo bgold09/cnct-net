@@ -1,6 +1,4 @@
-﻿using System.IO;
 using Cnct.Core.Configuration;
-using Xunit;
 
 namespace Cnct.Core.Tests
 {
