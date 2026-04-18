@@ -7,7 +7,7 @@
 ### Feature updates
 
 * The `os` property is now supported on all action types. When set, the action
-  only runs on the specified operating system(s).
+  only runs on the specified operating system(s). 
   ([#78](https://github.com/bgold09/cnct-net/pull/78))
 * Add `sh` shell type for running commands via `/bin/sh` on Linux and macOS.
   The `os` property on shell actions is now optional — when omitted, the action
@@ -40,7 +40,7 @@
   match (case-insensitive).
   ([#72](https://github.com/bgold09/cnct-net/pull/72))
 
-### Improvements
+### Improvements...
 
 * Migrate all tasks to use `IFileSystem` from `System.IO.Abstractions` for filesystem
   operations, enabling full unit test coverage without real disk I/O.
