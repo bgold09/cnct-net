@@ -93,9 +93,9 @@ Creates one or more symbolic links from source files or directories to destinati
 
 Each value in `links` can be:
 
-- A **string** — a single destination path.
-- An **array of strings** — multiple destination paths.
-- A **platform object** with keys `windows`, `linux`, `osx`, and/or `unix`, each pointing to a
+* A **string** — a single destination path.
+* An **array of strings** — multiple destination paths.
+* A **platform object** with keys `windows`, `linux`, `osx`, and/or `unix`, each pointing to a
   string or array of destination paths. This lets you use different destinations per platform.
 
 **Example:**
