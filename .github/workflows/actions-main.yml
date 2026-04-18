@@ -13,6 +13,14 @@ on:
       - release
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Lint markdown
+      run: npx markdownlint-cli@0 "**/*.md"
+
   build:
     strategy:
       matrix:
