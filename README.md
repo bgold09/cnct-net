@@ -17,15 +17,9 @@ be expressed in a simple configuration.
 
 ## Installation
 
-[Create a personal access token (PAT)][create-pat] that has the `read:packages` scope.
+Install the [.NET SDK](https://dotnet.microsoft.com/download), then install `cnct` as a global tool.
 
 ```powershell
-# When prompted, enter the PAT you created as the password
-$c = Get-Credential -UserName "<your GitHub username>"
-
-dotnet nuget add source --name github-bgold09 "https://nuget.pkg.github.com/bgold09/index.json" `
-  --username $c.UserName --password $c.GetNetworkCredential().Password
-
 dotnet tool install --global cnct
 ```
 
@@ -328,7 +322,6 @@ Below is a `cnct.json` that demonstrates every action type:
 * [Anish Athalye](https://github.com/anishathalye) for [dotbot](https://github.com/anishathalye/dotbot),
   which heavily inspired this project
 
-[create-pat]: https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token
 [ci-develop]: https://github.com/bgold09/cnct-net/actions/workflows/actions-main.yml/badge.svg?branch=develop
 [ci-main]: https://github.com/bgold09/cnct-net/actions/workflows/actions-main.yml/badge.svg?branch=main
 [ci-develop-history]: https://github.com/bgold09/cnct-net/actions?query=event%3Apush+branch%3Adevelop
