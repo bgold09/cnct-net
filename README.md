@@ -48,7 +48,7 @@ cnct -c ~/.dotfiles/cnct.json
 ### CLI options
 
 | Option | Short | Description |
-|:-------|:------|:------------|
+| :------- | :------ | :------------ |
 | `--config <path>` | `-c` | Path to config file. Defaults to `cnct.json` in the current directory. |
 | `--quiet` | `-q` | Suppress all output other than errors. |
 | `--debug` | `-d` | Output additional debug information. |
@@ -75,7 +75,7 @@ The top-level structure of a `cnct.json` file is:
 Every action supports these properties:
 
 | Property | Type | Required | Description |
-|:---------|:-----|:---------|:------------|
+| :--------- | :----- | :--------- | :------------ |
 | `actionType` | string | Yes | Identifies the type of action to run. |
 | `label` | string | No | Display label shown when the action starts and finishes. |
 | `os` | string or array | No | Platform filter: `"windows"`, `"linux"`, `"osx"`. Omit to run on all. |
@@ -88,7 +88,7 @@ Every action supports these properties:
 Creates one or more symbolic links from source files or directories to destination paths.
 
 | Property | Type | Required | Description |
-|:---------|:-----|:---------|:------------|
+| :--------- | :----- | :--------- | :------------ |
 | `links` | object | Yes | Map of source path → destination path(s). |
 
 Each value in `links` can be:
@@ -121,7 +121,7 @@ Creates a symlink in a target directory for each subdirectory found inside a sou
 Useful for linking batches of config directories (e.g. XDG config folders) without listing each one.
 
 | Property | Type | Required | Description |
-|:---------|:-----|:---------|:------------|
+| :--------- | :----- | :--------- | :------------ |
 | `source` | string | Yes | Directory whose subdirectories will be symlinked. |
 | `target` | string | Yes | Directory in which to create the symlinks. |
 
@@ -143,7 +143,7 @@ Copies source files or directories to destination paths. The `files` map has the
 `links` map in the `link` action.
 
 | Property | Type | Required | Description |
-|:---------|:-----|:---------|:------------|
+| :--------- | :----- | :--------- | :------------ |
 | `files` | object | Yes | Map of source path → destination path(s). |
 
 **Example:**
@@ -165,7 +165,7 @@ Invokes a command in a shell. On Windows you can use `powershell`; on Linux and 
 `sh`.
 
 | Property | Type | Required | Description |
-|:---------|:-----|:---------|:------------|
+| :--------- | :----- | :--------- | :------------ |
 | `command` | string | Yes | The command to invoke. |
 | `shell` | string | Yes | Shell to use: `"powershell"` or `"sh"`. |
 | `silent` | boolean | No | If `true`, suppress the command's output. Default: `false`. |
@@ -188,7 +188,7 @@ Invokes a command in a shell. On Windows you can use `powershell`; on Linux and 
 Sets a persistent user-scoped environment variable.
 
 | Property | Type | Required | Description |
-|:---------|:-----|:---------|:------------|
+| :--------- | :----- | :--------- | :------------ |
 | `name` | string | Yes | Name of the environment variable. |
 | `value` | string | Yes | Value to assign. |
 
@@ -210,7 +210,7 @@ Clones a git repository to a local path. If the destination already exists, perf
 instead.
 
 | Property | Type | Required | Description |
-|:---------|:-----|:---------|:------------|
+| :--------- | :----- | :--------- | :------------ |
 | `repos` | object | Yes | Map of repository URL → local destination path. |
 
 **Example:**
@@ -232,7 +232,7 @@ You can restrict individual actions to run only on machines with specific tags. 
 a `settings.json` file on each machine:
 
 | Platform | Path |
-|:---------|:-----|
+| :--------- | :----- |
 | Windows | `%LOCALAPPDATA%\cnct\settings.json` |
 | Linux / macOS | `$XDG_CONFIG_HOME/cnct/settings.json` or `~/.config/cnct/settings.json` |
 
