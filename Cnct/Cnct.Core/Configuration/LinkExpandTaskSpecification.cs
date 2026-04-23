@@ -27,7 +27,7 @@ namespace Cnct.Core.Configuration
         [JsonProperty("target")]
         public string Target { get; set; }
 
-        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        public override IReadOnlyList<ValidationIssue> Validate(CnctContext context)
         {
             var issues = new List<ValidationIssue>();
             if (string.IsNullOrWhiteSpace(this.Source))
@@ -40,9 +40,9 @@ namespace Cnct.Core.Configuration
                 issues.Add(this.CreateValidationError("A target directory must be specified."));
             }
 
-            if (issues.Count == 0)
+            if (issues.Count == 0 && this.WouldRunOnCurrentMachine(context))
             {
-                string source = this.pathResolver.Resolve(this.Source, configDirectoryRoot);
+                string source = this.pathResolver.Resolve(this.Source, context.ConfigDirectoryRoot);
                 if (!this.fileSystem.Directory.Exists(source))
                 {
                     issues.Add(this.CreateValidationError($"Source directory does not exist: {source}"));

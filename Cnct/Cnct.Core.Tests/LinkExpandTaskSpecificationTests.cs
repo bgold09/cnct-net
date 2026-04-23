@@ -37,7 +37,7 @@ namespace Cnct.Core.Tests
                 Target = "~/some/target",
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error && i.Message.Contains("source"));
         }
@@ -55,7 +55,7 @@ namespace Cnct.Core.Tests
                 Target = target,
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error && i.Message.Contains("target"));
         }
@@ -84,7 +84,7 @@ namespace Cnct.Core.Tests
                 Target = "~/some/target",
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate(configRoot);
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext(configRoot, []));
 
             Assert.Empty(issues);
         }
@@ -103,11 +103,70 @@ namespace Cnct.Core.Tests
                 Target = "~/some/target",
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate(configRoot);
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext(configRoot, []));
 
             Assert.Single(issues);
             Assert.Equal(ValidationSeverity.Error, issues[0].Severity);
             Assert.Contains("does not exist", issues[0].Message);
+        }
+
+        [Fact]
+        public void Validate_SkipsSourceExistenceCheck_WhenActionTagsDoNotMatchMachineTags()
+        {
+            const string configRoot = "/config";
+            var mockFs = new MockFileSystem();
+
+            var spec = new LinkExpandTaskSpecification(mockFs, new PathResolver(mockFs))
+            {
+                Source = "missing-scripts",
+                Target = "~/some/target",
+                Tags = ["work"],
+            };
+
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate(new CnctContext(configRoot, ["personal"]));
+
+            Assert.Empty(issues);
+        }
+
+        [Fact]
+        public void Validate_SkipsSourceExistenceCheck_WhenPlatformDoesNotMatch()
+        {
+            const string configRoot = "/config";
+            var mockFs = new MockFileSystem();
+
+            PlatformType otherPlatform = Platform.CurrentPlatform == PlatformType.Windows
+                ? PlatformType.Linux
+                : PlatformType.Windows;
+
+            var spec = new LinkExpandTaskSpecification(mockFs, new PathResolver(mockFs))
+            {
+                Source = "missing-scripts",
+                Target = "~/some/target",
+                PlatformType = [otherPlatform],
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext(configRoot, []));
+
+            Assert.Empty(issues);
+        }
+
+        [Fact]
+        public void Validate_StillReportsConfigErrors_WhenActionWouldBeSkipped()
+        {
+            var mockFs = new MockFileSystem();
+
+            var spec = new LinkExpandTaskSpecification(mockFs, new PathResolver(mockFs))
+            {
+                Source = null,
+                Target = "~/some/target",
+                Tags = ["work"],
+            };
+
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate(new CnctContext("/config", ["personal"]));
+
+            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error && i.Message.Contains("source"));
         }
     }
 }

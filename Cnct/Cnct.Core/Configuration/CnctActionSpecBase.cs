@@ -37,9 +37,26 @@ namespace Cnct.Core.Configuration
                 || this.PlatformType.Contains(Platform.CurrentPlatform);
         }
 
-        public virtual IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        public virtual IReadOnlyList<ValidationIssue> Validate(CnctContext context)
         {
             return [];
+        }
+
+        protected bool WouldRunOnCurrentMachine(CnctContext context)
+        {
+            if (context == null)
+            {
+                return true;
+            }
+
+            if (this.Tags != null
+                && this.Tags.Count > 0
+                && !this.Tags.Any(t => context.MachineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
+            {
+                return false;
+            }
+
+            return this.ShouldExecuteOnCurrentPlatform();
         }
 
         protected ValidationIssue CreateValidationError(string message)

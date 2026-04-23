@@ -35,9 +35,10 @@ namespace Cnct.Core.Configuration
             }
 
             var issues = new List<ValidationIssue>();
+            var context = new CnctContext(this.ConfigRootDirectory, this.MachineTags);
             foreach (var action in this.Actions.Where(a => a != null))
             {
-                issues.AddRange(action.Validate(this.ConfigRootDirectory));
+                issues.AddRange(action.Validate(context));
             }
 
             return new ConfigValidationResult(issues);

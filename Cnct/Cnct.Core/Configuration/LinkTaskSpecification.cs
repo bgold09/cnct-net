@@ -22,7 +22,7 @@ namespace Cnct.Core.Configuration
         [JsonConverter(typeof(FileSpecificationCollectionConverter))]
         public IReadOnlyDictionary<string, object> Links { get; set; }
 
-        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        public override IReadOnlyList<ValidationIssue> Validate(CnctContext context)
         {
             var issues = new List<ValidationIssue>();
             if (this.Links == null || this.Links.Count == 0)
@@ -31,7 +31,13 @@ namespace Cnct.Core.Configuration
                 return issues;
             }
 
-            foreach (string sourcePath in this.fileManagement.GetFileConfigurations(configDirectoryRoot, this.Links).Keys)
+            if (!this.WouldRunOnCurrentMachine(context))
+            {
+                return issues;
+            }
+
+            foreach (string sourcePath in
+                this.fileManagement.GetFileConfigurations(context.ConfigDirectoryRoot, this.Links).Keys)
             {
                 if (!this.fileSystem.File.Exists(sourcePath) && !this.fileSystem.Directory.Exists(sourcePath))
                 {

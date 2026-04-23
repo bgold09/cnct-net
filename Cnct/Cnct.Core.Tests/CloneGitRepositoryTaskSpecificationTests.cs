@@ -55,7 +55,7 @@ namespace Cnct.Core.Tests
         {
             var spec = new CloneGitRepositoryTaskSpecification { Repos = null };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
         }
@@ -68,7 +68,7 @@ namespace Cnct.Core.Tests
                 Repos = new Dictionary<string, string>(),
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
         }
@@ -84,7 +84,7 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.DoesNotContain(issues, i => i.Severity == ValidationSeverity.Error);
         }
@@ -103,7 +103,7 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
         }
@@ -161,7 +161,7 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Empty(issues);
         }
@@ -177,7 +177,7 @@ namespace Cnct.Core.Tests
                 },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Single(issues);
             Assert.Equal(ValidationSeverity.Error, issues[0].Severity);

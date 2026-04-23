@@ -132,7 +132,7 @@ namespace Cnct.Core.Tests
                 Command = "echo hello",
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             // The result depends on whether pwsh is installed — just verify the shape
             // If pwsh is not on PATH, we expect a warning; if it is, we expect no issues.
