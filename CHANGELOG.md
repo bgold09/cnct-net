@@ -4,13 +4,11 @@
 
 ### Fixes
 
-* Validation is now aware of the current machine's tags and operating system.
-  Machine-dependent checks (e.g. filesystem existence for `link`, `copy`, and
-  `linkExpand` sources) are skipped for any action whose `tags` or `os` filter
-  excludes the current machine, so validating a config on one machine no
-  longer reports false-positive errors for actions that target a different
-  machine. Pure-config checks (required fields, URL format, etc.) continue
-  to run for every action.
+* Validation is now aware of whether an action would run on the current machine
+  and skips any machine-dependent checks, e.g. checking whether source files and
+  directories exist for `link`, `copy`, and `linkExpand` actions. This eliminates
+  false-positive validation errors that would prevent taking action for an entire
+  configuration.
 
 ## 0.6.0
 
