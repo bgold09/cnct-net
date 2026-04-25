@@ -11,7 +11,7 @@ namespace Cnct.Core.Configuration
         [JsonRequired]
         public string Value { get; set; }
 
-        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        public override IReadOnlyList<ValidationIssue> Validate(CnctContext context)
         {
             var issues = new List<ValidationIssue>();
             if (!string.IsNullOrEmpty(this.Name) && this.Name.Contains('='))

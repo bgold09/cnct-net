@@ -47,7 +47,7 @@ namespace Cnct.Core.Tests
                 Links = new Dictionary<string, object> { [sourceFile] = "~/destination" },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate(configRoot);
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext(configRoot, []));
 
             Assert.Empty(issues);
         }
@@ -65,11 +65,62 @@ namespace Cnct.Core.Tests
                 Links = new Dictionary<string, object> { [sourceFile] = "~/destination" },
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate(configRoot);
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext(configRoot, []));
 
             Assert.Single(issues);
             Assert.Equal(ValidationSeverity.Error, issues[0].Severity);
             Assert.Contains("does not exist", issues[0].Message);
+        }
+
+        [Fact]
+        public void Validate_SkipsSourceExistenceCheck_WhenActionTagsDoNotMatchMachineTags()
+        {
+            var mockFs = new MockFileSystem();
+            var spec = new LinkTaskSpecification(new Configuration.FileManagement(), mockFs)
+            {
+                Links = new Dictionary<string, object> { ["missing-file"] = "~/destination" },
+                Tags = ["work"],
+            };
+
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate(new CnctContext("/config", ["personal"]));
+
+            Assert.Empty(issues);
+        }
+
+        [Fact]
+        public void Validate_SkipsSourceExistenceCheck_WhenPlatformDoesNotMatch()
+        {
+            var mockFs = new MockFileSystem();
+            PlatformType otherPlatform = Platform.CurrentPlatform == PlatformType.Windows
+                ? PlatformType.Linux
+                : PlatformType.Windows;
+
+            var spec = new LinkTaskSpecification(new Configuration.FileManagement(), mockFs)
+            {
+                Links = new Dictionary<string, object> { ["missing-file"] = "~/destination" },
+                PlatformType = [otherPlatform],
+            };
+
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
+
+            Assert.Empty(issues);
+        }
+
+        [Fact]
+        public void Validate_StillReportsEmptyLinks_WhenActionWouldBeSkipped()
+        {
+            var mockFs = new MockFileSystem();
+            var spec = new LinkTaskSpecification(new Configuration.FileManagement(), mockFs)
+            {
+                Links = null,
+                Tags = ["work"],
+            };
+
+            IReadOnlyList<ValidationIssue> issues =
+                spec.Validate(new CnctContext("/config", ["personal"]));
+
+            Assert.Contains(issues, i => i.Severity == ValidationSeverity.Error);
         }
     }
 }

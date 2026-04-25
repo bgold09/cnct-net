@@ -46,7 +46,7 @@ namespace Cnct.Core.Tests
                 Value = "hello",
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Empty(issues);
         }
@@ -60,7 +60,7 @@ namespace Cnct.Core.Tests
                 Value = "hello",
             };
 
-            IReadOnlyList<ValidationIssue> issues = spec.Validate("/config");
+            IReadOnlyList<ValidationIssue> issues = spec.Validate(new CnctContext("/config", []));
 
             Assert.Single(issues);
             Assert.Equal(ValidationSeverity.Error, issues[0].Severity);

@@ -8,7 +8,7 @@ namespace Cnct.Core.Configuration
         [JsonProperty("repos")]
         public IReadOnlyDictionary<string, string> Repos { get; set; }
 
-        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        public override IReadOnlyList<ValidationIssue> Validate(CnctContext context)
         {
             var issues = new List<ValidationIssue>();
             if (this.Repos == null || this.Repos.Count == 0)

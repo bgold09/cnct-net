@@ -13,7 +13,7 @@ namespace Cnct.Core.Configuration
 
         public bool Silent { get; set; }
 
-        public override IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot)
+        public override IReadOnlyList<ValidationIssue> Validate(CnctContext context)
         {
             var issues = new List<ValidationIssue>();
             if (this.Shell == ShellType.Unknown)

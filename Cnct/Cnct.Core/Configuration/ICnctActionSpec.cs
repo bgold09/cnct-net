@@ -13,6 +13,6 @@ namespace Cnct.Core.Configuration
 
         bool ShouldExecuteOnCurrentPlatform();
 
-        IReadOnlyList<ValidationIssue> Validate(string configDirectoryRoot);
+        IReadOnlyList<ValidationIssue> Validate(CnctContext context);
     }
 }
