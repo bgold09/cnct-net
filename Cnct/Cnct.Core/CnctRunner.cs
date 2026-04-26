@@ -11,19 +11,22 @@ namespace Cnct.Core
         private readonly string configRootDirectory;
         private readonly IReadOnlyCollection<string> machineTags;
         private readonly IActionRunner runner;
+        private readonly IReadOnlyCollection<string> actionFilter;
 
         public CnctRunner(
             CnctConfig config,
             ILogger logger,
             string configRootDirectory,
             IReadOnlyCollection<string> machineTags,
-            IActionRunner runner)
+            IActionRunner runner,
+            IReadOnlyCollection<string> actionFilter = null)
         {
             this.config = config;
             this.logger = logger;
             this.configRootDirectory = configRootDirectory;
             this.machineTags = machineTags;
             this.runner = runner;
+            this.actionFilter = actionFilter ?? [];
         }
 
         public ConfigValidationResult Validate()
@@ -42,9 +45,27 @@ namespace Cnct.Core
 
             var issues = new List<ValidationIssue>();
             var context = new CnctContext(this.configRootDirectory, this.machineTags);
+            var seenIds = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             foreach (var action in this.config.Actions.Where(a => a != null))
             {
                 issues.AddRange(action.Validate(context));
+
+                if (!string.IsNullOrEmpty(action.ID))
+                {
+                    if (!seenIds.TryAdd(action.ID, 1))
+                    {
+                        seenIds[action.ID]++;
+                    }
+                }
+            }
+
+            foreach (var entry in seenIds.Where(e => e.Value > 1))
+            {
+                issues.Add(new ValidationIssue(
+                    ValidationSeverity.Error,
+                    "config",
+                    null,
+                    $"Duplicate action id '{entry.Key}' found on {entry.Value} actions."));
             }
 
             return new ConfigValidationResult(issues);
@@ -52,19 +73,27 @@ namespace Cnct.Core
 
         public async Task<bool> ExecuteAsync()
         {
+            bool hasActionFilter = this.actionFilter.Count > 0;
+            var matchedIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var action in this.config.Actions.Where(a => a != null))
             {
-                if (action.Tags.Any()
-                    && !action.Tags.Any(t => this.machineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
+                if (hasActionFilter)
                 {
-                    this.logger.LogVerbose($"Skipping action '{action.ActionType}': no matching machine tag.");
-                    continue;
+                    if (string.IsNullOrEmpty(action.ID)
+                        || !this.actionFilter.Contains(action.ID, StringComparer.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    matchedIds.Add(action.ID);
                 }
 
-                if (!action.ShouldExecuteOnCurrentPlatform())
+                string skipReason = this.GetSkipReason(action);
+                if (skipReason != null)
                 {
                     this.logger.LogVerbose(
-                        $"Skipping action '{action.ActionType}': not applicable to current OS.");
+                        $"Skipping action '{action.GetDisplayText()}': {skipReason}.");
                     continue;
                 }
 
@@ -89,7 +118,34 @@ namespace Cnct.Core
                 }
             }
 
+            if (hasActionFilter)
+            {
+                foreach (var id in this.actionFilter)
+                {
+                    if (!matchedIds.Contains(id))
+                    {
+                        this.logger.LogError($"Action with id '{id}' was not found in the configuration.");
+                    }
+                }
+            }
+
             return true;
+        }
+
+        private string GetSkipReason(ICnctActionSpec action)
+        {
+            if (action.Tags.Any()
+                && !action.Tags.Any(t => this.machineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
+            {
+                return "no matching machine tag";
+            }
+
+            if (!action.ShouldExecuteOnCurrentPlatform())
+            {
+                return "not applicable to current OS";
+            }
+
+            return null;
         }
     }
 }
