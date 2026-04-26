@@ -13,7 +13,8 @@ namespace Cnct.Core
             var rootCommand = new RootCommand
             {
                 Description = "A cross-platform bootstrapping tool. Connect your dotfiles / cnct the dots!",
-                Handler = CommandHandler.Create((Func<FileInfo, bool, bool, bool, Task<int>>)ExecuteAsync),
+                Handler = CommandHandler.Create(
+                    (Func<FileInfo, bool, bool, bool, string[], Task<int>>)ExecuteAsync),
             };
 
             string configOptDescription = "Path to a configuration file. If not supplied, a file called 'cnct.json' "
@@ -24,6 +25,10 @@ namespace Cnct.Core
                 CreateOption<bool>('q', "quiet", "Suppress all output other than errors."),
                 CreateOption<bool>('d', "debug", "Output additional debug information."),
                 CreateOption<bool>('v', "validate", "Validate the config file and output results as JSON."),
+                CreateOption<string[]>(
+                    'a',
+                    "action",
+                    "Run only the action(s) with the specified id. Can be specified multiple times."),
             };
 
             foreach (var option in options)
@@ -34,7 +39,12 @@ namespace Cnct.Core
             return await rootCommand.InvokeAsync(args);
         }
 
-        private static async Task<int> ExecuteAsync(FileInfo config, bool quiet, bool debug, bool validate)
+        private static async Task<int> ExecuteAsync(
+            FileInfo config,
+            bool quiet,
+            bool debug,
+            bool validate,
+            string[] action)
         {
             var logger = new ConsoleLogger(new LoggerOptions(quiet, debug));
             var parser = new CnctConfigurationParser(logger);
@@ -46,7 +56,7 @@ namespace Cnct.Core
             IReadOnlyCollection<string> machineTags = (await new MachineSettingsLoader().LoadAsync()).Tags;
 
             var runner = new CnctRunner(
-                cnctConfig, logger, configRootDirectory, machineTags, new ActionRunner());
+                cnctConfig, logger, configRootDirectory, machineTags, new ActionRunner(), action ?? []);
 
             ConfigValidationResult validation = runner.Validate();
             if (validate)

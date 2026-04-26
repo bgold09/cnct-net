@@ -5,6 +5,8 @@ namespace Cnct.Core.Configuration
     [JsonConverter(typeof(CnctActionConverter))]
     public interface ICnctActionSpec
     {
+        string ID { get; }
+
         string ActionType { get; }
 
         IReadOnlyCollection<string> Tags { get; }

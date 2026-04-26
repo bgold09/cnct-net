@@ -69,6 +69,10 @@
                     "description": "The type of the action.",
                     "type": "string"
                 },
+                "id": {
+                    "description": "An optional unique identifier for the action. Used with the --action CLI option to run specific actions by name.",
+                    "type": "string"
+                },
                 "description": {
                     "description": "A description for the action.",
                     "type": "string"

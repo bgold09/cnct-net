@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Feature updates
+
+* Add `--action` / `-a` CLI option to run only the action(s) with the
+  specified id(s), e.g. `cnct --action foo --action bar`. Each action
+  can now be given a unique identifier for targeted execution.
+
 ### Fixes
 
 * Validation is now aware of whether an action would run on the current machine

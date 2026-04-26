@@ -4,6 +4,9 @@ namespace Cnct.Core.Configuration
 {
     public abstract class CnctActionSpecBase : ICnctActionSpec
     {
+        [JsonProperty("id")]
+        public string ID { get; set; }
+
         [JsonProperty("label")]
         public string Label { get; set; }
 
