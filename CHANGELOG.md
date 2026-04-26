@@ -4,14 +4,9 @@
 
 ### Feature updates
 
-* Add optional `"id"` property to actions in `cnct.json`. Each action can now
-  be given a unique identifier for targeted execution.
 * Add `--action` / `-a` CLI option to run only the action(s) with the
-  specified id(s). Can be specified multiple times
-  (e.g. `cnct --action foo --action bar`). OS and tag filtering still applies
-  — an action that would not run on the current machine is skipped even when
-  explicitly targeted.
-* Duplicate action ids within the same config are now a validation error.
+  specified id(s), e.g. `cnct --action foo --action bar`. Each action
+  can now be given a unique identifier for targeted execution.
 
 ### Fixes
 

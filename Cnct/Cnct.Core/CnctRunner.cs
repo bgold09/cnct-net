@@ -78,18 +78,7 @@ namespace Cnct.Core
 
             foreach (var action in this.config.Actions.Where(a => a != null))
             {
-                if (hasActionFilter)
-                {
-                    if (string.IsNullOrEmpty(action.ID)
-                        || !this.actionFilter.Contains(action.ID, StringComparer.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    matchedIds.Add(action.ID);
-                }
-
-                string skipReason = this.GetSkipReason(action);
+                string skipReason = this.GetSkipReason(action, hasActionFilter, matchedIds);
                 if (skipReason != null)
                 {
                     this.logger.LogVerbose(
@@ -132,8 +121,22 @@ namespace Cnct.Core
             return true;
         }
 
-        private string GetSkipReason(ICnctActionSpec action)
+        private string GetSkipReason(
+            ICnctActionSpec action,
+            bool hasActionFilter,
+            HashSet<string> matchedIds)
         {
+            if (hasActionFilter)
+            {
+                if (string.IsNullOrEmpty(action.ID)
+                    || !this.actionFilter.Contains(action.ID, StringComparer.OrdinalIgnoreCase))
+                {
+                    return "not targeted by --action filter";
+                }
+
+                matchedIds.Add(action.ID);
+            }
+
             if (action.Tags.Any()
                 && !action.Tags.Any(t => this.machineTags.Contains(t, StringComparer.OrdinalIgnoreCase)))
             {
