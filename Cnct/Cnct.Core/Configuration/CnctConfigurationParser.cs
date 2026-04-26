@@ -37,11 +37,7 @@ namespace Cnct.Core.Configuration
             try
             {
                 string json = this.fileSystem.File.ReadAllText(configFile);
-                CnctConfig config = JsonConvert.DeserializeObject<CnctConfig>(json);
-                config.Logger = this.logger;
-                config.ConfigRootDirectory = this.fileSystem.Path.GetDirectoryName(configFile);
-
-                return config;
+                return JsonConvert.DeserializeObject<CnctConfig>(json);
             }
             catch (Exception ex)
             {

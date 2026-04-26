@@ -38,13 +38,17 @@ namespace Cnct.Core
         {
             var logger = new ConsoleLogger(new LoggerOptions(quiet, debug));
             var parser = new CnctConfigurationParser(logger);
-            string configFilePath = config?.FullName ?? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
+            string configFilePath = config?.FullName
+                ?? $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}cnct.json";
 
             CnctConfig cnctConfig = parser.Parse(configFilePath);
-            cnctConfig.MachineTags = (await new MachineSettingsLoader().LoadAsync()).Tags;
-            cnctConfig.Runner = new ActionRunner();
+            string configRootDirectory = Path.GetDirectoryName(Path.GetFullPath(configFilePath));
+            IReadOnlyCollection<string> machineTags = (await new MachineSettingsLoader().LoadAsync()).Tags;
 
-            ConfigValidationResult validation = cnctConfig.Validate();
+            var runner = new CnctRunner(
+                cnctConfig, logger, configRootDirectory, machineTags, new ActionRunner());
+
+            ConfigValidationResult validation = runner.Validate();
             if (validate)
             {
                 Console.WriteLine(validation.ToJson());
@@ -61,7 +65,7 @@ namespace Cnct.Core
                 return 1;
             }
 
-            bool result = await cnctConfig.ExecuteAsync();
+            bool result = await runner.ExecuteAsync();
 
             return result ? 0 : 1;
         }
