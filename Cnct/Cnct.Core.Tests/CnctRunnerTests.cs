@@ -8,17 +8,17 @@ using Xunit;
 
 namespace Cnct.Core.Tests
 {
-    public class CnctConfigTagFilteringTests
+    public class CnctRunnerTests
     {
         [Fact]
         public async Task ExecuteAsync_RunsUntaggedAction_WhenMachineHasNoTags()
         {
             var action = new TestActionSpec();
-            var (config, runner) = MakeConfig([], action);
+            var (runner, actionRunner) = MakeRunner([], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(action, It.IsAny<ILogger>(), "/"),
                 Times.Once);
         }
@@ -27,11 +27,11 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsUntaggedAction_WhenMachineHasTags()
         {
             var action = new TestActionSpec();
-            var (config, runner) = MakeConfig(["personal"], action);
+            var (runner, actionRunner) = MakeRunner(["personal"], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(action, It.IsAny<ILogger>(), "/"),
                 Times.Once);
         }
@@ -40,11 +40,11 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsTaggedAction_WhenMachineTagMatches()
         {
             var action = new TestActionSpec { Tags = ["personal"] };
-            var (config, runner) = MakeConfig(["personal"], action);
+            var (runner, actionRunner) = MakeRunner(["personal"], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(action, It.IsAny<ILogger>(), "/"),
                 Times.Once);
         }
@@ -53,11 +53,11 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_SkipsTaggedAction_WhenNoMachineTags()
         {
             var action = new TestActionSpec { Tags = ["personal"] };
-            var (config, runner) = MakeConfig([], action);
+            var (runner, actionRunner) = MakeRunner([], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(
                     It.IsAny<ICnctActionSpec>(),
                     It.IsAny<ILogger>(),
@@ -69,11 +69,11 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_SkipsTaggedAction_WhenMachineTagsDoNotMatch()
         {
             var action = new TestActionSpec { Tags = ["personal"] };
-            var (config, runner) = MakeConfig(["work"], action);
+            var (runner, actionRunner) = MakeRunner(["work"], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(
                     It.IsAny<ICnctActionSpec>(),
                     It.IsAny<ILogger>(),
@@ -85,11 +85,11 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsTaggedAction_CaseInsensitiveMatch()
         {
             var action = new TestActionSpec { Tags = ["Personal"] };
-            var (config, runner) = MakeConfig(["personal"], action);
+            var (runner, actionRunner) = MakeRunner(["personal"], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(action, It.IsAny<ILogger>(), "/"),
                 Times.Once);
         }
@@ -98,11 +98,11 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsTaggedAction_WhenAnyTagMatches()
         {
             var action = new TestActionSpec { Tags = ["personal", "home"] };
-            var (config, runner) = MakeConfig(["work", "home"], action);
+            var (runner, actionRunner) = MakeRunner(["work", "home"], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(action, It.IsAny<ILogger>(), "/"),
                 Times.Once);
         }
@@ -112,16 +112,16 @@ namespace Cnct.Core.Tests
         {
             var untaggedAction = new TestActionSpec();
             var taggedAction = new TestActionSpec { Tags = ["personal"] };
-            var (config, runner) = MakeConfig(
+            var (runner, actionRunner) = MakeRunner(
                 [], untaggedAction, taggedAction);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(
                     untaggedAction, It.IsAny<ILogger>(), "/"),
                 Times.Once);
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(
                     taggedAction, It.IsAny<ILogger>(), It.IsAny<string>()),
                 Times.Never);
@@ -131,18 +131,12 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_LogsStartAndFinish_WithDisplayText()
         {
             var logger = new Mock<ILogger>();
-            var runner = new Mock<IActionRunner>();
+            var actionRunner = new Mock<IActionRunner>();
             var action = new TestActionSpec();
-            var config = new CnctConfig
-            {
-                Logger = logger.Object,
-                Runner = runner.Object,
-                ConfigRootDirectory = "/",
-                MachineTags = [],
-                Actions = [action],
-            };
+            var config = new CnctConfig { Actions = [action] };
+            var runner = new CnctRunner(config, logger.Object, "/", [], actionRunner.Object);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
             logger.Verify(l => l.LogStart("test"), Times.Once);
             logger.Verify(
@@ -154,18 +148,12 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_UsesLabel_WhenLabelIsSet()
         {
             var logger = new Mock<ILogger>();
-            var runner = new Mock<IActionRunner>();
+            var actionRunner = new Mock<IActionRunner>();
             var action = new TestActionSpec { Label = "my custom label" };
-            var config = new CnctConfig
-            {
-                Logger = logger.Object,
-                Runner = runner.Object,
-                ConfigRootDirectory = "/",
-                MachineTags = [],
-                Actions = [action],
-            };
+            var config = new CnctConfig { Actions = [action] };
+            var runner = new CnctRunner(config, logger.Object, "/", [], actionRunner.Object);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
             logger.Verify(l => l.LogStart("test: my custom label"), Times.Once);
             logger.Verify(
@@ -177,18 +165,12 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_UsesGetDisplayText_WhenLabelIsNotSet()
         {
             var logger = new Mock<ILogger>();
-            var runner = new Mock<IActionRunner>();
+            var actionRunner = new Mock<IActionRunner>();
             var action = new TestActionSpec();
-            var config = new CnctConfig
-            {
-                Logger = logger.Object,
-                Runner = runner.Object,
-                ConfigRootDirectory = "/",
-                MachineTags = [],
-                Actions = [action],
-            };
+            var config = new CnctConfig { Actions = [action] };
+            var runner = new CnctRunner(config, logger.Object, "/", [], actionRunner.Object);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
             logger.Verify(l => l.LogStart("test"), Times.Once);
         }
@@ -197,7 +179,7 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_SkipsAction_WhenOsDoesNotMatch()
         {
             var logger = new Mock<ILogger>();
-            var runner = new Mock<IActionRunner>();
+            var actionRunner = new Mock<IActionRunner>();
             var nonCurrentPlatform = Platform.CurrentPlatform == PlatformType.Windows
                 ? PlatformType.Linux
                 : PlatformType.Windows;
@@ -205,18 +187,12 @@ namespace Cnct.Core.Tests
             {
                 PlatformType = [nonCurrentPlatform],
             };
-            var config = new CnctConfig
-            {
-                Logger = logger.Object,
-                Runner = runner.Object,
-                ConfigRootDirectory = "/",
-                MachineTags = [],
-                Actions = [action],
-            };
+            var config = new CnctConfig { Actions = [action] };
+            var runner = new CnctRunner(config, logger.Object, "/", [], actionRunner.Object);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(
                     It.IsAny<ICnctActionSpec>(),
                     It.IsAny<ILogger>(),
@@ -242,11 +218,11 @@ namespace Cnct.Core.Tests
             {
                 PlatformType = [Platform.CurrentPlatform],
             };
-            var (config, runner) = MakeConfig([], action);
+            var (runner, actionRunner) = MakeRunner([], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(action, It.IsAny<ILogger>(), "/"),
                 Times.Once);
         }
@@ -255,31 +231,26 @@ namespace Cnct.Core.Tests
         public async Task ExecuteAsync_RunsAction_WhenOsNotSpecified()
         {
             var action = new TestActionSpec();
-            var (config, runner) = MakeConfig([], action);
+            var (runner, actionRunner) = MakeRunner([], action);
 
-            await config.ExecuteAsync();
+            await runner.ExecuteAsync();
 
-            runner.Verify(
+            actionRunner.Verify(
                 r => r.ExecuteAsync(action, It.IsAny<ILogger>(), "/"),
                 Times.Once);
             Assert.Null(action.PlatformType);
         }
 
-        private static (CnctConfig Config, Mock<IActionRunner> Runner) MakeConfig(
+        private static (CnctRunner Runner, Mock<IActionRunner> ActionRunner) MakeRunner(
             IReadOnlyCollection<string> machineTags,
             params ICnctActionSpec[] actions)
         {
-            var runner = new Mock<IActionRunner>();
-            var config = new CnctConfig
-            {
-                Logger = Mock.Of<ILogger>(),
-                Runner = runner.Object,
-                ConfigRootDirectory = "/",
-                MachineTags = machineTags,
-                Actions = actions,
-            };
+            var actionRunner = new Mock<IActionRunner>();
+            var config = new CnctConfig { Actions = actions };
+            var runner = new CnctRunner(
+                config, Mock.Of<ILogger>(), "/", machineTags, actionRunner.Object);
 
-            return (config, runner);
+            return (runner, actionRunner);
         }
 
         private class TestActionSpec : CnctActionSpecBase
