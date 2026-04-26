@@ -81,15 +81,13 @@ namespace Cnct.Core
                 string skipReason = this.GetSkipReason(action, hasActionFilter, matchedIds);
                 if (skipReason != null)
                 {
-                    this.logger.LogVerbose(
-                        $"Skipping action '{action.GetDisplayText()}': {skipReason}.");
+                    this.logger.LogVerbose($"Skipping action '{action.GetDisplayText()}': {skipReason}.");
                     continue;
                 }
 
-                string displayText = action.GetDisplayText();
-
                 try
                 {
+                    string displayText = action.GetDisplayText();
                     var start = DateTimeOffset.Now;
                     this.logger.LogStart(displayText);
 
@@ -121,10 +119,7 @@ namespace Cnct.Core
             return true;
         }
 
-        private string GetSkipReason(
-            ICnctActionSpec action,
-            bool hasActionFilter,
-            HashSet<string> matchedIds)
+        private string GetSkipReason(ICnctActionSpec action, bool hasActionFilter, HashSet<string> matchedIds)
         {
             if (hasActionFilter)
             {
