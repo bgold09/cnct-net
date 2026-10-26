@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Improvements
+
+* Upgrade to .NET 10.
+
 ### Feature updates
 
 * Add `--action` / `-a` CLI option to run only the action(s) with the

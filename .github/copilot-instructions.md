@@ -2,7 +2,10 @@
 
 ## What this project is
 
-**cnct-net** is a cross-platform bootstrapping tool written in C# (.NET 8). It reads a `cnct.json` config file and runs a sequence of declarative *actions* (creating symlinks, copying files, running shell commands, cloning git repos, setting environment variables). The primary consumer is a personal `.dotfiles` repository.
+**cnct-net** is a cross-platform bootstrapping tool written in C# (.NET 10). It reads a
+  `cnct.json` config file and runs declarative *actions* for creating symlinks, copying files,
+  running shell commands, cloning git repositories, and setting environment variables. Its primary
+  consumer is a personal `.dotfiles` repository.
 
 ## Solution structure
 
