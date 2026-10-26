@@ -15,13 +15,8 @@ namespace Cnct.Core.Tests
         }
 
         [Fact]
-        public async Task ExecuteAsync_OnNonWindows_CallsProcessRunnerWithPwsh()
+        public async Task ExecuteAsync_CallsProcessRunnerWithPwsh()
         {
-            if (OperatingSystem.IsWindows())
-            {
-                return;
-            }
-
             var logger = new Mock<ILogger>();
             var runner = new Mock<IProcessRunner>();
             ProcessStartInfo captured = null;
@@ -54,19 +49,23 @@ namespace Cnct.Core.Tests
                 "-NoProfile", captured.ArgumentList);
             Assert.Contains(
                 "-NoLogo", captured.ArgumentList);
-            Assert.Contains("-File", captured.ArgumentList);
-            Assert.Contains(
-                "./bootstrap.ps1", captured.ArgumentList);
+            Assert.Contains("-Command", captured.ArgumentList);
+            Assert.Equal(
+                "$ErrorActionPreference = 'Stop'; ./bootstrap.ps1",
+                captured.ArgumentList.Last());
+            Assert.False(captured.UseShellExecute);
+            Assert.True(captured.RedirectStandardOutput);
+            Assert.True(captured.RedirectStandardError);
+            if (OperatingSystem.IsWindows())
+            {
+                Assert.Contains("-ExecutionPolicy", captured.ArgumentList);
+                Assert.Contains("Unrestricted", captured.ArgumentList);
+            }
         }
 
         [Fact]
         public async Task ExecuteAsync_SilentOptions_StillCallsRunner()
         {
-            if (OperatingSystem.IsWindows())
-            {
-                return;
-            }
-
             var logger = new Mock<ILogger>();
             var runner = new Mock<IProcessRunner>();
             runner.Setup(r => r.ExecuteAsync(

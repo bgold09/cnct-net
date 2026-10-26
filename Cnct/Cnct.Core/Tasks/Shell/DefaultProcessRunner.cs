@@ -21,7 +21,7 @@ namespace Cnct.Core.Tasks.Shell
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
-                        logger.LogInformation(e.Data);
+                        logger?.LogInformation(e.Data);
                     }
                 };
             }
@@ -33,7 +33,7 @@ namespace Cnct.Core.Tasks.Shell
                     stderr.AppendLine(e.Data);
                     if (!options.Silent)
                     {
-                        logger.LogWarning(e.Data);
+                        logger?.LogWarning(e.Data);
                     }
                 }
             };
@@ -48,7 +48,7 @@ namespace Cnct.Core.Tasks.Shell
                     ? stderr.ToString().TrimEnd()
                     : "(no stderr output)";
                 throw new InvalidOperationException(
-                    $"Command failed (exit code "
+                    $"Command '{options.Command}' failed (exit code "
                     + $"{process.ExitCode}): "
                     + errorOutput);
             }

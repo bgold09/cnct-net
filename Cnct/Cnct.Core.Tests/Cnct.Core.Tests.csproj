@@ -28,7 +28,6 @@
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="..\Directory.Packages.props" />
   </ItemGroup>
 
 </Project>

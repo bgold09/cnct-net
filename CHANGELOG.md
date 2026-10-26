@@ -14,6 +14,8 @@
 
 ### Fixes
 
+* Run PowerShell actions in a separate `pwsh` process on all platforms, to properly stream output
+  from native commands, as well as report failures and command exit codes.
 * Validation is now aware of whether an action would run on the current machine
   and skips any machine-dependent checks, e.g. checking whether source files and
   directories exist for `link`, `copy`, and `linkExpand` actions. This eliminates
